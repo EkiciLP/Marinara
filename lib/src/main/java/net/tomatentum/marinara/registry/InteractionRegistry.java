@@ -17,7 +17,7 @@ public class InteractionRegistry {
         wrapper.subscribeInteractions(this::handle);
     }
 
-    public void registerInteractions(InteractionHandler interactionHandler) {
+    public void addInteractions(InteractionHandler interactionHandler) {
         for (Method method : interactionHandler.getClass().getMethods()) {
             interactionMethods.add(InteractionMethod.create(method, interactionHandler, wrapper));
         }
