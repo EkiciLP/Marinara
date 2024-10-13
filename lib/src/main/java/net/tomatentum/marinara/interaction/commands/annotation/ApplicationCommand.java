@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RootCommand {
+public @interface ApplicationCommand {
     public String name();
     public String description() default "";
     public String[] aliases() default {};
