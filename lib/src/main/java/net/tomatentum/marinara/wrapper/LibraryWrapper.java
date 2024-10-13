@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.tomatentum.marinara.command.option.OptionType;
+import net.tomatentum.marinara.interaction.commands.CommandDefinition;
+import net.tomatentum.marinara.interaction.commands.option.OptionType;
 import net.tomatentum.marinara.interaction.InteractionType;
 
 public abstract class LibraryWrapper {
@@ -30,7 +31,6 @@ public abstract class LibraryWrapper {
     }
 
     public abstract InteractionType getInteractionType(Class<?> clazz);
-    public abstract OptionType getOptionType(Class<?> clazz);
-    public abstract LibraryConverter getConverter();
-
+    public abstract Object convertCommandOption(Object context, OptionType type, String optionName);
+    public abstract CommandDefinition getCommandDefinition(Object context);
 }
