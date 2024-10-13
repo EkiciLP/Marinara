@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.command.option;
+package net.tomatentum.marinara.interaction.commands.option;
 
 public enum OptionType {
     ATTACHMENT,
