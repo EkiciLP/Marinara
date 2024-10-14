@@ -1,12 +1,22 @@
 package net.tomatentum.marinara.interaction.commands;
 
-public record CommandDefinition(String applicationCommand, String applicationCommandDescription, String[] subCommandGroups, String subCommand, String subCommandDescription) {
+import org.apache.logging.log4j.core.tools.picocli.CommandLine.Command;
+
+import net.tomatentum.marinara.interaction.commands.annotation.CommandOption;
+
+public record ExecutableCommandDefinition(
+    String applicationCommand,
+    String applicationCommandDescription, 
+    String[] subCommandGroups, 
+    String subCommand, 
+    String subCommandDescription,
+    CommandOption[] options) {
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof CommandDefinition))
+        if (!(o instanceof ExecutableCommandDefinition))
             return false;
-        CommandDefinition other = (CommandDefinition) o;
+        ExecutableCommandDefinition other = (ExecutableCommandDefinition) o;
         return other.applicationCommand.equals(this.applicationCommand) && 
             other.subCommandGroups.equals(this.subCommandGroups) &&
             other.subCommand.equals(this.subCommand);
@@ -18,16 +28,17 @@ public record CommandDefinition(String applicationCommand, String applicationCom
         private String[] subCommandGroupNames;
         private String subCommandName;
         private String subCommandDescription;
+        public CommandOption[] options;
 
         public Builder() {
             this.subCommandGroupNames = new String[0];
         }
 
-        public CommandDefinition build() {
+        public ExecutableCommandDefinition build() {
             if (applicationCommandName == null)
                 throw new IllegalArgumentException("applicationCommandName cant be null");
 
-            return new CommandDefinition(applicationCommandName, applicationCommandDescription, subCommandGroupNames, subCommandName, subCommandDescription);
+            return new ExecutableCommandDefinition(applicationCommandName, applicationCommandDescription, subCommandGroupNames, subCommandName, subCommandDescription, options);
         }
 
         public void setApplicationCommandName(String applicationCommandName) {
@@ -50,6 +61,10 @@ public record CommandDefinition(String applicationCommand, String applicationCom
             this.subCommandDescription = subCommandDescription;
         }
 
+        public void setOptions(CommandOption[] options) {
+            this.options = options;
+        }
+
         public String getApplicationCommandName() {
             return applicationCommandName;
         }
@@ -68,6 +83,10 @@ public record CommandDefinition(String applicationCommand, String applicationCom
 
         public String getSubCommandDescription() {
             return subCommandDescription;
+        }
+
+        public CommandOption[] getOptions() {
+            return options;
         }
     }
 }
