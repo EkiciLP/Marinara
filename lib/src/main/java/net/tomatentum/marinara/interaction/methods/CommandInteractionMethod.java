@@ -3,7 +3,7 @@ package net.tomatentum.marinara.interaction.methods;
 import java.lang.reflect.Method;
 
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.CommandDefinition;
+import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.CommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
@@ -14,9 +14,7 @@ import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class CommandInteractionMethod extends InteractionMethod {
 
-    private CommandOption[] options;
-
-    private CommandDefinition commandDefinition;
+    private ExecutableCommandDefinition commandDefinition;
 
     CommandInteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
         super(method, handler, wrapper);
@@ -25,12 +23,12 @@ public class CommandInteractionMethod extends InteractionMethod {
 
     @Override
     public Object getParameter(Object context, int index) {
-        return wrapper.convertCommandOption(context, options[index].type(), options[index].name());
+        return wrapper.convertCommandOption(context, commandDefinition.options()[index].type(), commandDefinition.options()[index].name());
     }
 
     @Override
     public boolean canRun(Object context) {
-        CommandDefinition other = wrapper.getCommandDefinition(context);
+        ExecutableCommandDefinition other = wrapper.getCommandDefinition(context);
         return commandDefinition.equals(other);
     }
 
@@ -39,22 +37,18 @@ public class CommandInteractionMethod extends InteractionMethod {
         return InteractionType.COMMAND;
     }
 
-    public CommandOption[] getOptions() {
-        return options;
-    }
-
-    public CommandDefinition getCommandDefinition() {
+    public ExecutableCommandDefinition getCommandDefinition() {
         return commandDefinition;
     }
 
     private void parseMethod() {
         ReflectionUtil.checkValidCommandMethod(method);
-        parseOptions();
 
         ApplicationCommand cmd = ReflectionUtil.getAnnotation(method, ApplicationCommand.class);
-        CommandDefinition.Builder builder = new CommandDefinition.Builder();
+        ExecutableCommandDefinition.Builder builder = new ExecutableCommandDefinition.Builder();
         builder.setApplicationCommandName(cmd.name());
         builder.setApplicationCommandDescription(cmd.description());
+        builder.setOptions(parseOptions());
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
             SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
