@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.CommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.util.ReflectionUtil;
