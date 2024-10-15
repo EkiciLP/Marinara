@@ -44,6 +44,8 @@ public class InteractionRegistry {
             else
                 defs.add(new ApplicationCommandDefinition(def.applicationCommand()).addExecutableCommand(def));
         });
+
+        defs.forEach(wrapper::registerApplicationCommand);
     }
 
     public void handle(Object context) {
