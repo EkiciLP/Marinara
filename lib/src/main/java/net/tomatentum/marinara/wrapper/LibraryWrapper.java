@@ -17,8 +17,7 @@ public abstract class LibraryWrapper {
         interactionSubscriber = new ArrayList<>();
     }
 
-    public abstract void registerGlobalCommand(ApplicationCommandDefinition def); 
-    public abstract void registerServerCommand(ApplicationCommandDefinition def);
+    public abstract void registerApplicationCommand(ApplicationCommandDefinition def); 
 
     public void handleInteraction(Object context) {
         interactionSubscriber.forEach((o) -> o.accept(context));
