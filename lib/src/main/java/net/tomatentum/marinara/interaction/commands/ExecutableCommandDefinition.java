@@ -1,15 +1,13 @@
 package net.tomatentum.marinara.interaction.commands;
 
-import org.apache.logging.log4j.core.tools.picocli.CommandLine.Command;
-
+import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.CommandOption;
+import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 
 public record ExecutableCommandDefinition(
-    String applicationCommand,
-    String applicationCommandDescription, 
+    ApplicationCommand applicationCommand,
+    SubCommand subCommand,
     String[] subCommandGroups, 
-    String subCommand, 
-    String subCommandDescription,
     CommandOption[] options) {
 
     @Override
@@ -22,71 +20,54 @@ public record ExecutableCommandDefinition(
             other.subCommand.equals(this.subCommand);
     }
 
+    @Override
+    public final String toString() {
+        return applicationCommand.name() + subCommand.name() != null ? "::" + subCommand.name() : "";
+    }
+
+    public boolean isRootCommand() {
+        return subCommand == null;    
+    }
+
     public static class Builder {
-        private String applicationCommandName;
-        private String applicationCommandDescription;
+        private ApplicationCommand applicationCommand;
+        private SubCommand subCommand;
         private String[] subCommandGroupNames;
-        private String subCommandName;
-        private String subCommandDescription;
-        public CommandOption[] options;
 
         public Builder() {
             this.subCommandGroupNames = new String[0];
         }
 
         public ExecutableCommandDefinition build() {
-            if (applicationCommandName == null)
+            if (applicationCommand == null)
                 throw new IllegalArgumentException("applicationCommandName cant be null");
 
-            return new ExecutableCommandDefinition(applicationCommandName, applicationCommandDescription, subCommandGroupNames, subCommandName, subCommandDescription, options);
+            return new ExecutableCommandDefinition(applicationCommand, subCommand, subCommandGroupNames, subCommand != null ? subCommand.options() : applicationCommand.options());
         }
 
-        public void setApplicationCommandName(String applicationCommandName) {
-            this.applicationCommandName = applicationCommandName;
+        public void setApplicationCommand(ApplicationCommand applicationCommand) {
+            this.applicationCommand = applicationCommand;
         }
 
-        public void setApplicationCommandDescription(String applicationCommandDescription) {
-            this.applicationCommandDescription = applicationCommandDescription;
+        public void setSubCommand(SubCommand subCommand) {
+            this.subCommand = subCommand;
         }
 
         public void setSubCommandGroupNames(String[] subCommandGroupNames) {
             this.subCommandGroupNames = subCommandGroupNames;
         }
 
-        public void setSubCommandName(String subCommandName) {
-            this.subCommandName = subCommandName;
+        public ApplicationCommand getApplicationCommand() {
+            return applicationCommand;
         }
 
-        public void setSubCommandDescription(String subCommandDescription) {
-            this.subCommandDescription = subCommandDescription;
-        }
-
-        public void setOptions(CommandOption[] options) {
-            this.options = options;
-        }
-
-        public String getApplicationCommandName() {
-            return applicationCommandName;
-        }
-
-        public String getApplicationCommandDescription() {
-            return applicationCommandDescription;
+        public SubCommand getSubCommand() {
+            return subCommand;
         }
 
         public String[] getSubCommandGroupNames() {
             return subCommandGroupNames;
         }
 
-        public String getSubCommandName() {
-            return subCommandName;
-        }
-
-        public String getSubCommandDescription() {
-            return subCommandDescription;
-        }
-
-        public CommandOption[] getOptions() {
-            return options;
-        }
     }
 }

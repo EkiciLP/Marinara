@@ -46,9 +46,7 @@ public class CommandInteractionMethod extends InteractionMethod {
 
         ApplicationCommand cmd = ReflectionUtil.getAnnotation(method, ApplicationCommand.class);
         ExecutableCommandDefinition.Builder builder = new ExecutableCommandDefinition.Builder();
-        builder.setApplicationCommandName(cmd.name());
-        builder.setApplicationCommandDescription(cmd.description());
-        builder.setOptions(parseOptions());
+        builder.setApplicationCommand(cmd);
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
             SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
@@ -57,21 +55,10 @@ public class CommandInteractionMethod extends InteractionMethod {
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommand.class)) {
             SubCommand subCmd = ReflectionUtil.getAnnotation(method, SubCommand.class);
-            builder.setSubCommandName(subCmd.name());
-            builder.setSubCommandDescription(subCmd.description());
+            builder.setSubCommand(subCmd);
         }
 
         this.commandDefinition = builder.build();
-    }
-
-    private CommandOption[] parseOptions() {
-        if (method.isAnnotationPresent(SubCommand.class)) {
-            SubCommand subCmd = method.getAnnotation(SubCommand.class);
-            return subCmd.options();
-        }else {
-            ApplicationCommand subCmd = method.getAnnotation(ApplicationCommand.class);
-            return subCmd.options();
-        }
     }
 
 }
