@@ -37,7 +37,7 @@ public class InteractionRegistry {
 
         execDefs.forEach((def) -> {
             Optional<ApplicationCommandDefinition> appDef = defs.stream()
-                .filter((x) -> x.applicationCommand().equals(def.applicationCommand()))
+                .filter((x) -> x.getApplicationCommand().equals(def.applicationCommand()))
                 .findFirst();
             if (appDef.isPresent())
                 appDef.get().addExecutableCommand(def);
