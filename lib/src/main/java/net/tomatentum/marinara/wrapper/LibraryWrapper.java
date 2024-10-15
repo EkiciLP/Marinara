@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import net.tomatentum.marinara.interaction.commands.ApplicationCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.option.OptionType;
 import net.tomatentum.marinara.interaction.InteractionType;
@@ -16,8 +17,8 @@ public abstract class LibraryWrapper {
         interactionSubscriber = new ArrayList<>();
     }
 
-    public abstract void registerGlobalCommand(); 
-    public abstract void registerServerCommand();
+    public abstract void registerGlobalCommand(ApplicationCommandDefinition def); 
+    public abstract void registerServerCommand(ApplicationCommandDefinition def);
 
     public void handleInteraction(Object context) {
         interactionSubscriber.forEach((o) -> o.accept(context));
