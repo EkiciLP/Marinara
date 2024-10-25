@@ -12,4 +12,5 @@ public @interface ApplicationCommand {
     public String description() default "";
     public String[] aliases() default {};
     public CommandOption[] options() default {};
+    public boolean isGlobal() default false;
 }
