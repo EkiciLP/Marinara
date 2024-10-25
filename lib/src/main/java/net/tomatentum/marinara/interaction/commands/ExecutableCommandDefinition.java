@@ -15,7 +15,7 @@ public record ExecutableCommandDefinition(
         if (!(o instanceof ExecutableCommandDefinition))
             return false;
         ExecutableCommandDefinition other = (ExecutableCommandDefinition) o;
-        return other.applicationCommand.equals(this.applicationCommand) && 
+        return other.applicationCommand.name().equals(this.applicationCommand.name()) && 
             other.subCommandGroups.equals(this.subCommandGroups) &&
             other.subCommand.equals(this.subCommand);
     }
