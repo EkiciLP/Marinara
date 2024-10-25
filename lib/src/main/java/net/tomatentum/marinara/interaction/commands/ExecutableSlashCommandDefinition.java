@@ -1,14 +1,14 @@
 package net.tomatentum.marinara.interaction.commands;
 
-import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.CommandOption;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 
 public record ExecutableSlashCommandDefinition(
-    ApplicationCommand applicationCommand,
+    SlashCommand applicationCommand,
     SubCommand subCommand,
     String[] subCommandGroups, 
-    CommandOption[] options) {
+    SlashCommandOption[] options) {
 
     @Override
     public final boolean equals(Object o) {
@@ -30,7 +30,7 @@ public record ExecutableSlashCommandDefinition(
     }
 
     public static class Builder {
-        private ApplicationCommand applicationCommand;
+        private SlashCommand applicationCommand;
         private SubCommand subCommand;
         private String[] subCommandGroupNames;
 
@@ -45,7 +45,7 @@ public record ExecutableSlashCommandDefinition(
             return new ExecutableSlashCommandDefinition(applicationCommand, subCommand, subCommandGroupNames, subCommand != null ? subCommand.options() : applicationCommand.options());
         }
 
-        public void setApplicationCommand(ApplicationCommand applicationCommand) {
+        public void setApplicationCommand(SlashCommand applicationCommand) {
             this.applicationCommand = applicationCommand;
         }
 
@@ -57,7 +57,7 @@ public record ExecutableSlashCommandDefinition(
             this.subCommandGroupNames = subCommandGroupNames;
         }
 
-        public ApplicationCommand getApplicationCommand() {
+        public SlashCommand getApplicationCommand() {
             return applicationCommand;
         }
 

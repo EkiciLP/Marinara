@@ -7,10 +7,9 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ApplicationCommand {
+public @interface SlashCommand {
     public String name();
     public String description() default "";
-    public String[] aliases() default {};
-    public CommandOption[] options() default {};
+    public SlashCommandOption[] options() default {};
     public long[] serverIds() default {};
 }

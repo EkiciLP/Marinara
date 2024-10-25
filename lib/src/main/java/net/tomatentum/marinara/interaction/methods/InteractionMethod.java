@@ -8,14 +8,14 @@ import java.util.List;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public abstract class InteractionMethod {
 
     public static InteractionMethod create(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
-        if (method.isAnnotationPresent(ApplicationCommand.class) || method.isAnnotationPresent(SubCommand.class))
+        if (method.isAnnotationPresent(SlashCommand.class) || method.isAnnotationPresent(SubCommand.class))
             return new CommandInteractionMethod(method, handler, wrapper);
         
         return null;

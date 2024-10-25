@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface SubCommand {
     public String name();
     public String description() default "";
-    public CommandOption[] options() default {};
+    public SlashCommandOption[] options() default {};
 }

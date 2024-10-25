@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import net.tomatentum.marinara.interaction.commands.option.OptionType;
+import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
 
 @Target({ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CommandOption {
+public @interface SlashCommandOption {
     public String name();
     public String description() default "";
-    public OptionType type() default OptionType.STRING;
+    public SlashCommandOptionType type() default SlashCommandOptionType.STRING;
     public boolean required() default false;
 }

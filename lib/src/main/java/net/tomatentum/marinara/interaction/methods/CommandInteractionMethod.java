@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.util.ReflectionUtil;
@@ -43,7 +43,7 @@ public class CommandInteractionMethod extends InteractionMethod {
     private void parseMethod() {
         ReflectionUtil.checkValidCommandMethod(method);
 
-        ApplicationCommand cmd = ReflectionUtil.getAnnotation(method, ApplicationCommand.class);
+        SlashCommand cmd = ReflectionUtil.getAnnotation(method, SlashCommand.class);
         ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
         builder.setApplicationCommand(cmd);
 

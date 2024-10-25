@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 
 public class SlashCommandDefinition {
     private List<ExecutableSlashCommandDefinition> executableDefinitons;
-    private ApplicationCommand applicationCommand;
+    private SlashCommand applicationCommand;
     private int subCommandGroupCount = -1;
     private boolean isRootCommand = false;
 
-    public SlashCommandDefinition(ApplicationCommand applicationCommand) {
+    public SlashCommandDefinition(SlashCommand applicationCommand) {
         this.executableDefinitons = new ArrayList<>();
         this.applicationCommand = applicationCommand;
     }
@@ -42,7 +42,7 @@ public class SlashCommandDefinition {
         return this;
     }
 
-    public ApplicationCommand getApplicationCommand() {
+    public SlashCommand getApplicationCommand() {
         return applicationCommand;
     }
 

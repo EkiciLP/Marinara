@@ -1,6 +1,6 @@
 package net.tomatentum.marinara.interaction.commands.option;
 
-public enum OptionType {
+public enum SlashCommandOptionType {
     ATTACHMENT,
     BOOLEAN,
     CHANNEL,
