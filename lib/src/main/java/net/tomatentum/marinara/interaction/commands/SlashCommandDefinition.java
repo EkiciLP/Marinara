@@ -9,7 +9,6 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 public class SlashCommandDefinition {
     private List<ExecutableSlashCommandDefinition> executableDefinitons;
     private SlashCommand applicationCommand;
-    private int subCommandGroupCount = -1;
     private boolean isRootCommand = false;
 
     public SlashCommandDefinition(SlashCommand applicationCommand) {
@@ -18,10 +17,6 @@ public class SlashCommandDefinition {
     }
 
     public SlashCommandDefinition addExecutableCommand(ExecutableSlashCommandDefinition def) {
-        if (this.subCommandGroupCount == -1)
-            this.subCommandGroupCount = def.subCommandGroups().length;
-        if (def.subCommandGroups().length != subCommandGroupCount)
-            throw new IllegalArgumentException(def + ": has a non matching amount of subcommand groups. All subcommands must have the same amount of subcommand groups!");
         if (def.applicationCommand() != null) {
             if (applicationCommand == null)
                 this.applicationCommand = def.applicationCommand();
@@ -55,8 +50,4 @@ public class SlashCommandDefinition {
         executableDefinitons.forEach(set::add);
         return set.toArray(new ExecutableSlashCommandDefinition[0]);
     }
-    public int getSubCommandGroupCount() {
-        return subCommandGroupCount;
-    }
-
 }

@@ -3,11 +3,12 @@ package net.tomatentum.marinara.interaction.commands;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 
 public record ExecutableSlashCommandDefinition(
     SlashCommand applicationCommand,
     SubCommand subCommand,
-    String[] subCommandGroups, 
+    SubCommandGroup subCommandGroup, 
     SlashCommandOption[] options) {
 
     @Override
@@ -16,8 +17,8 @@ public record ExecutableSlashCommandDefinition(
             return false;
         ExecutableSlashCommandDefinition other = (ExecutableSlashCommandDefinition) o;
         return other.applicationCommand.name().equals(this.applicationCommand.name()) && 
-            other.subCommandGroups.equals(this.subCommandGroups) &&
-            other.subCommand.equals(this.subCommand);
+            other.subCommandGroup.name().equals(this.subCommandGroup.name()) &&
+            other.subCommand.name().equals(this.subCommand.name());
     }
 
     @Override
@@ -32,17 +33,13 @@ public record ExecutableSlashCommandDefinition(
     public static class Builder {
         private SlashCommand applicationCommand;
         private SubCommand subCommand;
-        private String[] subCommandGroupNames;
-
-        public Builder() {
-            this.subCommandGroupNames = new String[0];
-        }
+        private SubCommandGroup subCommandGroup;
 
         public ExecutableSlashCommandDefinition build() {
             if (applicationCommand == null)
                 throw new IllegalArgumentException("applicationCommandName cant be null");
 
-            return new ExecutableSlashCommandDefinition(applicationCommand, subCommand, subCommandGroupNames, subCommand != null ? subCommand.options() : applicationCommand.options());
+            return new ExecutableSlashCommandDefinition(applicationCommand, subCommand, subCommandGroup, subCommand != null ? subCommand.options() : applicationCommand.options());
         }
 
         public void setApplicationCommand(SlashCommand applicationCommand) {
@@ -53,8 +50,8 @@ public record ExecutableSlashCommandDefinition(
             this.subCommand = subCommand;
         }
 
-        public void setSubCommandGroupNames(String[] subCommandGroupNames) {
-            this.subCommandGroupNames = subCommandGroupNames;
+        public void setSubCommandGroup(SubCommandGroup subCommandGroup) {
+            this.subCommandGroup = subCommandGroup;
         }
 
         public SlashCommand getApplicationCommand() {
@@ -65,8 +62,8 @@ public record ExecutableSlashCommandDefinition(
             return subCommand;
         }
 
-        public String[] getSubCommandGroupNames() {
-            return subCommandGroupNames;
+        public SubCommandGroup getSubCommandGroup() {
+            return subCommandGroup;
         }
 
     }

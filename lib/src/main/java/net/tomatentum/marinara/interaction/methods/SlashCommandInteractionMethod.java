@@ -11,11 +11,11 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.util.ReflectionUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
-public class CommandInteractionMethod extends InteractionMethod {
+public class SlashCommandInteractionMethod extends InteractionMethod {
 
     private ExecutableSlashCommandDefinition commandDefinition;
 
-    CommandInteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
+    SlashCommandInteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
         super(method, handler, wrapper);
         parseMethod();
     }
@@ -49,7 +49,7 @@ public class CommandInteractionMethod extends InteractionMethod {
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
             SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
-            builder.setSubCommandGroupNames(cmdGroup.name().split(" "));
+            builder.setSubCommandGroup(cmdGroup);
         }
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommand.class)) {

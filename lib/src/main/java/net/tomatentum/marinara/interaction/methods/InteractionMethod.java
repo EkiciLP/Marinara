@@ -16,7 +16,7 @@ public abstract class InteractionMethod {
 
     public static InteractionMethod create(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
         if (method.isAnnotationPresent(SlashCommand.class) || method.isAnnotationPresent(SubCommand.class))
-            return new CommandInteractionMethod(method, handler, wrapper);
+            return new SlashCommandInteractionMethod(method, handler, wrapper);
         
         return null;
     }

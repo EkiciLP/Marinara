@@ -9,7 +9,7 @@ import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
-import net.tomatentum.marinara.interaction.methods.CommandInteractionMethod;
+import net.tomatentum.marinara.interaction.methods.SlashCommandInteractionMethod;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
@@ -31,8 +31,8 @@ public class InteractionRegistry {
     public void registerCommands() {
         List<SlashCommandDefinition> defs = new ArrayList<>();
         List<ExecutableSlashCommandDefinition> execDefs = interactionMethods.stream()
-            .filter((x) -> x.getClass().isAssignableFrom(CommandInteractionMethod.class))
-            .map((x) -> ((CommandInteractionMethod)x).getCommandDefinition())
+            .filter((x) -> x.getClass().isAssignableFrom(SlashCommandInteractionMethod.class))
+            .map((x) -> ((SlashCommandInteractionMethod)x).getCommandDefinition())
             .toList();
 
         execDefs.forEach((def) -> {
