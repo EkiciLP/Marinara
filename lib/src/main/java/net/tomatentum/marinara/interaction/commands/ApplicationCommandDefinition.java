@@ -1,6 +1,7 @@
 package net.tomatentum.marinara.interaction.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
@@ -45,10 +46,15 @@ public class ApplicationCommandDefinition {
         return applicationCommand;
     }
 
-    public List<ExecutableCommandDefinition> getExecutableDefinitons() {
-        return executableDefinitons;
+    public ExecutableCommandDefinition[] getExecutableDefinitons() {
+        return executableDefinitons.toArray(new ExecutableCommandDefinition[0]);
     }
 
+    public ExecutableCommandDefinition[] getUniqueExecutableDefinitions() {
+        HashSet<ExecutableCommandDefinition> set = new HashSet<>();
+        executableDefinitons.forEach(set::add);
+        return set.toArray(new ExecutableCommandDefinition[0]);
+    }
     public int getSubCommandGroupCount() {
         return subCommandGroupCount;
     }
