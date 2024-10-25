@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import net.tomatentum.marinara.handler.InteractionHandler;
+import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;

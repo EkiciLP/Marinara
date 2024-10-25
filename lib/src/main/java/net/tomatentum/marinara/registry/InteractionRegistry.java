@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import net.tomatentum.marinara.handler.InteractionHandler;
+import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.ApplicationCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;

@@ -2,13 +2,13 @@ package net.tomatentum.marinara.interaction.methods;
 
 import java.lang.reflect.Method;
 
+import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.util.ReflectionUtil;
-import net.tomatentum.marinara.handler.InteractionHandler;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class CommandInteractionMethod extends InteractionMethod {
