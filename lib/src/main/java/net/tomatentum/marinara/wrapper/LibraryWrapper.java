@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.tomatentum.marinara.interaction.commands.ApplicationCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
+import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
+import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.option.OptionType;
 import net.tomatentum.marinara.interaction.InteractionType;
 
@@ -17,7 +17,7 @@ public abstract class LibraryWrapper {
         interactionSubscriber = new ArrayList<>();
     }
 
-    public abstract void registerApplicationCommands(ApplicationCommandDefinition[] defs); 
+    public abstract void registerSlashCommands(SlashCommandDefinition[] defs); 
 
     public void handleInteraction(Object context) {
         interactionSubscriber.forEach((o) -> o.accept(context));
@@ -32,5 +32,5 @@ public abstract class LibraryWrapper {
 
     public abstract InteractionType getInteractionType(Class<?> clazz);
     public abstract Object convertCommandOption(Object context, OptionType type, String optionName);
-    public abstract ExecutableCommandDefinition getCommandDefinition(Object context);
+    public abstract ExecutableSlashCommandDefinition getCommandDefinition(Object context);
 }

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
+import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
@@ -13,7 +13,7 @@ import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class CommandInteractionMethod extends InteractionMethod {
 
-    private ExecutableCommandDefinition commandDefinition;
+    private ExecutableSlashCommandDefinition commandDefinition;
 
     CommandInteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
         super(method, handler, wrapper);
@@ -27,7 +27,7 @@ public class CommandInteractionMethod extends InteractionMethod {
 
     @Override
     public boolean canRun(Object context) {
-        ExecutableCommandDefinition other = wrapper.getCommandDefinition(context);
+        ExecutableSlashCommandDefinition other = wrapper.getCommandDefinition(context);
         return commandDefinition.equals(other);
     }
 
@@ -36,7 +36,7 @@ public class CommandInteractionMethod extends InteractionMethod {
         return InteractionType.COMMAND;
     }
 
-    public ExecutableCommandDefinition getCommandDefinition() {
+    public ExecutableSlashCommandDefinition getCommandDefinition() {
         return commandDefinition;
     }
 
@@ -44,7 +44,7 @@ public class CommandInteractionMethod extends InteractionMethod {
         ReflectionUtil.checkValidCommandMethod(method);
 
         ApplicationCommand cmd = ReflectionUtil.getAnnotation(method, ApplicationCommand.class);
-        ExecutableCommandDefinition.Builder builder = new ExecutableCommandDefinition.Builder();
+        ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
         builder.setApplicationCommand(cmd);
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {

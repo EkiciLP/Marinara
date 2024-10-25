@@ -4,7 +4,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.ApplicationComman
 import net.tomatentum.marinara.interaction.commands.annotation.CommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 
-public record ExecutableCommandDefinition(
+public record ExecutableSlashCommandDefinition(
     ApplicationCommand applicationCommand,
     SubCommand subCommand,
     String[] subCommandGroups, 
@@ -12,9 +12,9 @@ public record ExecutableCommandDefinition(
 
     @Override
     public final boolean equals(Object o) {
-        if (!(o instanceof ExecutableCommandDefinition))
+        if (!(o instanceof ExecutableSlashCommandDefinition))
             return false;
-        ExecutableCommandDefinition other = (ExecutableCommandDefinition) o;
+        ExecutableSlashCommandDefinition other = (ExecutableSlashCommandDefinition) o;
         return other.applicationCommand.name().equals(this.applicationCommand.name()) && 
             other.subCommandGroups.equals(this.subCommandGroups) &&
             other.subCommand.equals(this.subCommand);
@@ -38,11 +38,11 @@ public record ExecutableCommandDefinition(
             this.subCommandGroupNames = new String[0];
         }
 
-        public ExecutableCommandDefinition build() {
+        public ExecutableSlashCommandDefinition build() {
             if (applicationCommand == null)
                 throw new IllegalArgumentException("applicationCommandName cant be null");
 
-            return new ExecutableCommandDefinition(applicationCommand, subCommand, subCommandGroupNames, subCommand != null ? subCommand.options() : applicationCommand.options());
+            return new ExecutableSlashCommandDefinition(applicationCommand, subCommand, subCommandGroupNames, subCommand != null ? subCommand.options() : applicationCommand.options());
         }
 
         public void setApplicationCommand(ApplicationCommand applicationCommand) {

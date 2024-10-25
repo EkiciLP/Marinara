@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.ApplicationCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.ExecutableCommandDefinition;
+import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
+import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.methods.CommandInteractionMethod;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
@@ -29,23 +29,23 @@ public class InteractionRegistry {
     }
 
     public void registerCommands() {
-        List<ApplicationCommandDefinition> defs = new ArrayList<>();
-        List<ExecutableCommandDefinition> execDefs = interactionMethods.stream()
+        List<SlashCommandDefinition> defs = new ArrayList<>();
+        List<ExecutableSlashCommandDefinition> execDefs = interactionMethods.stream()
             .filter((x) -> x.getClass().isAssignableFrom(CommandInteractionMethod.class))
             .map((x) -> ((CommandInteractionMethod)x).getCommandDefinition())
             .toList();
 
         execDefs.forEach((def) -> {
-            Optional<ApplicationCommandDefinition> appDef = defs.stream()
+            Optional<SlashCommandDefinition> appDef = defs.stream()
                 .filter((x) -> x.getApplicationCommand().equals(def.applicationCommand()))
                 .findFirst();
             if (appDef.isPresent())
                 appDef.get().addExecutableCommand(def);
             else
-                defs.add(new ApplicationCommandDefinition(def.applicationCommand()).addExecutableCommand(def));
+                defs.add(new SlashCommandDefinition(def.applicationCommand()).addExecutableCommand(def));
         });
 
-        wrapper.registerApplicationCommands(defs.toArray(new ApplicationCommandDefinition[0]));
+        wrapper.registerSlashCommands(defs.toArray(new SlashCommandDefinition[0]));
     }
 
     public void handle(Object context) {

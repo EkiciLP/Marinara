@@ -6,18 +6,18 @@ import java.util.List;
 
 import net.tomatentum.marinara.interaction.commands.annotation.ApplicationCommand;
 
-public class ApplicationCommandDefinition {
-    private List<ExecutableCommandDefinition> executableDefinitons;
+public class SlashCommandDefinition {
+    private List<ExecutableSlashCommandDefinition> executableDefinitons;
     private ApplicationCommand applicationCommand;
     private int subCommandGroupCount = -1;
     private boolean isRootCommand = false;
 
-    public ApplicationCommandDefinition(ApplicationCommand applicationCommand) {
+    public SlashCommandDefinition(ApplicationCommand applicationCommand) {
         this.executableDefinitons = new ArrayList<>();
         this.applicationCommand = applicationCommand;
     }
 
-    public ApplicationCommandDefinition addExecutableCommand(ExecutableCommandDefinition def) {
+    public SlashCommandDefinition addExecutableCommand(ExecutableSlashCommandDefinition def) {
         if (this.subCommandGroupCount == -1)
             this.subCommandGroupCount = def.subCommandGroups().length;
         if (def.subCommandGroups().length != subCommandGroupCount)
@@ -46,14 +46,14 @@ public class ApplicationCommandDefinition {
         return applicationCommand;
     }
 
-    public ExecutableCommandDefinition[] getExecutableDefinitons() {
-        return executableDefinitons.toArray(new ExecutableCommandDefinition[0]);
+    public ExecutableSlashCommandDefinition[] getExecutableDefinitons() {
+        return executableDefinitons.toArray(new ExecutableSlashCommandDefinition[0]);
     }
 
-    public ExecutableCommandDefinition[] getUniqueExecutableDefinitions() {
-        HashSet<ExecutableCommandDefinition> set = new HashSet<>();
+    public ExecutableSlashCommandDefinition[] getUniqueExecutableDefinitions() {
+        HashSet<ExecutableSlashCommandDefinition> set = new HashSet<>();
         executableDefinitons.forEach(set::add);
-        return set.toArray(new ExecutableCommandDefinition[0]);
+        return set.toArray(new ExecutableSlashCommandDefinition[0]);
     }
     public int getSubCommandGroupCount() {
         return subCommandGroupCount;
