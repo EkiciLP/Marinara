@@ -8,19 +8,19 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 
 public class SlashCommandDefinition {
     private List<ExecutableSlashCommandDefinition> executableDefinitons;
-    private SlashCommand applicationCommand;
+    private SlashCommand slashCommand;
     private boolean isRootCommand = false;
 
     public SlashCommandDefinition(SlashCommand applicationCommand) {
         this.executableDefinitons = new ArrayList<>();
-        this.applicationCommand = applicationCommand;
+        this.slashCommand = applicationCommand;
     }
 
     public SlashCommandDefinition addExecutableCommand(ExecutableSlashCommandDefinition def) {
         if (def.applicationCommand() != null) {
-            if (applicationCommand == null)
-                this.applicationCommand = def.applicationCommand();
-            if (!this.applicationCommand.equals(def.applicationCommand()))
+            if (slashCommand == null)
+                this.slashCommand = def.applicationCommand();
+            if (!this.slashCommand.equals(def.applicationCommand()))
                 throw new IllegalArgumentException(def + ": has a non matching Application Command description. Please edit it to equal all other descriptions or remove it to use other definitions descriptions");
         }
         if (isRootCommand) {
@@ -37,8 +37,8 @@ public class SlashCommandDefinition {
         return this;
     }
 
-    public SlashCommand getApplicationCommand() {
-        return applicationCommand;
+    public SlashCommand getSlashCommand() {
+        return slashCommand;
     }
 
     public ExecutableSlashCommandDefinition[] getExecutableDefinitons() {
