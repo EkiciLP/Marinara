@@ -1,10 +1,13 @@
 package net.tomatentum.marinara.interaction.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 
 public class SlashCommandDefinition {
     private List<ExecutableSlashCommandDefinition> executableDefinitons;
@@ -49,5 +52,31 @@ public class SlashCommandDefinition {
         HashSet<ExecutableSlashCommandDefinition> set = new HashSet<>();
         executableDefinitons.forEach(set::add);
         return set.toArray(new ExecutableSlashCommandDefinition[0]);
+    }
+
+    public SubCommandGroup[] getSubCommandGroups() {
+        HashSet<SubCommandGroup> subCommandGroups = new HashSet<>();
+
+        for (ExecutableSlashCommandDefinition execDef : getUniqueExecutableDefinitions()) {
+            String currName = execDef.subCommandGroup().name();
+            if (execDef.subCommandGroup() == null)
+                continue;
+            SubCommandGroup[] matching = (SubCommandGroup[]) subCommandGroups.stream().filter((x) -> x.name().equals(currName)).toArray();
+            if (matching.length < 1)
+                subCommandGroups.add(execDef.subCommandGroup());
+            else if (matching[0].description().isBlank() && execDef.subCommandGroup().description().isBlank()) {
+                subCommandGroups.removeIf((x) -> x.name().equals(currName));
+                subCommandGroups.add(execDef.subCommandGroup());
+            }
+        }
+
+        return subCommandGroups.toArray(new SubCommandGroup[0]);
+    }
+
+    public SubCommand[] getSubCommands(SubCommandGroup group) {
+        if (group == null)
+            return (SubCommand[]) Arrays.asList(getUniqueExecutableDefinitions()).stream().filter((x) -> x.subCommandGroup() == null && x.subCommand() != null).toArray();
+        else 
+            return (SubCommand[]) Arrays.asList(getUniqueExecutableDefinitions()).stream().filter((x) -> x.subCommandGroup().name().equals(group.name()) && x.subCommand() != null).toArray();
     }
 }
