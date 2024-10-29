@@ -3,7 +3,6 @@ package net.tomatentum.marinara.interaction.commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
@@ -78,6 +77,17 @@ public class SlashCommandDefinition {
         });
 
         return (SubCommand[]) subCommandMap.values().toArray();
+    }
+
+    public SlashCommand getFullSlashCommand() {
+        if (isRootCommand())
+            return getSlashCommand();
+        for (ExecutableSlashCommandDefinition executableSlashCommandDefinition : executableDefinitons) {
+            if (executableSlashCommandDefinition.options().length > 0)
+                return executableSlashCommandDefinition.applicationCommand();
+        }
+
+        return null;
     }
 
     public SlashCommand getSlashCommand() {
