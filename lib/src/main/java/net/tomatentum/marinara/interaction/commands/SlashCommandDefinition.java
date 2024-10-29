@@ -40,20 +40,6 @@ public class SlashCommandDefinition {
         return this;
     }
 
-    public SlashCommand getSlashCommand() {
-        return slashCommand;
-    }
-
-    public ExecutableSlashCommandDefinition[] getExecutableDefinitons() {
-        return executableDefinitons.toArray(new ExecutableSlashCommandDefinition[0]);
-    }
-
-    public ExecutableSlashCommandDefinition[] getUniqueExecutableDefinitions() {
-        HashSet<ExecutableSlashCommandDefinition> set = new HashSet<>();
-        executableDefinitons.forEach(set::add);
-        return set.toArray(new ExecutableSlashCommandDefinition[0]);
-    }
-
     public SubCommandGroup[] getSubCommandGroups() {
         HashSet<SubCommandGroup> subCommandGroups = new HashSet<>();
 
@@ -78,5 +64,23 @@ public class SlashCommandDefinition {
             return (SubCommand[]) Arrays.asList(getUniqueExecutableDefinitions()).stream().filter((x) -> x.subCommandGroup() == null && x.subCommand() != null).toArray();
         else 
             return (SubCommand[]) Arrays.asList(getUniqueExecutableDefinitions()).stream().filter((x) -> x.subCommandGroup().name().equals(group.name()) && x.subCommand() != null).toArray();
+    }
+
+    public SlashCommand getSlashCommand() {
+        return slashCommand;
+    }
+
+    public ExecutableSlashCommandDefinition[] getExecutableDefinitons() {
+        return executableDefinitons.toArray(new ExecutableSlashCommandDefinition[0]);
+    }
+
+    public ExecutableSlashCommandDefinition[] getUniqueExecutableDefinitions() {
+        HashSet<ExecutableSlashCommandDefinition> set = new HashSet<>();
+        executableDefinitons.forEach(set::add);
+        return set.toArray(new ExecutableSlashCommandDefinition[0]);
+    }
+
+    public boolean isRootCommand() {
+        return isRootCommand;
     }
 }
