@@ -3,8 +3,10 @@ package net.tomatentum.marinare.wrapper.javacord;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommandBuilder;
@@ -29,8 +31,23 @@ public class JavacordWrapper extends LibraryWrapper {
 
     @Override
     public void registerSlashCommands(SlashCommandDefinition[] defs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerSlashCommands'");
+        HashMap<Long, Set<SlashCommandBuilder>> serverCommands = new HashMap<>();
+        Set<SlashCommandBuilder> globalCommands = new HashSet<>();
+        for (SlashCommandDefinition slashCommandDefinition : defs) {
+            SlashCommandBuilder builder = convertSlashCommand(slashCommandDefinition);
+            if (slashCommandDefinition.getFullSlashCommand().serverIds().length > 0) {
+                for (long serverId : slashCommandDefinition.getFullSlashCommand().serverIds()) {
+                    serverCommands.putIfAbsent(serverId, new HashSet<>());
+                    serverCommands.get(serverId).add(builder);
+                }
+            }else
+                globalCommands.add(builder);
+        }
+
+        for (long serverId : serverCommands.keySet()) {
+            api.bulkOverwriteServerApplicationCommands(serverId, serverCommands.get(serverId));
+        }
+        api.bulkOverwriteGlobalApplicationCommands(globalCommands);
     }
 
     @Override
