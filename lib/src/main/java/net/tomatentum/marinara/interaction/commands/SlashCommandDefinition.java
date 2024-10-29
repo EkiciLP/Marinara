@@ -2,6 +2,7 @@ package net.tomatentum.marinara.interaction.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,29 +42,42 @@ public class SlashCommandDefinition {
     }
 
     public SubCommandGroup[] getSubCommandGroups() {
-        HashSet<SubCommandGroup> subCommandGroups = new HashSet<>();
+        List<SubCommandGroup> subCommandGroups = Arrays.stream(getExecutableDefinitons())
+            .filter((x) -> x.subCommandGroup() != null)
+            .map((x) -> x.subCommandGroup())
+            .toList();
 
-        for (ExecutableSlashCommandDefinition execDef : getUniqueExecutableDefinitions()) {
-            String currName = execDef.subCommandGroup().name();
-            if (execDef.subCommandGroup() == null)
-                continue;
-            SubCommandGroup[] matching = (SubCommandGroup[]) subCommandGroups.stream().filter((x) -> x.name().equals(currName)).toArray();
-            if (matching.length < 1)
-                subCommandGroups.add(execDef.subCommandGroup());
-            else if (matching[0].description().isBlank() && execDef.subCommandGroup().description().isBlank()) {
-                subCommandGroups.removeIf((x) -> x.name().equals(currName));
-                subCommandGroups.add(execDef.subCommandGroup());
-            }
-        }
+        HashMap<String, SubCommandGroup> subCommandGroupMap = new HashMap<>();
+        subCommandGroups.forEach((x) -> {
+            SubCommandGroup current = subCommandGroupMap.get(x.name());
+            if (current == null || (current.description().isBlank() && !x.description().isBlank()))
+                subCommandGroupMap.put(x.name(), x);
+        });
 
-        return subCommandGroups.toArray(new SubCommandGroup[0]);
+        return (SubCommandGroup[]) subCommandGroupMap.values().toArray();
     }
 
-    public SubCommand[] getSubCommands(SubCommandGroup group) {
-        if (group == null)
-            return (SubCommand[]) Arrays.asList(getUniqueExecutableDefinitions()).stream().filter((x) -> x.subCommandGroup() == null && x.subCommand() != null).toArray();
+    public SubCommand[] getSubCommands(String groupName) {
+        List<SubCommand> subCommands;
+        if (groupName == null)
+            subCommands = Arrays.stream(getExecutableDefinitons())
+            .filter((x) -> x.subCommandGroup() == null && x.subCommand() != null)
+            .map((x) -> x.subCommand())
+            .toList();
         else 
-            return (SubCommand[]) Arrays.asList(getUniqueExecutableDefinitions()).stream().filter((x) -> x.subCommandGroup().name().equals(group.name()) && x.subCommand() != null).toArray();
+            subCommands = Arrays.stream(getExecutableDefinitons())
+            .filter((x) -> x.subCommandGroup().name().equals(groupName) && x.subCommand() != null)
+            .map((x) -> x.subCommand())
+            .toList();
+        
+        HashMap<String, SubCommand> subCommandMap = new HashMap<>();
+        subCommands.forEach((x) -> {
+            SubCommand current = subCommandMap.get(x.name());
+            if (current == null || (current.description().isBlank() && !x.description().isBlank()))
+                subCommandMap.put(x.name(), x);
+        });
+
+        return (SubCommand[]) subCommandMap.values().toArray();
     }
 
     public SlashCommand getSlashCommand() {
@@ -72,12 +86,6 @@ public class SlashCommandDefinition {
 
     public ExecutableSlashCommandDefinition[] getExecutableDefinitons() {
         return executableDefinitons.toArray(new ExecutableSlashCommandDefinition[0]);
-    }
-
-    public ExecutableSlashCommandDefinition[] getUniqueExecutableDefinitions() {
-        HashSet<ExecutableSlashCommandDefinition> set = new HashSet<>();
-        executableDefinitons.forEach(set::add);
-        return set.toArray(new ExecutableSlashCommandDefinition[0]);
     }
 
     public boolean isRootCommand() {
