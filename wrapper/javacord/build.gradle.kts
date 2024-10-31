@@ -22,6 +22,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(libs.log4j)
     implementation(libs.javacord)
+    implementation(libs.geantyref)
     implementation(project(":lib"))
 }
 
