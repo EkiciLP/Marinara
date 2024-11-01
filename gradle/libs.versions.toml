@@ -2,16 +2,12 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-commons-math3 = "3.6.1"
-guava = "33.0.0-jre"
 junit-jupiter = "5.10.2"
 log4j = "2.24.1"
 javacord = "3.8.0"
 geantyref = "2.0.0"
 
 [libraries]
-commons-math3 = { module = "org.apache.commons:commons-math3", version.ref = "commons-math3" }
-guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
 log4j = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j"}
 javacord = { module = "org.javacord:javacord", version.ref = "javacord"}
