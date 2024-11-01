@@ -30,8 +30,8 @@ public final class ReflectionUtil {
         if (!isAnnotationPresent(method, SlashCommand.class))
             throw new RuntimeException(method.getName() + ": Missing ApplicationCommand Annotation on either Class or Method");
 
-        if (!(method.isAnnotationPresent(SubCommand.class) && 
-            isAnnotationPresent(method, SlashCommand.class))) {
+        if ((method.isAnnotationPresent(SubCommand.class) && 
+            !isAnnotationPresent(method, SlashCommand.class))) {
             throw new RuntimeException(method.getName() + ": Missing ApplicationCommand Annotation on either Method or Class");
         }
     }
