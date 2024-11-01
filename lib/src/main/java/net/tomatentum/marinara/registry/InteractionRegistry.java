@@ -3,7 +3,6 @@ package net.tomatentum.marinara.registry;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
@@ -26,14 +25,15 @@ public class InteractionRegistry {
 
     public void addInteractions(InteractionHandler interactionHandler) {
         for (Method method : interactionHandler.getClass().getMethods()) {
-            interactionMethods.add(InteractionMethod.create(method, interactionHandler, wrapper));
+            InteractionMethod iMethod = InteractionMethod.create(method, interactionHandler, wrapper);
+            if (iMethod != null)
+                this.interactionMethods.add(iMethod);
         }
     }
 
     public void registerCommands() {
         List<SlashCommandDefinition> defs = new ArrayList<>();
         List<ExecutableSlashCommandDefinition> execDefs = interactionMethods.stream()
-            .filter(Objects::nonNull)
             .filter((x) -> x.getClass().isAssignableFrom(SlashCommandInteractionMethod.class))
             .map((x) -> ((SlashCommandInteractionMethod)x).getCommandDefinition())
             .toList();
