@@ -1,5 +1,6 @@
 package net.tomatentum.marinara.interaction.methods;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ public abstract class InteractionMethod {
         }
         method.setAccessible(true);
         try {
-            method.invoke(handler, parameters);
-        }catch (Exception ex) {
+            method.invoke(handler, parameters.toArray());
+        }catch (IllegalAccessException | InvocationTargetException ex) {
             throw new RuntimeException(ex);
         }
     }
