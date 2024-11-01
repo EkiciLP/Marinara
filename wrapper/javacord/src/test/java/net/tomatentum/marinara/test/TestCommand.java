@@ -1,5 +1,7 @@
 package net.tomatentum.marinara.test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.javacord.api.interaction.SlashCommandInteraction;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
@@ -16,13 +18,14 @@ public class TestCommand implements InteractionHandler {
         },
         options = {
             @SlashCommandOption(
-                name = "pommes",
-                description = "mit Fett",
-                type = SlashCommandOptionType.MENTIONABLE
+                name = "foo",
+                description = "foo bar is very fooby",
+                type = SlashCommandOptionType.STRING
             )
         }
         )
-    public void exec(SlashCommandInteraction interaction) {
+    public void exec(SlashCommandInteraction interaction, String test) {
+        assertEquals(test, "test");
         System.out.println("Success!");
     }
 }
