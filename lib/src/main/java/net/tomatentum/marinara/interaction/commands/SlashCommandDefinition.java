@@ -12,7 +12,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 public class SlashCommandDefinition {
     private List<ExecutableSlashCommandDefinition> executableDefinitons;
     private SlashCommand slashCommand;
-    private boolean isRootCommand = false;
+    private boolean isRootCommand;
 
     public SlashCommandDefinition(SlashCommand applicationCommand) {
         this.executableDefinitons = new ArrayList<>();
@@ -23,17 +23,15 @@ public class SlashCommandDefinition {
         if (def.applicationCommand() != null) {
             if (slashCommand == null)
                 this.slashCommand = def.applicationCommand();
-            if (!this.slashCommand.equals(def.applicationCommand()))
+            if (!this.slashCommand.name().equals(def.applicationCommand().name()))
                 throw new IllegalArgumentException(def + ": has a non matching Application Command description. Please edit it to equal all other descriptions or remove it to use other definitions descriptions");
         }
-        if (isRootCommand) {
-            if (!def.isRootCommand())
-                throw new IllegalArgumentException(def + ": cannot have subcommands and rootcommand definitions together");
-            long subCommandAmount = executableDefinitons.stream()
-                .filter((x) -> !x.isRootCommand())
-                .count();
-            if (subCommandAmount > 0)
-                throw new IllegalArgumentException(def + ": cannot have subcommands and rootcommand definitions together");
+
+        if (executableDefinitons.isEmpty())
+            this.isRootCommand = def.isRootCommand();
+
+        if ((isRootCommand && !def.isRootCommand()) || (!isRootCommand && def.isRootCommand())) {
+            throw new IllegalArgumentException(def + ": cannot have subcommands and rootcommand definitions together");
         }
         
         executableDefinitons.add(def);
@@ -53,7 +51,7 @@ public class SlashCommandDefinition {
                 subCommandGroupMap.put(x.name(), x);
         });
 
-        return (SubCommandGroup[]) subCommandGroupMap.values().toArray();
+        return subCommandGroupMap.values().toArray(new SubCommandGroup[0]);
     }
 
     public SubCommand[] getSubCommands(String groupName) {
@@ -76,7 +74,7 @@ public class SlashCommandDefinition {
                 subCommandMap.put(x.name(), x);
         });
 
-        return (SubCommand[]) subCommandMap.values().toArray();
+        return subCommandMap.values().toArray(new SubCommand[0]);
     }
 
     public SlashCommand getFullSlashCommand() {
