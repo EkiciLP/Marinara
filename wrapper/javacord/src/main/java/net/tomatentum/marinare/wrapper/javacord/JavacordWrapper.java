@@ -6,10 +6,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.javacord.api.DiscordApi;
+import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.interaction.ApplicationCommandInteraction;
+import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
@@ -36,6 +39,14 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
+    public InteractionType getInteractionType(Class<?> clazz) {
+        if (ApplicationCommandInteraction.class.isAssignableFrom(clazz))
+            return InteractionType.COMMAND;
+
+        return null;
+    }
+
+    @Override
     public void registerSlashCommands(SlashCommandDefinition[] defs) {
         HashMap<Long, Set<SlashCommandBuilder>> serverCommands = new HashMap<>();
         Set<SlashCommandBuilder> globalCommands = new HashSet<>();
@@ -54,14 +65,6 @@ public class JavacordWrapper extends LibraryWrapper {
             api.bulkOverwriteServerApplicationCommands(serverId, serverCommands.get(serverId));
         }
         api.bulkOverwriteGlobalApplicationCommands(globalCommands);
-    }
-
-    @Override
-    public InteractionType getInteractionType(Class<?> clazz) {
-        if (ApplicationCommandInteraction.class.isAssignableFrom(clazz))
-            return InteractionType.COMMAND;
-
-        return null;
     }
 
     @Override
@@ -156,4 +159,30 @@ public class JavacordWrapper extends LibraryWrapper {
                 return null;
         }
     }
+
+    @Override
+    public String getButtonId(Object context) {
+        ButtonInteraction button = (ButtonInteraction) context;
+        return button.getCustomId();
+    }
+
+    @Override
+    public Object getComponentContextObject(Object context, Class<?> type) {
+        ButtonInteraction button = (ButtonInteraction) context;
+        switch (type.getName()) {
+            case "TextChannel":
+                return button.getChannel().orElse(null);
+            case "Message":
+                return button.getMessage();
+            case "Server":
+                return button.getServer().orElse(null);
+            case "User":
+                return button.getUser();
+            case "Member":
+                return button.getUser();
+        }
+        return null;
+    }
+
+    
 }
