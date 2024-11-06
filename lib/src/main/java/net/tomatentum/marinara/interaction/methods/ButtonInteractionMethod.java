@@ -34,7 +34,7 @@ public class ButtonInteractionMethod extends InteractionMethod {
 
     private void parseMethod() {
         Button button = getMethod().getAnnotation(Button.class);
-        this.customId = button.customId();
+        this.customId = button.value();
     }
     
 }
