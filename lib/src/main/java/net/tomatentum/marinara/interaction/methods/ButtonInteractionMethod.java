@@ -18,7 +18,7 @@ public class ButtonInteractionMethod extends InteractionMethod {
 
     @Override
     public Object getParameter(Object parameter, int index) {
-        Class<?> type = getMethod().getParameterTypes()[index];
+        Class<?> type = getMethod().getParameterTypes()[index+1];
         return wrapper.getComponentContextObject(parameter, type);
     }
 
