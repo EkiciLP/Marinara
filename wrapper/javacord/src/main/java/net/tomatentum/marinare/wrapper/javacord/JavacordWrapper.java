@@ -14,6 +14,7 @@ import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.core.entity.user.Member;
 
 import io.leangen.geantyref.AnnotationFormatException;
 import io.leangen.geantyref.TypeFactory;
@@ -40,6 +41,8 @@ public class JavacordWrapper extends LibraryWrapper {
     public InteractionType getInteractionType(Class<?> clazz) {
         if (ApplicationCommandInteraction.class.isAssignableFrom(clazz))
             return InteractionType.COMMAND;
+        if (ButtonInteraction.class.isAssignableFrom(clazz))
+            return InteractionType.BUTTON;
 
         return null;
     }
@@ -168,15 +171,13 @@ public class JavacordWrapper extends LibraryWrapper {
     public Object getComponentContextObject(Object context, Class<?> type) {
         ButtonInteraction button = (ButtonInteraction) context;
         switch (type.getName()) {
-            case "TextChannel":
+            case "org.javacord.api.entity.channel.TextChannel":
                 return button.getChannel().orElse(null);
-            case "Message":
+            case "org.javacord.api.entity.message.Message":
                 return button.getMessage();
-            case "Server":
+            case "org.javacord.api.entity.server.Server":
                 return button.getServer().orElse(null);
-            case "User":
-                return button.getUser();
-            case "Member":
+            case "org.javacord.api.entity.user.User":
                 return button.getUser();
         }
         return null;
