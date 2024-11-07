@@ -1,7 +1,6 @@
 package net.tomatentum.marinara.test.mocks;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
