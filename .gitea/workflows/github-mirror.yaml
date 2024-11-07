@@ -2,7 +2,7 @@ name: github-mirror
 on: push
 jobs:
   push-github:
-    runs-on: debian-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
