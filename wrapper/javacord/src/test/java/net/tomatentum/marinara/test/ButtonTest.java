@@ -10,7 +10,7 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.test.mocks.ButtonInteractionMock;
 import net.tomatentum.marinara.test.mocks.DiscordApiMock;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
-import net.tomatentum.marinare.wrapper.javacord.JavacordWrapper;
+import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 
 @TestInstance(Lifecycle.PER_CLASS)
 public class ButtonTest {

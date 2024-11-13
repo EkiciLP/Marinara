@@ -1,4 +1,4 @@
-package net.tomatentum.marinare.wrapper.javacord;
+package net.tomatentum.marinara.wrapper.javacord;
 
 import java.util.ArrayList;
 import java.util.Arrays;

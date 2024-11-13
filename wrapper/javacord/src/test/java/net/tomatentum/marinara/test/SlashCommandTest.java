@@ -11,7 +11,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.test.mocks.SlashCommandInteractionMock;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
-import net.tomatentum.marinare.wrapper.javacord.JavacordWrapper;
+import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 @TestInstance(Lifecycle.PER_CLASS)
 public class SlashCommandTest {
 
