@@ -1,0 +1,38 @@
+name: Test
+
+on:
+  push:
+
+jobs:
+  Gradle Test:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '23'
+        check-latest: true
+        distribution: 'zulu'
+
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: | 
+          ~/.gradle/caches
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Test
+      env:
+        DISCORD_TEST_TOKEN: {{ secrets.DISCORD_TOKEN }}
+      run: chmod +x gradlew; ./gradlew test
+
+    - name: Publish Test Results
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Test Results
+        path: build/test-results/test/*.xml
+        reporter: junit
