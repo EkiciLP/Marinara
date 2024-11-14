@@ -35,7 +35,7 @@ jobs:
 
       - name: Test
         env:
-          DISCORD_TEST_TOKEN: {{ secrets.DISCORD_TOKEN }}
+          DISCORD_TEST_TOKEN: ${{ secrets.DISCORD_TOKEN }}
         run: chmod +x gradlew; ./gradlew test
 
       - name: Publish Test Results

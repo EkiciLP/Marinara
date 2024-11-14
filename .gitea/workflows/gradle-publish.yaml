@@ -36,5 +36,5 @@ jobs:
 
       - name: Publish
         env:
-          GITEA_TOKEN: {{ secrets.PUBLISH_PACKAGE_TOKEN }}
+          GITEA_TOKEN: ${{ secrets.PUBLISH_PACKAGE_TOKEN }}
         run: chmod +x gradlew; ./gradlew publishAllPublicationsToGiteaRepository
