@@ -43,7 +43,5 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Test Results
-          path: |
-            lib/build/test-results/test/*.xml
-            wrapper/javacord/build/test-results/test/*.xml
+          path: 'lib/build/test-results/test/*.xml,wrapper/javacord/build/test-results/test/*.xml'
           reporter: java-junit
