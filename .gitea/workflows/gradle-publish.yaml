@@ -5,33 +5,36 @@ on:
     branches: [master]
 
 jobs:
-  Gradle Test:
-    - name: Checkout code
-      uses: actions/checkout@v4
+  Gradle-Test:
+    runs-on: ubuntu-latest
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        java-version: '23'
-        check-latest: true
-        distribution: 'zulu'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Setup Gradle
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          check-latest: true
+          distribution: 'zulu'
+
+      - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           add-job-summary: always
           cache-cleanup: on-success
 
-    - name: Cache Gradle dependencies
-      uses: actions/cache@v4
-      with:
-        path: | 
-          ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: | 
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
-    - name: Publish
-      env:
-        GITEA_TOKEN: {{ secrets.PUBLISH_PACKAGE_TOKEN }}
-      run: chmod +x gradlew; ./gradlew publishAllPublicationsToGiteaRepository
+      - name: Publish
+        env:
+          GITEA_TOKEN: {{ secrets.PUBLISH_PACKAGE_TOKEN }}
+        run: chmod +x gradlew; ./gradlew publishAllPublicationsToGiteaRepository
