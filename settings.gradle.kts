@@ -11,5 +11,7 @@ plugins {
 }
 
 rootProject.name = "Marinara"
-include("lib")
-include("wrapper:javacord")
+include(":lib")
+include(":wrapper-javacord")
+
+project(":wrapper-javacord").projectDir = file("wrapper/javacord")
