@@ -2,7 +2,7 @@ name: Publish
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
 
 jobs:
   Gradle-Publish:
@@ -34,7 +34,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Publish Release
+      - name: Publish Dev
         env:
           GITEA_TOKEN: ${{ secrets.PUBLISH_PACKAGE_TOKEN }}
-        run: chmod +x gradlew; ./gradlew publishAllPublicationsToGiteaRepository -Prelease
+        run: chmod +x gradlew; ./gradlew publishAllPublicationsToGiteaRepository 
