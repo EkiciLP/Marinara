@@ -8,6 +8,7 @@ allprojects {
     group = "net.tomatentum.Marinara"
     version = "1.0.0-RC1" + (if (!project.hasProperty("release")) ("-" + getGitHash()) else "")
     description = "A simple but powerful, library-agnostic Discord Interaction Wrapper."
+
 }
 
 subprojects {
@@ -18,6 +19,8 @@ subprojects {
         publishing {
             publications {
                 create<MavenPublication>("maven") {
+                    if (!project.hasProperty("release"))
+                        artifactId = project.getName() + "-dev"
                     from(components["java"])
                 }
             }
