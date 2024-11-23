@@ -4,7 +4,8 @@ import java.lang.reflect.Method;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.annotation.Button;
+import net.tomatentum.marinara.parser.AnnotationParser;
+import net.tomatentum.marinara.parser.ButtonParser;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class ButtonInteractionMethod extends InteractionMethod {
@@ -13,7 +14,13 @@ public class ButtonInteractionMethod extends InteractionMethod {
 
     ButtonInteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
         super(method, handler, wrapper);
-        parseMethod();
+    }
+
+    @Override
+    public AnnotationParser[] getParsers() {
+        return new AnnotationParser[] {
+            new ButtonParser(method, (x) -> { this.customId = x; } )
+        };
     }
 
     @Override
@@ -31,10 +38,4 @@ public class ButtonInteractionMethod extends InteractionMethod {
     public InteractionType getType() {
         return InteractionType.BUTTON;
     }
-
-    private void parseMethod() {
-        Button button = getMethod().getAnnotation(Button.class);
-        this.customId = button.value();
-    }
-    
 }

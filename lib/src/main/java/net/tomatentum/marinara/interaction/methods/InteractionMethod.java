@@ -12,6 +12,7 @@ import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.annotation.Button;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
+import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public abstract class InteractionMethod {
@@ -27,6 +28,7 @@ public abstract class InteractionMethod {
     protected Method method;
     protected InteractionHandler handler;
     protected LibraryWrapper wrapper;
+    protected AnnotationParser[] parsers;
 
     protected InteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
         if (!Arrays.asList(handler.getClass().getMethods()).contains(method))
@@ -34,7 +36,11 @@ public abstract class InteractionMethod {
         this.method = method;
         this.handler = handler;
         this.wrapper = wrapper;
+        this.parsers = getParsers();
+        Arrays.stream(parsers).forEach(AnnotationParser::parse);
     }
+
+    public abstract AnnotationParser[] getParsers();
 
     public abstract Object getParameter(Object parameter, int index);
 
