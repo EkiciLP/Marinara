@@ -60,7 +60,7 @@ public abstract class InteractionMethod {
     public abstract InteractionType getType();
 
     public void run(Object context) {
-        this.appliedChecks.forEach(AppliedCheck::pre);
+        this.appliedChecks.forEach(x -> x.pre(context));
 
         method.setAccessible(true);
         try {
@@ -69,7 +69,7 @@ public abstract class InteractionMethod {
             throw new RuntimeException(ex);
         }
 
-        this.appliedChecks.forEach(AppliedCheck::post);
+        this.appliedChecks.forEach(x -> x.post(context));
     }
 
     public Method getMethod() {
