@@ -29,7 +29,7 @@ public class InteractionCheckParser implements AnnotationParser {
     }
 
     private void convertAnnotation(Annotation annotation) {
-            Optional<InteractionCheck<?>> check = this.checkRegistry.getCheckFromAnnotation(annotation.getClass());
+            Optional<InteractionCheck<?>> check = this.checkRegistry.getCheckFromAnnotation(annotation.annotationType());
             if (check.isPresent())
                 consumer.accept(new AppliedCheck(check.get(), annotation));
     }
