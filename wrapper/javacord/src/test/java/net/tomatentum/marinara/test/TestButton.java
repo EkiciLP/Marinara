@@ -10,12 +10,14 @@ import org.javacord.api.interaction.ButtonInteraction;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.annotation.Button;
+import net.tomatentum.marinara.test.TestInteractionCheck.TestCheck;
 
 public class TestButton implements InteractionHandler {
 
 
     public static boolean didRun = false;
     @Button("test")
+    @TestCheck
     public void exec(ButtonInteraction interaction, TextChannel channel, Message message, User member, Server server) {
         assertNotNull(interaction);
         assertNotNull(channel);
