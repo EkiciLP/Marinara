@@ -1,11 +1,12 @@
 package net.tomatentum.marinara.registry;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import io.leangen.geantyref.GenericTypeReflector;
 import net.tomatentum.marinara.checks.InteractionCheck;
 
 public class InteractionCheckRegistry {
@@ -20,10 +21,11 @@ public class InteractionCheckRegistry {
         checks.add(check);
     }
 
-    public Optional<InteractionCheck<?>> getCheckFromAnnotation(Class<? extends Annotation> annotation) {
+    public Optional<InteractionCheck<?>> getCheckFromAnnotation(Type annotation) {
         for (InteractionCheck<?> interactionCheck : checks) {
-            TypeVariable<?> type = interactionCheck.getClass().getTypeParameters()[0];
-            if (type.getClass().equals(annotation.getClass()))
+            ParameterizedType type = (ParameterizedType) GenericTypeReflector.getExactSuperType(interactionCheck.getClass(), InteractionCheck.class);
+            Type typeParam = type.getActualTypeArguments()[0];
+            if (typeParam.equals(annotation))
                 return Optional.of(interactionCheck);
         }
         return Optional.empty();
