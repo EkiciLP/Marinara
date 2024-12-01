@@ -60,7 +60,8 @@ public abstract class InteractionMethod {
     public abstract InteractionType getType();
 
     public void run(Object context) {
-        this.appliedChecks.forEach(x -> x.pre(context));
+        if (this.appliedChecks.stream().filter(x -> !x.pre(context)).count() > 0)
+            return;
 
         method.setAccessible(true);
         try {

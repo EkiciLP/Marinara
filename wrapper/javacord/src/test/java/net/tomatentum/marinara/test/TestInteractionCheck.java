@@ -28,11 +28,10 @@ public class TestInteractionCheck implements InteractionCheck<TestInteractionChe
     }
 
     @Override
-    public boolean postExec(Object context, TestCheck annotation) {
+    public void postExec(Object context, TestCheck annotation) {
         assertNotNull(annotation);
         assertNotNull(context);
         postExecuted = true;
-        return true;
     }
     
 }

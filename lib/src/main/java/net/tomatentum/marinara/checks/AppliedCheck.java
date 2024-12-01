@@ -24,7 +24,7 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
         }
     }
 
-    public boolean post(Object context) {
+    public void post(Object context) {
         Method[] methods = Arrays.stream(check.getClass().getMethods())
             .filter(x -> x.getName().equals("postExec"))
             .filter(x -> !x.isBridge())
@@ -32,10 +32,9 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
         Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.getClass());
         method.setAccessible(true);
         try {
-            return (boolean) method.invoke(check, context, annotation);
+            method.invoke(check, context, annotation);
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
             e.printStackTrace();
-            return false;
         }
     }
 
