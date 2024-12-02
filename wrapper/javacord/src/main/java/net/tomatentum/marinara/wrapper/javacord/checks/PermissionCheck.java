@@ -1,5 +1,9 @@
 package net.tomatentum.marinara.wrapper.javacord.checks;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Optional;
 
 import org.javacord.api.entity.permission.PermissionType;
@@ -10,6 +14,8 @@ import net.tomatentum.marinara.checks.InteractionCheck;
 
 public class PermissionCheck implements InteractionCheck<PermissionCheck.HasPermission> {
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
     public static @interface HasPermission {
         public PermissionType[] value();
     }
