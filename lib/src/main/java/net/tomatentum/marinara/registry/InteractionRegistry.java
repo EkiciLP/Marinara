@@ -54,7 +54,7 @@ public class InteractionRegistry {
     public void handle(Object context) {
         interactionMethods.forEach((m) -> {
             InteractionType type = marinara.getWrapper().getInteractionType(context.getClass());
-            if (m.getType().equals(type))
+            if (m.getType().equals(type) && m.canRun(context))
                 m.run(context);
         });
     }
