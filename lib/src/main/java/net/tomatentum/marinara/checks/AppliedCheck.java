@@ -14,7 +14,7 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
             .filter(x -> x.getName().equals("preExec"))
             .filter(x -> !x.isBridge())
             .toArray(s -> new Method[s]);
-        Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.getClass());
+        Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.annotationType());
         method.setAccessible(true);
         try {
             return (boolean) method.invoke(check, context, annotation);
@@ -29,7 +29,7 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
             .filter(x -> x.getName().equals("postExec"))
             .filter(x -> !x.isBridge())
             .toArray(s -> new Method[s]);
-        Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.getClass());
+        Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.annotationType());
         method.setAccessible(true);
         try {
             method.invoke(check, context, annotation);
