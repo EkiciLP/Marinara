@@ -23,6 +23,10 @@ public final class ReflectionUtil {
     }
 
     public static int getCastDepth(Class<?> child, Class<?> parent) {
+
+        if (parent.equals(Object.class))
+            return Integer.MAX_VALUE;
+
         if (!parent.isAssignableFrom(child)) {
             throw new IllegalArgumentException("The specified class is not a child class of the specified parent.");
         }
@@ -77,7 +81,7 @@ public final class ReflectionUtil {
         Class<?> currMostSpecific = null;
         for (Class<?> currClass : classes) {
             int currCastDepth = getCastDepth(base, currClass);
-            if (currCastDepth < min) {
+            if (currCastDepth <= min) {
                 min = currCastDepth;
                 currMostSpecific = currClass;
             }
