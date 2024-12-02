@@ -23,6 +23,12 @@ import org.javacord.api.interaction.callback.InteractionOriginalResponseUpdater;
 
 public class ButtonInteractionMock implements ButtonInteraction {
 
+    private String customId;
+    
+    public ButtonInteractionMock(String customId) {
+        this.customId = customId;
+    }
+
     @Override
     public Message getMessage() {
         return new MessageMock();
@@ -30,7 +36,7 @@ public class ButtonInteractionMock implements ButtonInteraction {
 
     @Override
     public String getCustomId() {
-        return "test";
+        return this.customId;
     }
 
     @Override
