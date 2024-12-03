@@ -16,9 +16,18 @@ public record ExecutableSlashCommandDefinition(
         if (!(o instanceof ExecutableSlashCommandDefinition))
             return false;
         ExecutableSlashCommandDefinition other = (ExecutableSlashCommandDefinition) o;
-        return other.applicationCommand.name().equals(this.applicationCommand.name()) && 
-            other.subCommandGroup.name().equals(this.subCommandGroup.name()) &&
-            other.subCommand.name().equals(this.subCommand.name());
+        boolean equals = false;
+
+        if (this.applicationCommand() != null && other.subCommandGroup() != null)
+            equals = this.applicationCommand.name().equals(other.applicationCommand().name());
+
+        if (this.subCommandGroup() != null && other.subCommandGroup() != null)
+            equals = this.subCommandGroup().name().equals(other.subCommandGroup().name());
+        
+        if (this.subCommand() != null && other.subCommand() != null)
+            equals = this.subCommand().name().equals(other.subCommand().name());
+
+        return equals;
     }
 
     @Override
