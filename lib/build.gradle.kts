@@ -21,13 +21,13 @@ dependencies {
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(libs.log4j)
-
+    implementation(libs.geantyref)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(23)
     }
 }
 

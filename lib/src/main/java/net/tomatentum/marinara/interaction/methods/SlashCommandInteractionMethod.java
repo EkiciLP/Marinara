@@ -2,32 +2,36 @@ package net.tomatentum.marinara.interaction.methods;
 
 import java.lang.reflect.Method;
 
+import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
-import net.tomatentum.marinara.util.ReflectionUtil;
-import net.tomatentum.marinara.wrapper.LibraryWrapper;
+import net.tomatentum.marinara.parser.AnnotationParser;
+import net.tomatentum.marinara.parser.SlashCommandParser;
 
 public class SlashCommandInteractionMethod extends InteractionMethod {
 
     private ExecutableSlashCommandDefinition commandDefinition;
 
-    SlashCommandInteractionMethod(Method method, InteractionHandler handler, LibraryWrapper wrapper) {
-        super(method, handler, wrapper);
-        parseMethod();
+    SlashCommandInteractionMethod(Method method, InteractionHandler handler, Marinara marinara) {
+        super(method, handler, marinara);
+    }
+
+    @Override
+    public AnnotationParser[] getParsers() {
+        return new AnnotationParser[] { 
+            new SlashCommandParser(method, (x) -> { this.commandDefinition = x; } ) 
+        };
     }
 
     @Override
     public Object getParameter(Object context, int index) {
-        return wrapper.convertCommandOption(context, commandDefinition.options()[index].type(), commandDefinition.options()[index].name());
+        return marinara.getWrapper().convertCommandOption(context, commandDefinition.options()[index].type(), commandDefinition.options()[index].name());
     }
 
     @Override
     public boolean canRun(Object context) {
-        ExecutableSlashCommandDefinition other = wrapper.getCommandDefinition(context);
+        ExecutableSlashCommandDefinition other = marinara.getWrapper().getCommandDefinition(context);
         return commandDefinition.equals(other);
     }
 
@@ -40,24 +44,8 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
         return commandDefinition;
     }
 
-    private void parseMethod() {
-        ReflectionUtil.checkValidCommandMethod(method);
-
-        SlashCommand cmd = ReflectionUtil.getAnnotation(method, SlashCommand.class);
-        ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
-        builder.setApplicationCommand(cmd);
-
-        if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
-            SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
-            builder.setSubCommandGroup(cmdGroup);
-        }
-
-        if (ReflectionUtil.isAnnotationPresent(method, SubCommand.class)) {
-            SubCommand subCmd = ReflectionUtil.getAnnotation(method, SubCommand.class);
-            builder.setSubCommand(subCmd);
-        }
-
-        this.commandDefinition = builder.build();
+    public void setCommandDefinition(ExecutableSlashCommandDefinition commandDefinition) {
+        this.commandDefinition = commandDefinition;
     }
 
 }

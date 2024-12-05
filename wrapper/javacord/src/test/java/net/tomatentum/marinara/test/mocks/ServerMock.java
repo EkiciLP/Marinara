@@ -1,5 +1,7 @@
 package net.tomatentum.marinara.test.mocks;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.time.Instant;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -27,6 +29,7 @@ import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.channel.ServerThreadChannel;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.emoji.KnownCustomEmoji;
+import org.javacord.api.entity.permission.PermissionType;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.ActiveThreads;
 import org.javacord.api.entity.server.Ban;
@@ -2258,6 +2261,13 @@ public class ServerMock implements Server {
     public EnumSet<SystemChannelFlag> getSystemChannelFlags() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getSystemChannelFlags'");
+    }
+    public static PermissionType TESTPERMISSION = PermissionType.ADMINISTRATOR;
+    @Override
+    public boolean hasPermissions(User user, PermissionType... type) {
+        assertNotNull(user);
+        assertNotNull(type);
+        return TESTPERMISSION.equals(type[0]);
     }
     
 }

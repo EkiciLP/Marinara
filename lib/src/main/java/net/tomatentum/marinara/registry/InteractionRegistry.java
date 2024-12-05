@@ -5,27 +5,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.methods.SlashCommandInteractionMethod;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
-import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class InteractionRegistry {
     private List<InteractionMethod> interactionMethods;
-    private LibraryWrapper wrapper;
+    private Marinara marinara;
 
-    public InteractionRegistry(LibraryWrapper wrapper) {
+    public InteractionRegistry(Marinara marinara) {
         this.interactionMethods = new ArrayList<>();
-        this.wrapper = wrapper;
-        wrapper.subscribeInteractions(this::handle);
+        this.marinara = marinara;
+        marinara.getWrapper().subscribeInteractions(this::handle);
     }
 
     public void addInteractions(InteractionHandler interactionHandler) {
         for (Method method : interactionHandler.getClass().getMethods()) {
-            InteractionMethod iMethod = InteractionMethod.create(method, interactionHandler, wrapper);
+            InteractionMethod iMethod = InteractionMethod.create(method, interactionHandler, marinara);
             if (iMethod != null)
                 this.interactionMethods.add(iMethod);
         }
@@ -48,13 +48,13 @@ public class InteractionRegistry {
                 defs.add(new SlashCommandDefinition(def.applicationCommand()).addExecutableCommand(def));
         });
 
-        wrapper.registerSlashCommands(defs.toArray(new SlashCommandDefinition[0]));
+        marinara.getWrapper().registerSlashCommands(defs.toArray(new SlashCommandDefinition[0]));
     }
 
     public void handle(Object context) {
         interactionMethods.forEach((m) -> {
-            InteractionType type = wrapper.getInteractionType(context.getClass());
-            if (m.getType().equals(type))
+            InteractionType type = marinara.getWrapper().getInteractionType(context.getClass());
+            if (m.getType().equals(type) && m.canRun(context))
                 m.run(context);
         });
     }

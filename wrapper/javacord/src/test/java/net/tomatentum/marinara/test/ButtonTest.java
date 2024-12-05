@@ -20,7 +20,7 @@ public class ButtonTest {
         LibraryWrapper wrapper = new JavacordWrapper(new DiscordApiMock()); //null okay as we don't use the discord API in this test.
         Marinara marinara = Marinara.load(wrapper);
         marinara.getRegistry().addInteractions(new TestButton());
-        wrapper.handleInteraction(new ButtonInteractionMock());
+        wrapper.handleInteraction(new ButtonInteractionMock("test"));
         assertTrue(TestButton.didRun);
     }
     
