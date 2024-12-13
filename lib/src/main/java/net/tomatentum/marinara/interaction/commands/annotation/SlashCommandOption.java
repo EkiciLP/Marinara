@@ -14,4 +14,10 @@ public @interface SlashCommandOption {
     public String description() default "";
     public SlashCommandOptionType type() default SlashCommandOptionType.STRING;
     public boolean required() default false;
+    public SlashCommandOptionChoice[] choices() default {};
+    public Class<? extends Enum<?>> choiceEnum() default PlaceHolderEnum.class;
+
+    public static enum PlaceHolderEnum {
+
+    }
 }

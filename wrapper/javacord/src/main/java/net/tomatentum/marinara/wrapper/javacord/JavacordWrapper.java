@@ -22,6 +22,7 @@ import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefini
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
@@ -121,18 +122,35 @@ public class JavacordWrapper extends LibraryWrapper {
     private org.javacord.api.interaction.SlashCommandOption convertSubCommandGroupDef(SlashCommandDefinition def, SubCommandGroup subGroup) {
         SubCommand[] subCommands = def.getSubCommands(subGroup.name());
         org.javacord.api.interaction.SlashCommandOption[] convertedSubCommands = (org.javacord.api.interaction.SlashCommandOption[]) Arrays.stream(subCommands).map(this::convertSubCommandDef).toArray();
-        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, subGroup.name(), subGroup.description(), Arrays.asList(convertedSubCommands));
+        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
+            org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, 
+            subGroup.name(), 
+            subGroup.description(), 
+            Arrays.asList(convertedSubCommands));
     }
 
     private org.javacord.api.interaction.SlashCommandOption convertSubCommandDef(SubCommand sub) {
         List<org.javacord.api.interaction.SlashCommandOption> convertedOptions = new ArrayList<>();
         Arrays.stream(sub.options()).map(this::convertOptionDef).forEach(convertedOptions::add);
-        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, sub.name(), sub.description(), convertedOptions);
+        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
+            org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, 
+            sub.name(), 
+            sub.description(), 
+            convertedOptions);
     }
 
     private org.javacord.api.interaction.SlashCommandOption convertOptionDef(SlashCommandOption option) {
         org.javacord.api.interaction.SlashCommandOptionType type = Enum.valueOf(org.javacord.api.interaction.SlashCommandOptionType.class, option.type().toString());
-        return org.javacord.api.interaction.SlashCommandOption.create(type, option.name(), option.description(), option.required());
+
+        List<org.javacord.api.interaction.SlashCommandOptionChoice> choices = new ArrayList<>();
+        for (SlashCommandOptionChoice choice : ExecutableSlashCommandDefinition.getActualChoices(option)) {
+            if (choice.stringValue().isEmpty())
+                choices.add(org.javacord.api.interaction.SlashCommandOptionChoice.create(choice.name(), choice.longValue()));
+            else
+                choices.add(org.javacord.api.interaction.SlashCommandOptionChoice.create(choice.name(), choice.stringValue()));
+        }
+
+        return org.javacord.api.interaction.SlashCommandOption.createWithChoices(type, option.name(), option.description(), option.required(), choices);
     }
 
     private Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
