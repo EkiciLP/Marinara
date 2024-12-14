@@ -5,6 +5,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption.PlaceHolderEnum;
 
 public record ExecutableSlashCommandDefinition(
     SlashCommand applicationCommand,
@@ -14,7 +15,7 @@ public record ExecutableSlashCommandDefinition(
 
     public static SlashCommandOptionChoice[] getActualChoices(SlashCommandOption option) {
         SlashCommandOptionChoice[] choices = option.choices();
-        if (choices.length <= 0)
+        if (choices.length <= 0 && !option.choiceEnum().equals(PlaceHolderEnum.class))
             choices = EnumChoices.of(option.choiceEnum()).choices();
         return choices;
     }
