@@ -41,52 +41,52 @@ public class SlashCommandInteractionOptionMock implements SlashCommandInteractio
 
     @Override
     public Optional<Long> getLongValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getLongValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<Boolean> getBooleanValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getBooleanValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<User> getUserValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getUserValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<CompletableFuture<User>> requestUserValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'requestUserValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<ServerChannel> getChannelValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getChannelValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<Attachment> getAttachmentValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getAttachmentValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<Role> getRoleValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getRoleValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<Mentionable> getMentionableValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getMentionableValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<Double> getDecimalValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'getDecimalValue'");
+        return Optional.empty();
     }
 
     @Override
     public Optional<CompletableFuture<Mentionable>> requestMentionableValue() {
-        throw new UnsupportedOperationException("Unimplemented method 'requestMentionableValue'");
+        return Optional.empty();
     }
 
     @Override
