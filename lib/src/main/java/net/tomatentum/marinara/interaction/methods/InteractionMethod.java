@@ -11,6 +11,7 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.checks.AppliedCheck;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
+import net.tomatentum.marinara.interaction.annotation.AutoComplete;
 import net.tomatentum.marinara.interaction.annotation.Button;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
@@ -20,6 +21,8 @@ import net.tomatentum.marinara.parser.InteractionCheckParser;
 public abstract class InteractionMethod {
 
     public static InteractionMethod create(Method method, InteractionHandler handler, Marinara marinara) {
+        if (method.isAnnotationPresent(AutoComplete.class))
+            return new AutoCompleteInteractionMethod(method, handler, marinara);
         if (method.isAnnotationPresent(SlashCommand.class) || method.isAnnotationPresent(SubCommand.class))
             return new SlashCommandInteractionMethod(method, handler, marinara);
         if (method.isAnnotationPresent(Button.class))
@@ -53,7 +56,7 @@ public abstract class InteractionMethod {
 
     public abstract AnnotationParser[] getParsers();
 
-    public abstract Object getParameter(Object parameter, int index);
+    public abstract Object getParameter(Object context, int index);
 
     public abstract boolean canRun(Object context);
 
