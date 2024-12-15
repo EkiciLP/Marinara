@@ -4,6 +4,7 @@ import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 
@@ -26,7 +27,8 @@ public class JavacordContextObjectProvider implements ContextObjectProvider {
     }
 
     private Object getOptionValue(SlashCommandInteractionOption option) {
-        switch (getOptionType(option)) {
+        SlashCommandOptionType type = getOptionType(option);
+        switch (type) {
             case ATTACHMENT:
                 return option.getAttachmentValue().get();
             case BOOLEAN:
@@ -38,40 +40,40 @@ public class JavacordContextObjectProvider implements ContextObjectProvider {
             case LONG:
                 return option.getLongValue().get();
             case MENTIONABLE:
-                return option.getMentionableValue().get();
+                return option.requestMentionableValue().get();
             case ROLE:
                 return option.getRoleValue().get();
             case STRING:
                 return option.getStringValue().get();
             case USER:
-                return option.getUserValue().get();
+                return option.requestUserValue().get();
             default:
                 return null;
         }
     }
 
 
-    private org.javacord.api.interaction.SlashCommandOptionType getOptionType(SlashCommandInteractionOption option) {
+    private SlashCommandOptionType getOptionType(SlashCommandInteractionOption option) {
         if (option.getAttachmentValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.ATTACHMENT;
+            return SlashCommandOptionType.ATTACHMENT;
         if (option.getBooleanValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.BOOLEAN;
+            return SlashCommandOptionType.BOOLEAN;
         if (option.getChannelValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.CHANNEL;
+            return SlashCommandOptionType.CHANNEL;
         if (option.getDecimalValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.DECIMAL;
+            return SlashCommandOptionType.DECIMAL;
         if (option.getLongValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.LONG;
-        if (option.getMentionableValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.MENTIONABLE;
+            return SlashCommandOptionType.LONG;
+        if (option.requestMentionableValue().isPresent())
+            return SlashCommandOptionType.MENTIONABLE;
         if (option.getRoleValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.ROLE;
+            return SlashCommandOptionType.ROLE;
         if (option.getStringValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.ATTACHMENT;
-        if (option.getUserValue().isPresent())
-            return org.javacord.api.interaction.SlashCommandOptionType.USER;
+            return SlashCommandOptionType.STRING;
+        if (option.requestUserValue().isPresent())
+            return SlashCommandOptionType.USER;
 
-        return org.javacord.api.interaction.SlashCommandOptionType.UNKNOWN;
+        return SlashCommandOptionType.UNKNOWN;
     }
 
     @Override
