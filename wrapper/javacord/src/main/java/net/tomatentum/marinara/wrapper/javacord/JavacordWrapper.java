@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.ApplicationCommandInteraction;
+import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
@@ -25,15 +26,17 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
-import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
+import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class JavacordWrapper extends LibraryWrapper {
 
     private DiscordApi api;
+    private JavacordContextObjectProvider contextObjectProvider;
 
     public JavacordWrapper(DiscordApi api) {
         this.api = api;
+        this.contextObjectProvider = new JavacordContextObjectProvider();
         api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
     }
 
@@ -43,6 +46,8 @@ public class JavacordWrapper extends LibraryWrapper {
             return InteractionType.COMMAND;
         if (ButtonInteraction.class.isAssignableFrom(clazz))
             return InteractionType.BUTTON;
+        if (AutocompleteInteraction.class.isAssignableFrom(clazz))
+            return InteractionType.AUTOCOMPLETE;
 
         return null;
     }
@@ -66,22 +71,6 @@ public class JavacordWrapper extends LibraryWrapper {
             api.bulkOverwriteServerApplicationCommands(serverId, serverCommands.get(serverId));
         }
         api.bulkOverwriteGlobalApplicationCommands(globalCommands);
-    }
-
-    @Override
-    public Object convertCommandOption(Object context, SlashCommandOptionType type, String optionName) {
-        if (!(context instanceof SlashCommandInteraction))
-            return null;
-        SlashCommandInteraction interaction = (SlashCommandInteraction) context;
-        if (!interaction.getArguments().isEmpty())
-            return getOptionValue(interaction.getOptionByName(optionName).get(), type);
-
-        SlashCommandInteractionOption subCommandOption = interaction.getOptions().getFirst();
-
-        if (!subCommandOption.getOptions().isEmpty())
-            subCommandOption = subCommandOption.getOptions().getFirst();
-
-        return getOptionValue(subCommandOption.getOptionByName(optionName).get(), type);
     }
 
     @Override
@@ -153,31 +142,6 @@ public class JavacordWrapper extends LibraryWrapper {
         return org.javacord.api.interaction.SlashCommandOption.createWithChoices(type, option.name(), option.description(), option.required(), choices);
     }
 
-    private Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
-        switch (type) {
-            case ATTACHMENT:
-                return option.getAttachmentValue().get();
-            case BOOLEAN:
-                return option.getBooleanValue().get();
-            case CHANNEL:
-                return option.getChannelValue().get();
-            case DECIMAL:
-                return option.getDecimalValue().get();
-            case LONG:
-                return option.getLongValue().get();
-            case MENTIONABLE:
-                return option.getMentionableValue().get();
-            case ROLE:
-                return option.getRoleValue().get();
-            case STRING:
-                return option.getStringValue().get();
-            case USER:
-                return option.getUserValue().get();
-            default:
-                return null;
-        }
-    }
-
     @Override
     public String getButtonId(Object context) {
         ButtonInteraction button = (ButtonInteraction) context;
@@ -185,20 +149,8 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public Object getComponentContextObject(Object context, Class<?> type) {
-        ButtonInteraction button = (ButtonInteraction) context;
-        switch (type.getName()) {
-            case "org.javacord.api.entity.channel.TextChannel":
-                return button.getChannel().orElse(null);
-            case "org.javacord.api.entity.message.Message":
-                return button.getMessage();
-            case "org.javacord.api.entity.server.Server":
-                return button.getServer().orElse(null);
-            case "org.javacord.api.entity.user.User":
-                return button.getUser();
-        }
-        return null;
+    public ContextObjectProvider getContextObjectProvider() {
+        return contextObjectProvider;
     }
 
-    
 }

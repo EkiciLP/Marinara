@@ -26,7 +26,7 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
 
     @Override
     public Object getParameter(Object context, int index) {
-        return marinara.getWrapper().convertCommandOption(context, commandDefinition.options()[index].type(), commandDefinition.options()[index].name());
+        return marinara.getWrapper().getContextObjectProvider().convertCommandOption(context, commandDefinition.options()[index].name());
     }
 
     @Override
