@@ -20,7 +20,8 @@ public class TestCommand implements InteractionHandler {
             @SlashCommandOption(
                 name = "foo",
                 description = "foo bar is very fooby",
-                type = SlashCommandOptionType.STRING
+                type = SlashCommandOptionType.STRING,
+                choiceEnum = TestChoiceEnum.class
             )
         }
         )
