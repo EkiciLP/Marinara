@@ -15,6 +15,9 @@ import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.SlashCommandOptionBuilder;
+import org.javacord.api.interaction.SlashCommandOptionChoiceBuilder;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 import io.leangen.geantyref.AnnotationFormatException;
 import io.leangen.geantyref.TypeFactory;
@@ -130,17 +133,35 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     private org.javacord.api.interaction.SlashCommandOption convertOptionDef(SlashCommandOption option) {
-        org.javacord.api.interaction.SlashCommandOptionType type = Enum.valueOf(org.javacord.api.interaction.SlashCommandOptionType.class, option.type().toString());
+        SlashCommandOptionType type = SlashCommandOptionType.fromValue(option.type().getValue());
+        SlashCommandOptionBuilder builder = new SlashCommandOptionBuilder();
+        builder
+            .setType(type)
+            .setName(option.name())
+            .setDescription(option.description())
+            .setRequired(option.required())
+            .setAutocompletable(option.autocomplete())
+            .setChoices(convertChoices(option));
+        
+        return builder.build();
+    }
 
-        List<org.javacord.api.interaction.SlashCommandOptionChoice> choices = new ArrayList<>();
+    private List<org.javacord.api.interaction.SlashCommandOptionChoice> convertChoices(SlashCommandOption option) {
+        List<org.javacord.api.interaction.SlashCommandOptionChoice> convertedChoices = new ArrayList<>();
         for (SlashCommandOptionChoice choice : ExecutableSlashCommandDefinition.getActualChoices(option)) {
-            if (choice.stringValue().isEmpty())
-                choices.add(org.javacord.api.interaction.SlashCommandOptionChoice.create(choice.name(), choice.longValue()));
-            else
-                choices.add(org.javacord.api.interaction.SlashCommandOptionChoice.create(choice.name(), choice.stringValue()));
+            SlashCommandOptionChoiceBuilder builder = new SlashCommandOptionChoiceBuilder();
+            builder.setName(choice.name());
+            if (choice.longValue() != Long.MAX_VALUE)
+                builder.setValue(choice.longValue());
+            /*
+            not yet available
+            if (choice.doubleValue() != Double.MAX_VALUE)
+                builder.setValue(choice.doubleValue());
+            */
+            if (!choice.stringValue().isEmpty())
+                builder.setValue(choice.stringValue());
         }
-
-        return org.javacord.api.interaction.SlashCommandOption.createWithChoices(type, option.name(), option.description(), option.required(), choices);
+        return convertedChoices;
     }
 
     @Override

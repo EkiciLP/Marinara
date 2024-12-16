@@ -40,12 +40,13 @@ public record EnumChoices(Class<? extends Enum<?>> enumClass, ChoiceType type, S
         if (!(typeParam instanceof Class<?>))
             throw new IllegalArgumentException("ChoiceValueProvider need either a String or Number type parameter.");
 
+        if (Long.class.isAssignableFrom((Class<?>) typeParam))
+            return ChoiceType.INTEGER;
+        if (Double.class.isAssignableFrom((Class<?>) typeParam))
+            return ChoiceType.DOUBLE;
         if (String.class.isAssignableFrom((Class<?>) typeParam))
             return ChoiceType.String;
-        else if (Number.class.isAssignableFrom((Class<?>) typeParam))
-            return ChoiceType.Number;
-        else
-            throw new IllegalArgumentException("ChoiceValueProvider need either a String or Number type parameter.");
+        throw new IllegalArgumentException("ChoiceValueProvider need either a String, Number or Decimal type parameter.");
     }
 
     private static SlashCommandOptionChoice[] parseChoices(Class<? extends Enum<?>> enumClass, ChoiceType type) {
@@ -55,10 +56,12 @@ public record EnumChoices(Class<? extends Enum<?>> enumClass, ChoiceType type, S
             Object value;
             try {
                 value = method.invoke(enumInstance);
+                if (type.equals(ChoiceType.INTEGER))
+                    choices.add(TypeFactory.annotation(SlashCommandOptionChoice.class, Map.of("name", enumInstance.name(), "longValue", value)));
+                if (type.equals(ChoiceType.DOUBLE))
+                    choices.add(TypeFactory.annotation(SlashCommandOptionChoice.class, Map.of("name", enumInstance.name(), "doubleValue", value)));
                 if (type.equals(ChoiceType.String))
                     choices.add(TypeFactory.annotation(SlashCommandOptionChoice.class, Map.of("name", enumInstance.name(), "stringValue", value)));
-                else if (type.equals(ChoiceType.Number))
-                    choices.add(TypeFactory.annotation(SlashCommandOptionChoice.class, Map.of("name", enumInstance.name(), "longValue", value)));
             } catch (IllegalAccessException | InvocationTargetException | AnnotationFormatException e) {
                 e.printStackTrace();
                 return null;
@@ -69,6 +72,7 @@ public record EnumChoices(Class<? extends Enum<?>> enumClass, ChoiceType type, S
 
     public static enum ChoiceType {
         String,
-        Number
+        INTEGER,
+        DOUBLE
     }
 }
