@@ -56,8 +56,8 @@ public class InteractionRegistry {
 
             logger.debug("Added Executable Command {}{}{} for registration", 
                 def.applicationCommand().name(), 
-                def.subCommandGroup().name().isBlank() ? "" : "." + def.subCommandGroup().name(),
-                def.subCommand().name().isBlank() ? "" : "." + def.subCommand().name()
+                def.subCommandGroup() == null ? "" : "." + def.subCommandGroup().name(),
+                def.subCommand() == null ? "" : "." + def.subCommand().name()
                 );
         });
 
