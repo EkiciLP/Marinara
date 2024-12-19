@@ -100,4 +100,8 @@ public final class ReflectionUtil {
         }
         return true;
     }
+
+    public static String getFullMethodName(Method method) {
+        return method.getClass().getName() + "." + method.getName();
+    }
 }
