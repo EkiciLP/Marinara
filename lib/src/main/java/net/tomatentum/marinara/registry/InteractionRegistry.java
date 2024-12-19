@@ -34,8 +34,8 @@ public class InteractionRegistry {
                 this.interactionMethods.add(iMethod);
                 logger.debug("Added {} method from {}", iMethod.getMethod().getName(), interactionHandler.getClass().getSimpleName());
             }
-            logger.info("Added all Interactions from {}", interactionHandler.getClass().getSimpleName());
         }
+        logger.info("Added all Interactions from {}", interactionHandler.getClass().getSimpleName());
     }
 
     public void registerCommands() {
