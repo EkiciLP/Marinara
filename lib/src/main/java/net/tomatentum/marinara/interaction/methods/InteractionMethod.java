@@ -19,6 +19,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.InteractionCheckParser;
 import net.tomatentum.marinara.util.LoggerUtil;
+import net.tomatentum.marinara.util.ReflectionUtil;
 
 public abstract class InteractionMethod {
 
@@ -93,7 +94,7 @@ public abstract class InteractionMethod {
             }else
                 parameter = getParameter(context, i-1);
 
-            logger.trace("Found parameter {}={} for {}", parameter.getClass().toString(), parameter, getMethod().getClass().getName() + "." + getMethod().getName());
+            logger.trace("Found parameter {}={} for method {}", parameter.getClass().toString(), parameter, ReflectionUtil.getFullMethodName(method));
             parameters.add(parameter);   
         }
         return parameters.toArray();
