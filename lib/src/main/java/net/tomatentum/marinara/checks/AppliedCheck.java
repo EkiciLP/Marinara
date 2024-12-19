@@ -23,7 +23,9 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
         method.setAccessible(true);
         try {
             logger.debug("Executing pre check {} with context {}", check.getClass().getName(), context.toString());
-            return (boolean) method.invoke(check, context, annotation);
+            boolean result = (boolean) method.invoke(check, context, annotation);
+            logger.debug("Pre Check {} {} with context {}", check.getClass().getName(), result ? "succeeded" : "failed", context.toString());
+            return result;
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
             logger.fatal(e);
             return false;
