@@ -38,7 +38,7 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
         Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.annotationType());
         method.setAccessible(true);
         try {
-            logger.debug("Executing pre check {} with context {}", check.getClass().getName(), context.toString());
+            logger.debug("Executing post check {} with context {}", check.getClass().getName(), context.toString());
             method.invoke(check, context, annotation);
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
             logger.fatal(e);

@@ -70,8 +70,8 @@ public class InteractionRegistry {
         logger.debug("Received {} interaction ", context);
         interactionMethods.forEach((m) -> {
             if (m.getType().equals(type) && m.canRun(context)) {
-                m.run(context);
                 logger.info("Running {} interaction using {}\ncontext: {}", type, m.getMethod().toString(), context.toString());
+                m.run(context);
             }
         });
     }
