@@ -9,6 +9,6 @@ geantyref = "2.0.0"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
-log4j = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j"}
+log4j = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j"}
 javacord = { module = "org.javacord:javacord", version.ref = "javacord"}
 geantyref = { module = "io.leangen.geantyref:geantyref", version.ref = "geantyref"}
