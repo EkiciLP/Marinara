@@ -17,4 +17,8 @@ public class LoggerUtil {
             return new SimpleLogger(name, Level.DEBUG, true, false, true, true, "yyyy-MM-dd HH:mm:ss.SSSZ", null,
                                                  new PropertiesUtil(new Properties()), System.out);
     }
+
+    public static Logger getLogger(Class<?> clazz) {
+        return getLogger(clazz.getName());
+    }
 }
