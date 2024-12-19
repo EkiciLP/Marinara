@@ -73,7 +73,7 @@ public abstract class InteractionMethod {
         try {
             method.invoke(handler, getParameters(context));
         }catch (IllegalAccessException | InvocationTargetException ex) {
-            throw new RuntimeException(ex);
+            logger.fatal(ex);
         }
 
         this.appliedChecks.forEach(x -> x.post(context));
