@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
+
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.checks.AppliedCheck;
 import net.tomatentum.marinara.interaction.InteractionHandler;
@@ -16,6 +18,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.InteractionCheckParser;
+import net.tomatentum.marinara.util.LoggerUtil;
 
 public abstract class InteractionMethod {
 
@@ -32,6 +35,8 @@ public abstract class InteractionMethod {
     protected Marinara marinara;
     protected List<AnnotationParser> parsers;
     protected List<AppliedCheck> appliedChecks;
+
+    private Logger logger = LoggerUtil.getLogger(getClass());
 
     protected InteractionMethod(Method method, 
         InteractionHandler handler, 
@@ -82,11 +87,14 @@ public abstract class InteractionMethod {
         List<Object> parameters = new ArrayList<>();
         
         for (int i = 0; i < parameterCount; i++) {
+            Object parameter;
             if (i == 0) {
-                parameters.add(context);
-                continue;
-            }
-            parameters.add(getParameter(context, i-1));
+                parameter = context;
+            }else
+                parameter = getParameter(context, i-1);
+
+            logger.trace("Found parameter {}={} for {}", parameter.getClass().toString(), parameter, getMethod().getClass().getName() + "." + getMethod().getName());
+            parameters.add(parameter);   
         }
         return parameters.toArray();
     }
