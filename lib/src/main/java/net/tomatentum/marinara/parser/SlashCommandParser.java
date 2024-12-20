@@ -3,16 +3,21 @@ package net.tomatentum.marinara.parser;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
+import org.apache.logging.log4j.Logger;
+
 import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ReflectionUtil;
 
 public class SlashCommandParser implements AnnotationParser {
 
     private Method method;
     private Consumer<ExecutableSlashCommandDefinition> consumer;
+
+    private Logger logger = LoggerUtil.getLogger(getClass());
 
     public SlashCommandParser(Method method, Consumer<ExecutableSlashCommandDefinition> consumer) {
         this.method = method;
@@ -37,6 +42,9 @@ public class SlashCommandParser implements AnnotationParser {
             builder.setSubCommand(subCmd);
         }
 
+        ExecutableSlashCommandDefinition def = builder.build();
+
+        logger.trace("Parsed using SlashCommandParser for method {} with the result:\n{}", ReflectionUtil.getFullMethodName(method), def.toString());
         consumer.accept(builder.build());
     }
 

@@ -5,9 +5,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.Logger;
+
+import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ReflectionUtil;
 
 public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
+
+    private static Logger logger = LoggerUtil.getLogger(AppliedCheck.class);
     
     public boolean pre(Object context) {
         Method[] methods = Arrays.stream(check.getClass().getMethods())
@@ -17,9 +22,12 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
         Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.annotationType());
         method.setAccessible(true);
         try {
-            return (boolean) method.invoke(check, context, annotation);
+            logger.debug("Executing pre check {} with context {}", check.getClass().getName(), context.toString());
+            boolean result = (boolean) method.invoke(check, context, annotation);
+            logger.debug("Pre Check {} {} with context {}", check.getClass().getName(), result ? "succeeded" : "failed", context.toString());
+            return result;
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
-            e.printStackTrace();
+            logger.fatal(e);
             return false;
         }
     }
@@ -32,9 +40,10 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
         Method method = ReflectionUtil.getMostSpecificMethod(methods, context.getClass(), annotation.annotationType());
         method.setAccessible(true);
         try {
+            logger.debug("Executing post check {} with context {}", check.getClass().getName(), context.toString());
             method.invoke(check, context, annotation);
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
-            e.printStackTrace();
+            logger.fatal(e);
         }
     }
 
