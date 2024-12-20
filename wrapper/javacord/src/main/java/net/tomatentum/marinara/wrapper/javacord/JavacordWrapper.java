@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.ApplicationCommandInteraction;
 import org.javacord.api.interaction.ButtonInteraction;
@@ -25,15 +26,19 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
+import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class JavacordWrapper extends LibraryWrapper {
 
     private DiscordApi api;
 
+    private Logger logger = LoggerUtil.getLogger(getClass());
+
     public JavacordWrapper(DiscordApi api) {
         this.api = api;
         api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
+        logger.info("Javacord wrapper loaded!");
     }
 
     @Override
@@ -99,7 +104,7 @@ public class JavacordWrapper extends LibraryWrapper {
             }else
                 builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getName())));
         } catch (AnnotationFormatException e) {
-            e.printStackTrace();
+            logger.fatal(e);
         }
 
         return builder.build();
