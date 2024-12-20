@@ -41,7 +41,13 @@ public record ExecutableSlashCommandDefinition(
 
     @Override
     public final String toString() {
-        return applicationCommand.name() + subCommand.name() != null ? "::" + subCommand.name() : "";
+        StringBuilder builder = new StringBuilder();
+        builder.append(applicationCommand.name());
+        if (subCommandGroup != null && subCommandGroup.name() != null)
+            builder.append("::").append(subCommandGroup.name());
+        if (subCommand != null && subCommand.name() != null)
+            builder.append("::").append(subCommand.name());
+        return builder.toString();
     }
 
     public boolean isRootCommand() {
