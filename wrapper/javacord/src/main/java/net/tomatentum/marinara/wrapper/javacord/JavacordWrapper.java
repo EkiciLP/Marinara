@@ -98,11 +98,13 @@ public class JavacordWrapper extends LibraryWrapper {
         List<SlashCommandInteractionOption> options = interaction.getOptions();
         try {
             builder.setApplicationCommand(TypeFactory.annotation(SlashCommand.class, Map.of("name", interaction.getCommandName())));
-            if (!options.getFirst().getArguments().isEmpty()) {
-                builder.setSubCommandGroup(TypeFactory.annotation(SubCommandGroup.class, Map.of("name", options.getFirst().getName())));
-                builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getOptions().getFirst().getName())));
-            }else
-                builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getName())));
+            if (!options.isEmpty()) {
+                if (!options.getFirst().getArguments().isEmpty()) {
+                    builder.setSubCommandGroup(TypeFactory.annotation(SubCommandGroup.class, Map.of("name", options.getFirst().getName())));
+                    builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getOptions().getFirst().getName())));
+                }else
+                    builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getName())));
+            }
         } catch (AnnotationFormatException e) {
             logger.fatal(e);
         }
