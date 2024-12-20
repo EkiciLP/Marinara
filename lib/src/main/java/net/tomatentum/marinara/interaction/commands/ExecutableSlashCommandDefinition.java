@@ -18,8 +18,8 @@ public record ExecutableSlashCommandDefinition(
         ExecutableSlashCommandDefinition other = (ExecutableSlashCommandDefinition) o;
         boolean equals = false;
 
-        if (this.applicationCommand() != null && other.subCommandGroup() != null)
-            equals = this.applicationCommand.name().equals(other.applicationCommand().name());
+        if (this.applicationCommand() != null && other.applicationCommand() != null)
+            equals = this.applicationCommand().name().equals(other.applicationCommand().name());
 
         if (this.subCommandGroup() != null && other.subCommandGroup() != null)
             equals = this.subCommandGroup().name().equals(other.subCommandGroup().name());
