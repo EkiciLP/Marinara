@@ -2,14 +2,23 @@ package net.tomatentum.marinara.interaction.commands;
 
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption.PlaceHolderEnum;
 
 public record ExecutableSlashCommandDefinition(
     SlashCommand applicationCommand,
     SubCommand subCommand,
     SubCommandGroup subCommandGroup, 
     SlashCommandOption[] options) {
+
+    public static SlashCommandOptionChoice[] getActualChoices(SlashCommandOption option) {
+        SlashCommandOptionChoice[] choices = option.choices();
+        if (choices.length <= 0 && !option.choiceEnum().equals(PlaceHolderEnum.class))
+            choices = EnumChoices.of(option.choiceEnum()).choices();
+        return choices;
+    }
 
     @Override
     public final boolean equals(Object o) {

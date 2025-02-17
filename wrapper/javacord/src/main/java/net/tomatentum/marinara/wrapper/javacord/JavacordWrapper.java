@@ -11,10 +11,14 @@ import java.util.Set;
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.ApplicationCommandInteraction;
+import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
+import org.javacord.api.interaction.SlashCommandOptionBuilder;
+import org.javacord.api.interaction.SlashCommandOptionChoiceBuilder;
+import org.javacord.api.interaction.SlashCommandOptionType;
 
 import io.leangen.geantyref.AnnotationFormatException;
 import io.leangen.geantyref.TypeFactory;
@@ -23,31 +27,35 @@ import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefini
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
-import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
+import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class JavacordWrapper extends LibraryWrapper {
 
     private DiscordApi api;
-
+    private JavacordContextObjectProvider contextObjectProvider;
+    
     private Logger logger = LoggerUtil.getLogger(getClass());
 
     public JavacordWrapper(DiscordApi api) {
         this.api = api;
+        this.contextObjectProvider = new JavacordContextObjectProvider();
         api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
         logger.info("Javacord wrapper loaded!");
     }
 
     @Override
     public InteractionType getInteractionType(Object context) {
+        if (AutocompleteInteraction.class.isAssignableFrom(context.getClass()))
+            return InteractionType.AUTOCOMPLETE;
         if (ApplicationCommandInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.COMMAND;
         if (ButtonInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.BUTTON;
-
         return null;
     }
 
@@ -70,22 +78,6 @@ public class JavacordWrapper extends LibraryWrapper {
             api.bulkOverwriteServerApplicationCommands(serverId, serverCommands.get(serverId));
         }
         api.bulkOverwriteGlobalApplicationCommands(globalCommands);
-    }
-
-    @Override
-    public Object convertCommandOption(Object context, SlashCommandOptionType type, String optionName) {
-        if (!(context instanceof SlashCommandInteraction))
-            return null;
-        SlashCommandInteraction interaction = (SlashCommandInteraction) context;
-        if (!interaction.getArguments().isEmpty())
-            return getOptionValue(interaction.getOptionByName(optionName).get(), type);
-
-        SlashCommandInteractionOption subCommandOption = interaction.getOptions().getFirst();
-
-        if (!subCommandOption.getOptions().isEmpty())
-            subCommandOption = subCommandOption.getOptions().getFirst();
-
-        return getOptionValue(subCommandOption.getOptionByName(optionName).get(), type);
     }
 
     @Override
@@ -128,43 +120,53 @@ public class JavacordWrapper extends LibraryWrapper {
     private org.javacord.api.interaction.SlashCommandOption convertSubCommandGroupDef(SlashCommandDefinition def, SubCommandGroup subGroup) {
         SubCommand[] subCommands = def.getSubCommands(subGroup.name());
         org.javacord.api.interaction.SlashCommandOption[] convertedSubCommands = (org.javacord.api.interaction.SlashCommandOption[]) Arrays.stream(subCommands).map(this::convertSubCommandDef).toArray();
-        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, subGroup.name(), subGroup.description(), Arrays.asList(convertedSubCommands));
+        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
+            org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, 
+            subGroup.name(), 
+            subGroup.description(), 
+            Arrays.asList(convertedSubCommands));
     }
 
     private org.javacord.api.interaction.SlashCommandOption convertSubCommandDef(SubCommand sub) {
         List<org.javacord.api.interaction.SlashCommandOption> convertedOptions = new ArrayList<>();
         Arrays.stream(sub.options()).map(this::convertOptionDef).forEach(convertedOptions::add);
-        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, sub.name(), sub.description(), convertedOptions);
+        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
+            org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, 
+            sub.name(), 
+            sub.description(), 
+            convertedOptions);
     }
 
     private org.javacord.api.interaction.SlashCommandOption convertOptionDef(SlashCommandOption option) {
-        org.javacord.api.interaction.SlashCommandOptionType type = Enum.valueOf(org.javacord.api.interaction.SlashCommandOptionType.class, option.type().toString());
-        return org.javacord.api.interaction.SlashCommandOption.create(type, option.name(), option.description(), option.required());
+        SlashCommandOptionType type = SlashCommandOptionType.fromValue(option.type().getValue());
+        SlashCommandOptionBuilder builder = new SlashCommandOptionBuilder();
+        builder
+            .setType(type)
+            .setName(option.name())
+            .setDescription(option.description())
+            .setRequired(option.required())
+            .setAutocompletable(option.autocomplete())
+            .setChoices(convertChoices(option));
+        
+        return builder.build();
     }
 
-    private Object getOptionValue(SlashCommandInteractionOption option, SlashCommandOptionType type) {
-        switch (type) {
-            case ATTACHMENT:
-                return option.getAttachmentValue().get();
-            case BOOLEAN:
-                return option.getBooleanValue().get();
-            case CHANNEL:
-                return option.getChannelValue().get();
-            case DECIMAL:
-                return option.getDecimalValue().get();
-            case LONG:
-                return option.getLongValue().get();
-            case MENTIONABLE:
-                return option.getMentionableValue().get();
-            case ROLE:
-                return option.getRoleValue().get();
-            case STRING:
-                return option.getStringValue().get();
-            case USER:
-                return option.getUserValue().get();
-            default:
-                return null;
+    private List<org.javacord.api.interaction.SlashCommandOptionChoice> convertChoices(SlashCommandOption option) {
+        List<org.javacord.api.interaction.SlashCommandOptionChoice> convertedChoices = new ArrayList<>();
+        for (SlashCommandOptionChoice choice : ExecutableSlashCommandDefinition.getActualChoices(option)) {
+            SlashCommandOptionChoiceBuilder builder = new SlashCommandOptionChoiceBuilder();
+            builder.setName(choice.name());
+            if (choice.longValue() != Long.MAX_VALUE)
+                builder.setValue(choice.longValue());
+            /*
+            not yet available
+            if (choice.doubleValue() != Double.MAX_VALUE)
+                builder.setValue(choice.doubleValue());
+            */
+            if (!choice.stringValue().isEmpty())
+                builder.setValue(choice.stringValue());
         }
+        return convertedChoices;
     }
 
     @Override
@@ -174,20 +176,8 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public Object getComponentContextObject(Object context, Class<?> type) {
-        ButtonInteraction button = (ButtonInteraction) context;
-        switch (type.getName()) {
-            case "org.javacord.api.entity.channel.TextChannel":
-                return button.getChannel().orElse(null);
-            case "org.javacord.api.entity.message.Message":
-                return button.getMessage();
-            case "org.javacord.api.entity.server.Server":
-                return button.getServer().orElse(null);
-            case "org.javacord.api.entity.user.User":
-                return button.getUser();
-        }
-        return null;
+    public ContextObjectProvider getContextObjectProvider() {
+        return contextObjectProvider;
     }
 
-    
 }
