@@ -9,11 +9,14 @@ import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefini
 import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.SlashCommandParser;
 
-public class SlashCommandInteractionMethod extends InteractionMethod {
+public class AutoCompleteInteractionMethod extends InteractionMethod {
 
     private ExecutableSlashCommandDefinition commandDefinition;
 
-    SlashCommandInteractionMethod(Method method, InteractionHandler handler, Marinara marinara) {
+    public AutoCompleteInteractionMethod(Method method, 
+        InteractionHandler handler, 
+        Marinara marinara
+        ) {
         super(method, handler, marinara);
     }
 
@@ -26,7 +29,12 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
 
     @Override
     public Object getParameter(Object context, int index) {
-        return marinara.getWrapper().getContextObjectProvider().convertCommandOption(context, commandDefinition.options()[index].name());
+        Class<?> type = getMethod().getParameterTypes()[index+1];
+        Object autocompleteOptionValue = marinara.getWrapper().getContextObjectProvider().getAutocompleteFocusedOption(context);
+        if (autocompleteOptionValue != null)
+            return autocompleteOptionValue;
+
+        return marinara.getWrapper().getContextObjectProvider().getComponentContextObject(context, type);
     }
 
     @Override
@@ -37,15 +45,7 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
 
     @Override
     public InteractionType getType() {
-        return InteractionType.COMMAND;
+        return InteractionType.AUTOCOMPLETE;
     }
-
-    public ExecutableSlashCommandDefinition getCommandDefinition() {
-        return commandDefinition;
-    }
-
-    public void setCommandDefinition(ExecutableSlashCommandDefinition commandDefinition) {
-        this.commandDefinition = commandDefinition;
-    }
-
+    
 }

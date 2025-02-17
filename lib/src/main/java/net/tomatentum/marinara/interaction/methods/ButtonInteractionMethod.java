@@ -24,9 +24,9 @@ public class ButtonInteractionMethod extends InteractionMethod {
     }
 
     @Override
-    public Object getParameter(Object parameter, int index) {
+    public Object getParameter(Object context, int index) {
         Class<?> type = getMethod().getParameterTypes()[index+1];
-        return marinara.getWrapper().getComponentContextObject(parameter, type);
+        return marinara.getWrapper().getContextObjectProvider().getComponentContextObject(context, type);
     }
 
     @Override
@@ -38,4 +38,5 @@ public class ButtonInteractionMethod extends InteractionMethod {
     public InteractionType getType() {
         return InteractionType.BUTTON;
     }
+    
 }
