@@ -42,10 +42,10 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public InteractionType getInteractionType(Class<?> clazz) {
-        if (ApplicationCommandInteraction.class.isAssignableFrom(clazz))
+    public InteractionType getInteractionType(Object context) {
+        if (ApplicationCommandInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.COMMAND;
-        if (ButtonInteraction.class.isAssignableFrom(clazz))
+        if (ButtonInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.BUTTON;
 
         return null;

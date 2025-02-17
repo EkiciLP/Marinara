@@ -66,7 +66,7 @@ public class InteractionRegistry {
     }
 
     public void handle(Object context) {
-        InteractionType type = marinara.getWrapper().getInteractionType(context.getClass());
+        InteractionType type = marinara.getWrapper().getInteractionType(context);
         logger.debug("Received {} interaction ", context);
         interactionMethods.forEach((m) -> {
             if (m.getType().equals(type) && m.canRun(context)) {
