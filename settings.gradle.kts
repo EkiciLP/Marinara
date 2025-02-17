@@ -13,5 +13,9 @@ plugins {
 rootProject.name = "Marinara"
 include(":lib")
 include(":wrapper-javacord")
+include(":wrapper-discord4j")
+
 
 project(":wrapper-javacord").projectDir = file("wrapper/javacord")
+project(":wrapper-discord4j").projectDir = file("wrapper/discord4j")
+
