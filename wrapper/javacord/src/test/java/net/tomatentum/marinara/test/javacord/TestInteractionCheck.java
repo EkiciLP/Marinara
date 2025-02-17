@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.javacord;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

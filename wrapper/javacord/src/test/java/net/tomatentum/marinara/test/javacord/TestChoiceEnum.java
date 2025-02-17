@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.javacord;
 
 import net.tomatentum.marinara.interaction.commands.ChoiceValueProvider;
 

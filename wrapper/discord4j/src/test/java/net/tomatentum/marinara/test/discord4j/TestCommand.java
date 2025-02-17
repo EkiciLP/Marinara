@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.discord4j;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

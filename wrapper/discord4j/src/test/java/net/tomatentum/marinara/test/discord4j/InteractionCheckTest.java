@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.discord4j;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import net.tomatentum.marinara.Marinara;
-import net.tomatentum.marinara.test.mocks.ButtonInteractionMock;
-import net.tomatentum.marinara.test.mocks.DiscordApiMock;
-import net.tomatentum.marinara.test.mocks.ServerMock;
+import net.tomatentum.marinara.test.discord4j.mocks.ButtonInteractionMock;
+import net.tomatentum.marinara.test.discord4j.mocks.DiscordApiMock;
+import net.tomatentum.marinara.test.discord4j.mocks.ServerMock;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 import net.tomatentum.marinara.wrapper.javacord.checks.PermissionCheck;
