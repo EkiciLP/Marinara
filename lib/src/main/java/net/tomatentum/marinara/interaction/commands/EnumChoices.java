@@ -67,7 +67,7 @@ public record EnumChoices(Class<? extends Enum<?>> enumClass, ChoiceType type, S
                 return null;
             }
         }
-        return choices.toArray(new SlashCommandOptionChoice[0]);
+        return choices.toArray(SlashCommandOptionChoice[]::new);
     }
 
     public static enum ChoiceType {
