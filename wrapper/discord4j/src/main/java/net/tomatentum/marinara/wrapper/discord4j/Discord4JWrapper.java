@@ -33,7 +33,6 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
-import reactor.core.publisher.Mono;
 
 public class Discord4JWrapper extends LibraryWrapper {
 
@@ -55,9 +54,9 @@ public class Discord4JWrapper extends LibraryWrapper {
     public Discord4JWrapper(GatewayDiscordClient api) {
         this.api = api;
         this.contextObjectProvider = new Discord4JContextObjectProvider();
-        api.on(InteractionCreateEvent.class)
-            .subscribe(event -> handleInteraction(event));
-        Mono.just("test").subscribe(logger::debug);
+        if (api != null)
+            api.on(InteractionCreateEvent.class)
+                .subscribe(event -> handleInteraction(event));
             
         logger.info("Discord4J wrapper loaded!");
     }
@@ -99,15 +98,24 @@ public class Discord4JWrapper extends LibraryWrapper {
 
     @Override
     public ExecutableSlashCommandDefinition getCommandDefinition(Object context) {
-        if (!(context instanceof ChatInputInteractionEvent))
+        List<ApplicationCommandInteractionOption> options;
+        String commandName;
+
+        if (context instanceof ChatInputInteractionEvent) {
+            ChatInputInteractionEvent interaction = (ChatInputInteractionEvent) context;
+            options = SUB_FILTER.apply(interaction.getOptions());
+            commandName = interaction.getCommandName();
+        }else if (context instanceof ChatInputAutoCompleteEvent) {
+            ChatInputAutoCompleteEvent interaction = (ChatInputAutoCompleteEvent) context;
+            options = SUB_FILTER.apply(interaction.getOptions());
+            commandName = interaction.getCommandName();
+        }else
             return null;
 
-        ChatInputInteractionEvent interaction = (ChatInputInteractionEvent) context;
         ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
-        List<ApplicationCommandInteractionOption> options = SUB_FILTER.apply(interaction.getOptions());
 
         try {
-            builder.setApplicationCommand(TypeFactory.annotation(SlashCommand.class, Map.of("name", interaction.getCommandName())));
+            builder.setApplicationCommand(TypeFactory.annotation(SlashCommand.class, Map.of("name", commandName)));
             if (!options.isEmpty()) {
                 if (!ARG_FILTER.apply(options.getFirst().getOptions()).isEmpty()) {
                     builder.setSubCommandGroup(TypeFactory.annotation(SubCommandGroup.class, Map.of("name", options.getFirst().getName())));
