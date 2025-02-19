@@ -71,7 +71,7 @@ public class Discord4JContextObjectProvider implements ContextObjectProvider {
         ComponentInteractionEvent componentInteractionEvent = (ComponentInteractionEvent) context;
         switch (type.getName()) {
             case "discord4j.core.object.entity.Message":
-                return componentInteractionEvent.getMessage();
+                return componentInteractionEvent.getMessage().orElse(null);
             default:
                 return getInteractionContextObject(context, type);
         }
