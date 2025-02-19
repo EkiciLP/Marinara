@@ -51,21 +51,16 @@ public class SlashCommandDefinition {
                 subCommandGroupMap.put(x.name(), x);
         });
 
-        return subCommandGroupMap.values().toArray(new SubCommandGroup[0]);
+        return subCommandGroupMap.values().toArray(SubCommandGroup[]::new);
     }
 
-    public SubCommand[] getSubCommands(String groupName) {
+    public SubCommand[] getSubCommands() {
         List<SubCommand> subCommands;
-        if (groupName == null)
-            subCommands = Arrays.stream(getExecutableDefinitons())
-            .filter((x) -> x.subCommandGroup() == null && x.subCommand() != null)
-            .map((x) -> x.subCommand())
-            .toList();
-        else 
-            subCommands = Arrays.stream(getExecutableDefinitons())
-            .filter((x) -> x.subCommandGroup().name().equals(groupName) && x.subCommand() != null)
-            .map((x) -> x.subCommand())
-            .toList();
+        subCommands = Arrays.stream(getExecutableDefinitons())
+        .filter((x) -> x.subCommandGroup() == null && x.subCommand() != null)
+        .map((x) -> x.subCommand())
+        .toList();
+
         
         HashMap<String, SubCommand> subCommandMap = new HashMap<>();
         subCommands.forEach((x) -> {
@@ -74,18 +69,24 @@ public class SlashCommandDefinition {
                 subCommandMap.put(x.name(), x);
         });
 
-        return subCommandMap.values().toArray(new SubCommand[0]);
+        return subCommandMap.values().toArray(SubCommand[]::new);
     }
 
-    public SlashCommand getFullSlashCommand() {
-        if (isRootCommand())
-            return getSlashCommand();
-        for (ExecutableSlashCommandDefinition executableSlashCommandDefinition : executableDefinitons) {
-            if (executableSlashCommandDefinition.options().length > 0)
-                return executableSlashCommandDefinition.applicationCommand();
-        }
+    public SubCommand[] getSubCommands(String groupName) {
+        List<SubCommand> subCommands;
+        subCommands = Arrays.stream(getExecutableDefinitons())
+        .filter((x) -> x.subCommandGroup().name().equals(groupName) && x.subCommand() != null)
+        .map((x) -> x.subCommand())
+        .toList();
+        
+        HashMap<String, SubCommand> subCommandMap = new HashMap<>();
+        subCommands.forEach((x) -> {
+            SubCommand current = subCommandMap.get(x.name());
+            if (current == null || (current.description().isBlank() && !x.description().isBlank()))
+                subCommandMap.put(x.name(), x);
+        });
 
-        return null;
+        return subCommandMap.values().toArray(SubCommand[]::new);
     }
 
     public SlashCommand getSlashCommand() {
