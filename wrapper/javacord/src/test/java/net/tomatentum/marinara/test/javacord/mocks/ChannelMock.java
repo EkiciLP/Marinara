@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test.mocks;
+package net.tomatentum.marinara.test.javacord.mocks;
 
 import java.util.Collection;
 import java.util.List;

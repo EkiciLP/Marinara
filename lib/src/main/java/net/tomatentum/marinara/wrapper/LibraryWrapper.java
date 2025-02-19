@@ -27,7 +27,7 @@ public abstract class LibraryWrapper {
         interactionSubscriber.remove(consumer);
     }
 
-    public abstract InteractionType getInteractionType(Class<?> clazz);
+    public abstract InteractionType getInteractionType(Object context);
 
     public abstract void registerSlashCommands(SlashCommandDefinition[] defs); 
     public abstract ExecutableSlashCommandDefinition getCommandDefinition(Object context);

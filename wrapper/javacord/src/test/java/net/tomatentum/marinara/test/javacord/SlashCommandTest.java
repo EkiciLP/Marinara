@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.javacord;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import net.tomatentum.marinara.Marinara;
-import net.tomatentum.marinara.test.mocks.SlashCommandInteractionMock;
+import net.tomatentum.marinara.test.javacord.mocks.SlashCommandInteractionMock;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 @TestInstance(Lifecycle.PER_CLASS)

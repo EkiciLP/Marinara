@@ -23,4 +23,13 @@ public enum SlashCommandOptionType {
     public int getValue() {
         return value;
     }
+
+    public static SlashCommandOptionType fromValue(int value) {
+        for (SlashCommandOptionType type : values()) {
+            if (type.getValue() == value) {
+                return type;
+            }
+        }
+        return UNKNOWN;
+    }
 }

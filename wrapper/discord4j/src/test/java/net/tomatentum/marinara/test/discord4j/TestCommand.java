@@ -1,9 +1,8 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.discord4j;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.javacord.api.interaction.SlashCommandInteraction;
-
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
@@ -25,7 +24,7 @@ public class TestCommand implements InteractionHandler {
             )
         }
         )
-    public void exec(SlashCommandInteraction interaction, String test) {
+    public void exec(ChatInputInteractionEvent event, String test) {
         assertEquals(test, "test");
         System.out.println("Success!");
     }

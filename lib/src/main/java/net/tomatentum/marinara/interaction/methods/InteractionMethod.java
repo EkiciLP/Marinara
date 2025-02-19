@@ -97,7 +97,7 @@ public abstract class InteractionMethod {
             }else
                 parameter = getParameter(context, i-1);
 
-            logger.trace("Found parameter {}={} for method {}", parameter.getClass().toString(), parameter, ReflectionUtil.getFullMethodName(method));
+            logger.trace("Found parameter {}={} for method {}", parameter != null ? parameter.getClass().toString() : " ", parameter, ReflectionUtil.getFullMethodName(method));
             parameters.add(parameter);   
         }
         return parameters.toArray();

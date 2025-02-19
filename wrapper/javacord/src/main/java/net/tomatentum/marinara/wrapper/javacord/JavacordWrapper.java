@@ -49,12 +49,12 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public InteractionType getInteractionType(Class<?> clazz) {
-        if (AutocompleteInteraction.class.isAssignableFrom(clazz))
+    public InteractionType getInteractionType(Object context) {
+        if (AutocompleteInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.AUTOCOMPLETE;
-        if (ApplicationCommandInteraction.class.isAssignableFrom(clazz))
+        if (ApplicationCommandInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.COMMAND;
-        if (ButtonInteraction.class.isAssignableFrom(clazz))
+        if (ButtonInteraction.class.isAssignableFrom(context.getClass()))
             return InteractionType.BUTTON;
         return null;
     }
@@ -119,17 +119,16 @@ public class JavacordWrapper extends LibraryWrapper {
 
     private org.javacord.api.interaction.SlashCommandOption convertSubCommandGroupDef(SlashCommandDefinition def, SubCommandGroup subGroup) {
         SubCommand[] subCommands = def.getSubCommands(subGroup.name());
-        org.javacord.api.interaction.SlashCommandOption[] convertedSubCommands = (org.javacord.api.interaction.SlashCommandOption[]) Arrays.stream(subCommands).map(this::convertSubCommandDef).toArray();
+        List<org.javacord.api.interaction.SlashCommandOption> convertedSubCommands = Arrays.stream(subCommands).map(this::convertSubCommandDef).toList();
         return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
             org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, 
             subGroup.name(), 
             subGroup.description(), 
-            Arrays.asList(convertedSubCommands));
+            convertedSubCommands);
     }
 
     private org.javacord.api.interaction.SlashCommandOption convertSubCommandDef(SubCommand sub) {
-        List<org.javacord.api.interaction.SlashCommandOption> convertedOptions = new ArrayList<>();
-        Arrays.stream(sub.options()).map(this::convertOptionDef).forEach(convertedOptions::add);
+        List<org.javacord.api.interaction.SlashCommandOption> convertedOptions = Arrays.stream(sub.options()).map(this::convertOptionDef).toList();
         return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
             org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, 
             sub.name(), 

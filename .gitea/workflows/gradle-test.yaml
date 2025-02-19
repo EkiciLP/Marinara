@@ -44,6 +44,7 @@ jobs:
           mkdir test-results/;
           [ -d lib/build/test-results/test/ ] && mv lib/build/test-results/test/*.xml test-results/;
           [ -d wrapper/javacord/build/test-results/test/ ] && mv wrapper/javacord/build/test-results/test/*.xml test-results/;
+          [ -d wrapper/discord4j/build/test-results/test/ ] && mv wrapper/discord4j/build/test-results/test/*.xml test-results/;
 
       - name: Upload Test Result
         uses: christopherhx/gitea-upload-artifact@v4

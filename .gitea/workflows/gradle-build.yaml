@@ -38,7 +38,10 @@ jobs:
       run: chmod +x gradlew; ./gradlew assemble
 
     - name: Move artifacts
-      run: mkdir artifacts; mv lib/build/libs/*.jar artifacts; mv wrapper/javacord/build/libs/*.jar artifacts;
+      run: |
+        mkdir artifacts; mv lib/build/libs/*.jar artifacts; 
+        mv wrapper/javacord/build/libs/*.jar artifacts; 
+        mv wrapper/discord4j/build/libs/*.jar artifacts;
 
     - name: Upload artifact
       uses: christopherhx/gitea-upload-artifact@v4

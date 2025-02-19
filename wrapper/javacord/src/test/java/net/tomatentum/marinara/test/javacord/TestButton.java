@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.test;
+package net.tomatentum.marinara.test.javacord;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -11,7 +11,7 @@ import org.javacord.api.interaction.ButtonInteraction;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.annotation.Button;
-import net.tomatentum.marinara.test.TestInteractionCheck.TestCheck;
+import net.tomatentum.marinara.test.javacord.TestInteractionCheck.TestCheck;
 import net.tomatentum.marinara.wrapper.javacord.checks.PermissionCheck.HasPermission;
 
 public class TestButton implements InteractionHandler {
