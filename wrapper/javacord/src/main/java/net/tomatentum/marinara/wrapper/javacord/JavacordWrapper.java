@@ -65,8 +65,8 @@ public class JavacordWrapper extends LibraryWrapper {
         Set<SlashCommandBuilder> globalCommands = new HashSet<>();
         for (SlashCommandDefinition slashCommandDefinition : defs) {
             SlashCommandBuilder builder = convertSlashCommand(slashCommandDefinition);
-            if (slashCommandDefinition.getFullSlashCommand().serverIds().length > 0) {
-                for (long serverId : slashCommandDefinition.getFullSlashCommand().serverIds()) {
+            if (slashCommandDefinition.getSlashCommand().serverIds().length > 0) {
+                for (long serverId : slashCommandDefinition.getSlashCommand().serverIds()) {
                     serverCommands.putIfAbsent(serverId, new HashSet<>());
                     serverCommands.get(serverId).add(builder);
                 }
@@ -106,7 +106,7 @@ public class JavacordWrapper extends LibraryWrapper {
 
     private SlashCommandBuilder convertSlashCommand(SlashCommandDefinition def) {
         List<org.javacord.api.interaction.SlashCommandOption> options = new ArrayList<>();
-        SlashCommand cmd = def.getFullSlashCommand();
+        SlashCommand cmd = def.getSlashCommand();
         if (!def.isRootCommand()) {
             Arrays.stream(def.getSubCommands(null)).map(this::convertSubCommandDef).forEach(options::add);
             Arrays.stream(def.getSubCommandGroups()).map((x) -> convertSubCommandGroupDef(def, x)).forEach(options::add);
@@ -164,6 +164,7 @@ public class JavacordWrapper extends LibraryWrapper {
             */
             if (!choice.stringValue().isEmpty())
                 builder.setValue(choice.stringValue());
+            convertedChoices.add(builder.build());
         }
         return convertedChoices;
     }

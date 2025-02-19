@@ -81,8 +81,8 @@ public class Discord4JWrapper extends LibraryWrapper {
 
         for (SlashCommandDefinition slashCommandDefinition : defs) {
             ApplicationCommandRequest request = convertSlashCommand(slashCommandDefinition);
-            if (slashCommandDefinition.getFullSlashCommand().serverIds().length > 0) {
-                for (long serverId : slashCommandDefinition.getFullSlashCommand().serverIds()) {
+            if (slashCommandDefinition.getSlashCommand().serverIds().length > 0) {
+                for (long serverId : slashCommandDefinition.getSlashCommand().serverIds()) {
                     serverCommands.putIfAbsent(serverId, new ArrayList<>());
                     serverCommands.get(serverId).add(request);
                 }
@@ -132,7 +132,7 @@ public class Discord4JWrapper extends LibraryWrapper {
 
     private ApplicationCommandRequest convertSlashCommand(SlashCommandDefinition def) {
         List<ApplicationCommandOptionData> options = new ArrayList<>();
-        SlashCommand cmd = def.getFullSlashCommand();
+        SlashCommand cmd = def.getSlashCommand();
         if (!def.isRootCommand()) {
             Arrays.stream(def.getSubCommands(null)).map(this::convertSubCommandDef).forEach(options::add);
             Arrays.stream(def.getSubCommandGroups()).map((x) -> convertSubCommandGroupDef(def, x)).forEach(options::add);
@@ -191,6 +191,7 @@ public class Discord4JWrapper extends LibraryWrapper {
                 builder.value(choice.doubleValue());
             if (!choice.stringValue().isEmpty())
                 builder.value(choice.stringValue());
+            convertedChoices.add(builder.build());
         }
         return convertedChoices;
     }
