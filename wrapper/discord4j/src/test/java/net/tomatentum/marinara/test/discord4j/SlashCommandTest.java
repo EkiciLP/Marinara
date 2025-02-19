@@ -1,39 +1,46 @@
 package net.tomatentum.marinara.test.discord4j;
 
-import org.javacord.api.DiscordApi;
-import org.javacord.api.DiscordApiBuilder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
+import discord4j.core.DiscordClient;
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
+import discord4j.core.object.command.ApplicationCommandInteractionOption;
+import discord4j.core.object.command.ApplicationCommandInteractionOptionValue;
+import discord4j.core.object.command.ApplicationCommandOption.Type;
 import net.tomatentum.marinara.Marinara;
-import net.tomatentum.marinara.test.discord4j.mocks.SlashCommandInteractionMock;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
-import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
+import net.tomatentum.marinara.wrapper.discord4j.Discord4JWrapper;
 @TestInstance(Lifecycle.PER_CLASS)
 public class SlashCommandTest {
 
     String DISCORD_TOKEN = System.getenv("DISCORD_TEST_TOKEN");
-    DiscordApi api;
+    GatewayDiscordClient client;
 
     @BeforeAll
     void setUp() {
-        api = new DiscordApiBuilder()
-        .setToken(DISCORD_TOKEN)
-        .login().join();
+        client = DiscordClient.create(DISCORD_TOKEN).login().block();
     }
 
     @AfterAll
     void tearDown() {
-        api.disconnect();
-        api = null;
+        client.logout().block();
+        client = null;
     }
 
     @Test
     void testSlashCommand() {
-        Marinara marinara = Marinara.load(new JavacordWrapper(api));
+        Marinara marinara = Marinara.load(new Discord4JWrapper(client));
         marinara.getRegistry().addInteractions(new TestCommand());
         marinara.getRegistry().registerCommands();
         System.out.println("Success!");
@@ -41,11 +48,25 @@ public class SlashCommandTest {
     
     @Test
     void testSlashCommandExecution() {
-        LibraryWrapper wrapper = new JavacordWrapper(api);
+        ApplicationCommandInteractionOption optionMock = mock();
+        ChatInputInteractionEvent eventMock = mock();
+
+        when(optionMock.getName()).thenReturn("foo");
+        when(optionMock.getType()).thenReturn(Type.STRING);
+        when(optionMock.getValue()).thenReturn(
+            Optional.of(
+                new ApplicationCommandInteractionOptionValue(null, null, Type.STRING.getValue(), "test", null)
+                ));
+
+        when(eventMock.getCommandName()).thenReturn("test");
+        when(eventMock.getOptions()).thenReturn(Arrays.asList(optionMock));
+        when(eventMock.getOption("foo")).thenReturn(Optional.of(optionMock));
+        
+        LibraryWrapper wrapper = new Discord4JWrapper(client);
         Marinara marinara = Marinara.load(wrapper);
         marinara.getRegistry().addInteractions(new TestCommand());
 
-        wrapper.handleInteraction(new SlashCommandInteractionMock());
+        wrapper.handleInteraction(eventMock);
     }
 
     

@@ -18,11 +18,12 @@ repositories {
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockito)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(libs.log4j)
     implementation(libs.discord4j) {
-        exclude(module="discord4j-voice")
+//        exclude(module="discord4j-voice")
     }
     implementation(libs.geantyref)
     implementation(project(":lib"))
