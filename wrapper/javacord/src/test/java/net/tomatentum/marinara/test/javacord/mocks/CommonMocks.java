@@ -25,5 +25,18 @@ public class CommonMocks {
 
         return buttonInteractionMock;
     }
+
+    public static ButtonInteraction getButtonInteractionMock(String customId, Server serverMock) {
+        ButtonInteraction buttonInteractionMock = mock();
+        
+        when(buttonInteractionMock.getCustomId()).thenReturn(customId);
+        when(buttonInteractionMock.getMessage()).thenReturn(mock(Message.class));
+        when(buttonInteractionMock.getServer()).thenReturn(Optional.of(serverMock));
+        when(buttonInteractionMock.getChannel()).thenReturn(Optional.of(mock(TextChannel.class)));
+        when(buttonInteractionMock.getUser()).thenReturn(mock(User.class));
+
+
+        return buttonInteractionMock;
+    }
     
 }
