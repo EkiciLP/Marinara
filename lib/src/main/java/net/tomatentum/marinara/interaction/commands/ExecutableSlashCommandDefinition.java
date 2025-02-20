@@ -6,6 +6,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption.PlaceHolderEnum;
+import net.tomatentum.marinara.interaction.commands.choice.EnumChoices;
 
 public record ExecutableSlashCommandDefinition(
     SlashCommand applicationCommand,

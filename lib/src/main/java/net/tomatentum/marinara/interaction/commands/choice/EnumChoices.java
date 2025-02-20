@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.interaction.commands;
+package net.tomatentum.marinara.interaction.commands.choice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

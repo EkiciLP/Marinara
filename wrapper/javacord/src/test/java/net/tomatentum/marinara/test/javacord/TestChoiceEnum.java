@@ -1,6 +1,6 @@
 package net.tomatentum.marinara.test.javacord;
 
-import net.tomatentum.marinara.interaction.commands.ChoiceValueProvider;
+import net.tomatentum.marinara.interaction.commands.choice.ChoiceValueProvider;
 
 public enum TestChoiceEnum implements ChoiceValueProvider<String> {
     TestValue("testValue"),
