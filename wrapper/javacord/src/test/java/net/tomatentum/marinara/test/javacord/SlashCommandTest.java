@@ -1,7 +1,15 @@
 package net.tomatentum.marinara.test.javacord;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Optional;
+
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
+import org.javacord.api.interaction.SlashCommandInteraction;
+import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -9,7 +17,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import net.tomatentum.marinara.Marinara;
-import net.tomatentum.marinara.test.javacord.mocks.SlashCommandInteractionMock;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 @TestInstance(Lifecycle.PER_CLASS)
@@ -45,7 +52,18 @@ public class SlashCommandTest {
         Marinara marinara = Marinara.load(wrapper);
         marinara.getRegistry().addInteractions(new TestCommand());
 
-        wrapper.handleInteraction(new SlashCommandInteractionMock());
+        SlashCommandInteractionOption optionMock = mock();
+        SlashCommandInteraction interactionMock = mock();
+
+        when(optionMock.getName()).thenReturn("foo");
+        when(optionMock.getStringValue()).thenReturn(Optional.of("test"));
+
+        when(interactionMock.getCommandName()).thenReturn("test");
+        when(interactionMock.getOptions()).thenReturn(Arrays.asList(optionMock));
+        when(interactionMock.getArguments()).thenReturn(Arrays.asList(optionMock));
+        when(interactionMock.getOptionByName("foo")).thenReturn(Optional.of(optionMock));
+
+        wrapper.handleInteraction(interactionMock);
     }
 
     

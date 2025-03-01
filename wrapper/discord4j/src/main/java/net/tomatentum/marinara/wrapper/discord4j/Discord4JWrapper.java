@@ -57,6 +57,8 @@ public class Discord4JWrapper extends LibraryWrapper {
         if (api != null)
             api.on(InteractionCreateEvent.class)
                 .subscribe(event -> handleInteraction(event));
+        else
+            logger.warn("GatewayDiscordClient was null so no Events were subscribed to.");
             
         logger.info("Discord4J wrapper loaded!");
     }

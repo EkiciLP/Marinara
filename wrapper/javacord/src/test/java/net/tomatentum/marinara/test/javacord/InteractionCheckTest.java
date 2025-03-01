@@ -2,16 +2,18 @@ package net.tomatentum.marinara.test.javacord;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import org.javacord.api.entity.permission.PermissionType;
+import org.javacord.api.entity.server.Server;
+import org.javacord.api.interaction.ButtonInteraction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 
 import net.tomatentum.marinara.Marinara;
-import net.tomatentum.marinara.test.javacord.mocks.ButtonInteractionMock;
-import net.tomatentum.marinara.test.javacord.mocks.DiscordApiMock;
-import net.tomatentum.marinara.test.javacord.mocks.ServerMock;
+import net.tomatentum.marinara.test.javacord.mocks.CommonMocks;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 import net.tomatentum.marinara.wrapper.javacord.checks.PermissionCheck;
@@ -21,27 +23,31 @@ public class InteractionCheckTest {
     
     @Test
     public void testInteractionCheck() {
-        LibraryWrapper wrapper = new JavacordWrapper(new DiscordApiMock());
+        LibraryWrapper wrapper = new JavacordWrapper(null);
         Marinara marinara = Marinara.load(wrapper);
         marinara.getCheckRegistry().addCheck(new TestInteractionCheck());
         marinara.getRegistry().addInteractions(new TestButton());
-        wrapper.handleInteraction(new ButtonInteractionMock("test"));
+        wrapper.handleInteraction(CommonMocks.getButtonInteractionMock("test"));
         assertTrue(TestInteractionCheck.preExecuted);
         assertTrue(TestInteractionCheck.postExecuted);
     }
 
     @Test
     public void testPermissionCheck() {
-        LibraryWrapper wrapper = new JavacordWrapper(new DiscordApiMock());
+        LibraryWrapper wrapper = new JavacordWrapper(null);
         Marinara marinara = Marinara.load(wrapper);
         marinara.getCheckRegistry().addCheck(new PermissionCheck());
         marinara.getRegistry().addInteractions(new TestButton());
-        wrapper.handleInteraction(new ButtonInteractionMock("permissionCheck"));
-        assertTrue(TestButton.didPermRun);
-        TestButton.didPermRun = false;
-        ServerMock.TESTPERMISSION = PermissionType.ATTACH_FILE;
-        wrapper.handleInteraction(new ButtonInteractionMock("permissionCheck"));
+
+        Server serverMock = mock();
+        ButtonInteraction buttonInteractionMock = CommonMocks.getButtonInteractionMock("permissionCheck", serverMock);
+        when(serverMock.hasPermissions(any(), any())).thenReturn(false);
+        wrapper.handleInteraction(buttonInteractionMock);
         assertFalse(TestButton.didPermRun);
+
+        when(serverMock.hasPermissions(any(), any())).thenReturn(true);
+        wrapper.handleInteraction(buttonInteractionMock);
+        assertTrue(TestButton.didPermRun);
     }
 
 }
