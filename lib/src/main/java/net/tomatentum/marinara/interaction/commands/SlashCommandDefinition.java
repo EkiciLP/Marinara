@@ -72,7 +72,7 @@ public class SlashCommandDefinition {
     public SlashCommandIdentifier[] getSubCommands() {
         if (isRootCommand)
             return null;
-        return InteractionIdentifier.distinct(entries.stream().toList()).toArray(SlashCommandIdentifier[]::new);
+        return InteractionIdentifier.distinct(entries.stream().filter(x -> x instanceof RootCommandIdentifier).toList()).toArray(SlashCommandIdentifier[]::new);
     }
 
     public SlashCommandIdentifier[] getSubCommands(String groupName) {
