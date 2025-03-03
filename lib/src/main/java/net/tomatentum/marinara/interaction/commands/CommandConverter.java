@@ -12,7 +12,7 @@ public class CommandConverter<A extends Object> {
         return null;
     }
 
-    public interface Spec<A extends Object, O extends Object, C extends Object> {
+    public static interface Spec<A extends Object, O extends Object, C extends Object> {
 
         public A convertCommand(SlashCommandDefinition def);
         public O convertSubCommand(SubCommand def, O[] options);

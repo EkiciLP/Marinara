@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 import org.apache.logging.log4j.Logger;
@@ -20,16 +19,13 @@ import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-import io.leangen.geantyref.AnnotationFormatException;
-import io.leangen.geantyref.TypeFactory;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
+import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
+import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
@@ -64,18 +60,6 @@ public class Discord4JWrapper extends LibraryWrapper {
     }
 
     @Override
-    public InteractionType getInteractionType(Object context) {
-        if (ChatInputAutoCompleteEvent.class.isAssignableFrom(context.getClass()))
-            return InteractionType.AUTOCOMPLETE;
-        if (ChatInputInteractionEvent.class.isAssignableFrom(context.getClass()))
-            return InteractionType.COMMAND;
-        if (ButtonInteractionEvent.class.isAssignableFrom(context.getClass()))
-            return InteractionType.BUTTON;
-
-        return null;
-    }
-
-    @Override
     public void registerSlashCommands(SlashCommandDefinition[] defs) {
         HashMap<Long, List<ApplicationCommandRequest>> serverCommands = new HashMap<>();
         List<ApplicationCommandRequest> globalCommands = new ArrayList<>();
@@ -83,8 +67,8 @@ public class Discord4JWrapper extends LibraryWrapper {
 
         for (SlashCommandDefinition slashCommandDefinition : defs) {
             ApplicationCommandRequest request = convertSlashCommand(slashCommandDefinition);
-            if (slashCommandDefinition.getSlashCommand().serverIds().length > 0) {
-                for (long serverId : slashCommandDefinition.getSlashCommand().serverIds()) {
+            if (slashCommandDefinition.rootIdentifier().serverIds().length > 0) {
+                for (long serverId : slashCommandDefinition.rootIdentifier().serverIds()) {
                     serverCommands.putIfAbsent(serverId, new ArrayList<>());
                     serverCommands.get(serverId).add(request);
                 }
@@ -99,9 +83,16 @@ public class Discord4JWrapper extends LibraryWrapper {
     }
 
     @Override
-    public ExecutableSlashCommandDefinition getCommandDefinition(Object context) {
+    public InteractionIdentifier getInteractionIdentifier(Object context) {
+
+        if (context instanceof ButtonInteractionEvent) {
+            ButtonInteractionEvent interaction = (ButtonInteractionEvent) context;
+            return InteractionIdentifier.builder().name(interaction.getCustomId()).type(InteractionType.BUTTON).build();
+        }
+
         List<ApplicationCommandInteractionOption> options;
         String commandName;
+        boolean isAutocomplete = false;
 
         if (context instanceof ChatInputInteractionEvent) {
             ChatInputInteractionEvent interaction = (ChatInputInteractionEvent) context;
@@ -111,30 +102,35 @@ public class Discord4JWrapper extends LibraryWrapper {
             ChatInputAutoCompleteEvent interaction = (ChatInputAutoCompleteEvent) context;
             options = SUB_FILTER.apply(interaction.getOptions());
             commandName = interaction.getCommandName();
+            isAutocomplete = true;
         }else
             return null;
 
-        ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
+        InteractionIdentifier last = InteractionIdentifier.slashBuilder().name(commandName).autocomplete(isAutocomplete).build();
 
-        try {
-            builder.setApplicationCommand(TypeFactory.annotation(SlashCommand.class, Map.of("name", commandName)));
-            if (!options.isEmpty()) {
-                if (!ARG_FILTER.apply(options.getFirst().getOptions()).isEmpty()) {
-                    builder.setSubCommandGroup(TypeFactory.annotation(SubCommandGroup.class, Map.of("name", options.getFirst().getName())));
-                    builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", SUB_FILTER.apply(options.getFirst().getOptions()).getFirst().getName())));
-                }else
-                    builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getName())));
-            }
-        } catch (AnnotationFormatException e) {
-            logger.fatal(e);
+        if (!options.isEmpty()) {
+            List<ApplicationCommandInteractionOption> sub_options = SUB_FILTER.apply(options.getFirst().getOptions());
+            if (!sub_options.isEmpty()) {
+                last = InteractionIdentifier.builder()
+                    .name(options.getFirst().getName())
+                    .type(isAutocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND)
+                    .parent(last).build();
+                last = InteractionIdentifier.slashBuilder()
+                    .name(sub_options.getFirst().getName())
+                    .autocomplete(isAutocomplete)
+                    .parent(last).build();
+            }else
+                last = InteractionIdentifier.slashBuilder()
+                    .name(options.getFirst().getName())
+                    .autocomplete(isAutocomplete)
+                    .parent(last).build();
         }
-
-        return builder.build();
+        return last;
     }
 
     private ApplicationCommandRequest convertSlashCommand(SlashCommandDefinition def) {
         List<ApplicationCommandOptionData> options = new ArrayList<>();
-        SlashCommand cmd = def.getSlashCommand();
+        RootCommandIdentifier cmd = def.rootIdentifier();
         if (!def.isRootCommand()) {
             Arrays.stream(def.getSubCommands(null)).map(this::convertSubCommandDef).forEach(options::add);
             Arrays.stream(def.getSubCommandGroups()).map((x) -> convertSubCommandGroupDef(def, x)).forEach(options::add);
@@ -149,8 +145,8 @@ public class Discord4JWrapper extends LibraryWrapper {
             .build();
     }
 
-    private ApplicationCommandOptionData convertSubCommandGroupDef(SlashCommandDefinition def, SubCommandGroup subGroup) {
-        SubCommand[] subCommands = def.getSubCommands(subGroup.name());
+    private ApplicationCommandOptionData convertSubCommandGroupDef(SlashCommandDefinition def, SlashCommandIdentifier subGroup) {
+        SlashCommandIdentifier[] subCommands = def.getSubCommands(subGroup.name());
         List<ApplicationCommandOptionData> convertedSubCommands = Arrays.stream(subCommands).map(this::convertSubCommandDef).toList();
         return ApplicationCommandOptionData.builder()
             .type(Type.SUB_COMMAND_GROUP.getValue())
@@ -160,7 +156,7 @@ public class Discord4JWrapper extends LibraryWrapper {
             .build();
     }
 
-    private ApplicationCommandOptionData convertSubCommandDef(SubCommand sub) {
+    private ApplicationCommandOptionData convertSubCommandDef(SlashCommandIdentifier sub) {
         List<ApplicationCommandOptionData> convertedOptions = Arrays.stream(sub.options()).map(this::convertOptionDef).toList();
         return ApplicationCommandOptionData.builder()
             .type(Type.SUB_COMMAND_GROUP.getValue())
@@ -184,7 +180,7 @@ public class Discord4JWrapper extends LibraryWrapper {
 
     private List<ApplicationCommandOptionChoiceData> convertChoices(SlashCommandOption option) {
         List<ApplicationCommandOptionChoiceData> convertedChoices = new ArrayList<>();
-        for (SlashCommandOptionChoice choice : ExecutableSlashCommandDefinition.getActualChoices(option)) {
+        for (SlashCommandOptionChoice choice : SlashCommandDefinition.getActualChoices(option)) {
             var builder = ApplicationCommandOptionChoiceData.builder();
             builder.name(choice.name());
             if (choice.longValue() != Long.MAX_VALUE)
@@ -196,12 +192,6 @@ public class Discord4JWrapper extends LibraryWrapper {
             convertedChoices.add(builder.build());
         }
         return convertedChoices;
-    }
-
-    @Override
-    public String getButtonId(Object context) {
-        ButtonInteractionEvent button = (ButtonInteractionEvent) context;
-        return button.getCustomId();
     }
 
     @Override

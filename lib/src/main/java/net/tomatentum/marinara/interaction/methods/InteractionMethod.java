@@ -12,11 +12,11 @@ import org.apache.logging.log4j.Logger;
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.checks.AppliedCheck;
 import net.tomatentum.marinara.interaction.InteractionHandler;
-import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.annotation.AutoComplete;
 import net.tomatentum.marinara.interaction.annotation.Button;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.InteractionCheckParser;
 import net.tomatentum.marinara.util.LoggerUtil;
@@ -42,7 +42,8 @@ public abstract class InteractionMethod {
 
     private Logger logger = LoggerUtil.getLogger(getClass());
 
-    protected InteractionMethod(Method method, 
+    protected InteractionMethod(
+        Method method, 
         InteractionHandler handler, 
         Marinara marinara
         ) {
@@ -52,21 +53,13 @@ public abstract class InteractionMethod {
         this.method = method;
         this.handler = handler;
         this.marinara = marinara;
-        this.parsers = new ArrayList<>(Arrays.asList(getParsers()));
+        this.parsers = new ArrayList<>(Arrays.asList(parsers()));
         this.appliedChecks = new ArrayList<>();
 
         parsers.add(new InteractionCheckParser(method, appliedChecks::add, marinara.getCheckRegistry()));
 
         parsers.stream().forEach(AnnotationParser::parse);
     }
-
-    public abstract AnnotationParser[] getParsers();
-
-    public abstract Object getParameter(Object context, int index);
-
-    public abstract boolean canRun(Object context);
-
-    public abstract InteractionType getType();
 
     public void run(Object context) {
         if (this.appliedChecks.stream().filter(x -> !x.pre(context)).count() > 0)
@@ -82,7 +75,13 @@ public abstract class InteractionMethod {
         this.appliedChecks.forEach(x -> x.post(context));
     }
 
-    public Method getMethod() {
+    public abstract AnnotationParser[] parsers();
+
+    public abstract Object getParameter(Object context, int index);
+
+    public abstract InteractionIdentifier identifier();
+
+    public Method method() {
         return method;
     }
 

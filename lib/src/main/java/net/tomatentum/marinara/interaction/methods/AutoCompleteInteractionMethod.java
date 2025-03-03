@@ -4,14 +4,13 @@ import java.lang.reflect.Method;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
-import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.SlashCommandParser;
 
 public class AutoCompleteInteractionMethod extends InteractionMethod {
 
-    private ExecutableSlashCommandDefinition commandDefinition;
+    private InteractionIdentifier interactionIdentifier;
 
     public AutoCompleteInteractionMethod(Method method, 
         InteractionHandler handler, 
@@ -21,15 +20,15 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
     }
 
     @Override
-    public AnnotationParser[] getParsers() {
+    public AnnotationParser[] parsers() {
         return new AnnotationParser[] { 
-            new SlashCommandParser(method, (x) -> { this.commandDefinition = x; } ) 
+            new SlashCommandParser(method, true, (x) -> { this.interactionIdentifier = x; } ) 
         };
     }
 
     @Override
     public Object getParameter(Object context, int index) {
-        Class<?> type = getMethod().getParameterTypes()[index+1];
+        Class<?> type = method().getParameterTypes()[index+1];
         Object autocompleteOptionValue = marinara.getWrapper().getContextObjectProvider().getAutocompleteFocusedOption(context);
         if (autocompleteOptionValue != null)
             return autocompleteOptionValue;
@@ -38,14 +37,8 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
     }
 
     @Override
-    public boolean canRun(Object context) {
-        ExecutableSlashCommandDefinition other = marinara.getWrapper().getCommandDefinition(context);
-        return commandDefinition.equals(other);
-    }
-
-    @Override
-    public InteractionType getType() {
-        return InteractionType.AUTOCOMPLETE;
+    public InteractionIdentifier identifier() {
+        return interactionIdentifier;
     }
     
 }

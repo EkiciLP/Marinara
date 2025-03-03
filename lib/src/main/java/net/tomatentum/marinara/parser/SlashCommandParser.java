@@ -5,22 +5,26 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.Logger;
 
-import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
+import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
+import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ReflectionUtil;
 
 public class SlashCommandParser implements AnnotationParser {
 
     private Method method;
-    private Consumer<ExecutableSlashCommandDefinition> consumer;
+    private boolean isAutoComplete;
+    private Consumer<SlashCommandIdentifier> consumer;
 
     private Logger logger = LoggerUtil.getLogger(getClass());
 
-    public SlashCommandParser(Method method, Consumer<ExecutableSlashCommandDefinition> consumer) {
+    public SlashCommandParser(Method method, boolean isAutoComplete, Consumer<SlashCommandIdentifier> consumer) {
         this.method = method;
+        this.isAutoComplete = isAutoComplete;
         this.consumer = consumer;
     }
 
@@ -29,23 +33,36 @@ public class SlashCommandParser implements AnnotationParser {
         this.checkValidCommandMethod(method);
 
         SlashCommand cmd = ReflectionUtil.getAnnotation(method, SlashCommand.class);
-        ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
-        builder.setApplicationCommand(cmd);
+        InteractionIdentifier lastIdentifier = InteractionIdentifier.rootBuilder()
+            .name(cmd.name())
+            .description(cmd.description())
+            .options(cmd.options())
+            .autocomplete(isAutoComplete)
+            .serverIds(cmd.serverIds())
+            .build();
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
             SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
-            builder.setSubCommandGroup(cmdGroup);
+            lastIdentifier = InteractionIdentifier.builder()
+                .name(cmdGroup.name())
+                .description(cmdGroup.description())
+                .type(isAutoComplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND)
+                .parent(lastIdentifier)
+                .build();
         }
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommand.class)) {
             SubCommand subCmd = ReflectionUtil.getAnnotation(method, SubCommand.class);
-            builder.setSubCommand(subCmd);
+            lastIdentifier = InteractionIdentifier.slashBuilder()
+                .name(subCmd.name())
+                .description(subCmd.description())
+                .options(subCmd.options())
+                .autocomplete(isAutoComplete)
+                .build();
         }
 
-        ExecutableSlashCommandDefinition def = builder.build();
-
-        logger.trace("Parsed using SlashCommandParser for method {} with the result:\n{}", ReflectionUtil.getFullMethodName(method), def.toString());
-        consumer.accept(builder.build());
+        logger.trace("Parsed using SlashCommandParser for method {} with the result:\n{}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());
+        consumer.accept((SlashCommandIdentifier) lastIdentifier);
     }
 
     @Override

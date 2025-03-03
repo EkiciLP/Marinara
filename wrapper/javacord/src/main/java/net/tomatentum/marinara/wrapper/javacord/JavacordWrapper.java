@@ -5,12 +5,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.interaction.ApplicationCommandInteraction;
 import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
@@ -20,16 +18,13 @@ import org.javacord.api.interaction.SlashCommandOptionBuilder;
 import org.javacord.api.interaction.SlashCommandOptionChoiceBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import io.leangen.geantyref.AnnotationFormatException;
-import io.leangen.geantyref.TypeFactory;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
+import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
+import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
@@ -52,24 +47,13 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public InteractionType getInteractionType(Object context) {
-        if (AutocompleteInteraction.class.isAssignableFrom(context.getClass()))
-            return InteractionType.AUTOCOMPLETE;
-        if (ApplicationCommandInteraction.class.isAssignableFrom(context.getClass()))
-            return InteractionType.COMMAND;
-        if (ButtonInteraction.class.isAssignableFrom(context.getClass()))
-            return InteractionType.BUTTON;
-        return null;
-    }
-
-    @Override
     public void registerSlashCommands(SlashCommandDefinition[] defs) {
         HashMap<Long, Set<SlashCommandBuilder>> serverCommands = new HashMap<>();
         Set<SlashCommandBuilder> globalCommands = new HashSet<>();
         for (SlashCommandDefinition slashCommandDefinition : defs) {
             SlashCommandBuilder builder = convertSlashCommand(slashCommandDefinition);
-            if (slashCommandDefinition.getSlashCommand().serverIds().length > 0) {
-                for (long serverId : slashCommandDefinition.getSlashCommand().serverIds()) {
+            if (slashCommandDefinition.rootIdentifier().serverIds().length > 0) {
+                for (long serverId : slashCommandDefinition.rootIdentifier().serverIds()) {
                     serverCommands.putIfAbsent(serverId, new HashSet<>());
                     serverCommands.get(serverId).add(builder);
                 }
@@ -84,32 +68,52 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public ExecutableSlashCommandDefinition getCommandDefinition(Object context) {
+    public InteractionIdentifier getInteractionIdentifier(Object context) {
+        if (context instanceof ButtonInteraction) {
+            ButtonInteraction button = (ButtonInteraction) context;
+            return InteractionIdentifier.builder().name(button.getCustomId()).type(InteractionType.BUTTON).build();
+        }
+
         if (!(context instanceof SlashCommandInteraction))
             return null;
 
+        boolean isAutocomplete = false;
+
+        if (context instanceof AutocompleteInteraction)
+            isAutocomplete = true;
+
         SlashCommandInteraction interaction = (SlashCommandInteraction) context;
-        ExecutableSlashCommandDefinition.Builder builder = new ExecutableSlashCommandDefinition.Builder();
+        InteractionIdentifier lastIdentifier = InteractionIdentifier.rootBuilder()
+            .name(interaction.getCommandName())
+            .autocomplete(isAutocomplete)
+            .build();
         List<SlashCommandInteractionOption> options = interaction.getOptions();
-        try {
-            builder.setApplicationCommand(TypeFactory.annotation(SlashCommand.class, Map.of("name", interaction.getCommandName())));
-            if (!options.isEmpty()) {
-                if (!options.getFirst().getArguments().isEmpty()) {
-                    builder.setSubCommandGroup(TypeFactory.annotation(SubCommandGroup.class, Map.of("name", options.getFirst().getName())));
-                    builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getOptions().getFirst().getName())));
-                }else
-                    builder.setSubCommand(TypeFactory.annotation(SubCommand.class, Map.of("name", options.getFirst().getName())));
-            }
-        } catch (AnnotationFormatException e) {
-            logger.fatal(e);
+        if (!options.isEmpty()) {
+            if (!options.getFirst().getArguments().isEmpty()) {
+                lastIdentifier = InteractionIdentifier.builder()
+                    .name(options.getFirst().getName())
+                    .type(isAutocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND)
+                    .parent(lastIdentifier)
+                    .build();
+                lastIdentifier = InteractionIdentifier.slashBuilder()
+                    .name(options.getFirst().getOptions().getFirst().getName())
+                    .autocomplete(isAutocomplete)
+                    .parent(lastIdentifier)
+                    .build();
+            }else
+                lastIdentifier = InteractionIdentifier.slashBuilder()
+                    .name(options.getFirst().getName())
+                    .autocomplete(isAutocomplete)
+                    .parent(lastIdentifier)
+                    .build();
         }
 
-        return builder.build();
+        return lastIdentifier;
     }
 
     private SlashCommandBuilder convertSlashCommand(SlashCommandDefinition def) {
         List<org.javacord.api.interaction.SlashCommandOption> options = new ArrayList<>();
-        SlashCommand cmd = def.getSlashCommand();
+        RootCommandIdentifier cmd = def.rootIdentifier();
         if (!def.isRootCommand()) {
             Arrays.stream(def.getSubCommands(null)).map(this::convertSubCommandDef).forEach(options::add);
             Arrays.stream(def.getSubCommandGroups()).map((x) -> convertSubCommandGroupDef(def, x)).forEach(options::add);
@@ -120,8 +124,8 @@ public class JavacordWrapper extends LibraryWrapper {
         return org.javacord.api.interaction.SlashCommand.with(cmd.name(), cmd.description(), options);
     }
 
-    private org.javacord.api.interaction.SlashCommandOption convertSubCommandGroupDef(SlashCommandDefinition def, SubCommandGroup subGroup) {
-        SubCommand[] subCommands = def.getSubCommands(subGroup.name());
+    private org.javacord.api.interaction.SlashCommandOption convertSubCommandGroupDef(SlashCommandDefinition def, SlashCommandIdentifier subGroup) {
+        SlashCommandIdentifier[] subCommands = def.getSubCommands(subGroup.name());
         List<org.javacord.api.interaction.SlashCommandOption> convertedSubCommands = Arrays.stream(subCommands).map(this::convertSubCommandDef).toList();
         return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
             org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, 
@@ -130,7 +134,7 @@ public class JavacordWrapper extends LibraryWrapper {
             convertedSubCommands);
     }
 
-    private org.javacord.api.interaction.SlashCommandOption convertSubCommandDef(SubCommand sub) {
+    private org.javacord.api.interaction.SlashCommandOption convertSubCommandDef(SlashCommandIdentifier sub) {
         List<org.javacord.api.interaction.SlashCommandOption> convertedOptions = Arrays.stream(sub.options()).map(this::convertOptionDef).toList();
         return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
             org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, 
@@ -155,7 +159,7 @@ public class JavacordWrapper extends LibraryWrapper {
 
     private List<org.javacord.api.interaction.SlashCommandOptionChoice> convertChoices(SlashCommandOption option) {
         List<org.javacord.api.interaction.SlashCommandOptionChoice> convertedChoices = new ArrayList<>();
-        for (SlashCommandOptionChoice choice : ExecutableSlashCommandDefinition.getActualChoices(option)) {
+        for (SlashCommandOptionChoice choice : SlashCommandDefinition.getActualChoices(option)) {
             SlashCommandOptionChoiceBuilder builder = new SlashCommandOptionChoiceBuilder();
             builder.setName(choice.name());
             if (choice.longValue() != Long.MAX_VALUE)
@@ -170,12 +174,6 @@ public class JavacordWrapper extends LibraryWrapper {
             convertedChoices.add(builder.build());
         }
         return convertedChoices;
-    }
-
-    @Override
-    public String getButtonId(Object context) {
-        ButtonInteraction button = (ButtonInteraction) context;
-        return button.getCustomId();
     }
 
     @Override

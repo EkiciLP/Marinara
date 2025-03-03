@@ -4,48 +4,34 @@ import java.lang.reflect.Method;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
-import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
+import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.SlashCommandParser;
 
 public class SlashCommandInteractionMethod extends InteractionMethod {
 
-    private ExecutableSlashCommandDefinition commandDefinition;
+    private SlashCommandIdentifier interactionIdentifier;
 
     SlashCommandInteractionMethod(Method method, InteractionHandler handler, Marinara marinara) {
         super(method, handler, marinara);
     }
 
     @Override
-    public AnnotationParser[] getParsers() {
+    public AnnotationParser[] parsers() {
         return new AnnotationParser[] { 
-            new SlashCommandParser(method, (x) -> { this.commandDefinition = x; } ) 
+            new SlashCommandParser(method, false, (x) -> { this.interactionIdentifier = x; } ) 
         };
     }
 
     @Override
     public Object getParameter(Object context, int index) {
-        return marinara.getWrapper().getContextObjectProvider().convertCommandOption(context, commandDefinition.options()[index].name());
+        return marinara.getWrapper().getContextObjectProvider().convertCommandOption(context, interactionIdentifier.options()[index].name());
     }
 
     @Override
-    public boolean canRun(Object context) {
-        ExecutableSlashCommandDefinition other = marinara.getWrapper().getCommandDefinition(context);
-        return commandDefinition.equals(other);
-    }
-
-    @Override
-    public InteractionType getType() {
-        return InteractionType.COMMAND;
-    }
-
-    public ExecutableSlashCommandDefinition getCommandDefinition() {
-        return commandDefinition;
-    }
-
-    public void setCommandDefinition(ExecutableSlashCommandDefinition commandDefinition) {
-        this.commandDefinition = commandDefinition;
+    public InteractionIdentifier identifier() {
+        return interactionIdentifier;
     }
 
 }

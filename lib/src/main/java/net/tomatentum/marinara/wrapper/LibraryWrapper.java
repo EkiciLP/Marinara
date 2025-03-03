@@ -5,8 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.ExecutableSlashCommandDefinition;
-import net.tomatentum.marinara.interaction.InteractionType;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 
 public abstract class LibraryWrapper {
 
@@ -27,12 +26,8 @@ public abstract class LibraryWrapper {
         interactionSubscriber.remove(consumer);
     }
 
-    public abstract InteractionType getInteractionType(Object context);
-
     public abstract void registerSlashCommands(SlashCommandDefinition[] defs); 
-    public abstract ExecutableSlashCommandDefinition getCommandDefinition(Object context);
-
-    public abstract String getButtonId(Object context);
+    public abstract InteractionIdentifier getInteractionIdentifier(Object context);
 
     public abstract ContextObjectProvider getContextObjectProvider();
 
