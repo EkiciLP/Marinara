@@ -1,7 +1,5 @@
 package net.tomatentum.marinara.wrapper.javacord;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,17 +12,13 @@ import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
-import org.javacord.api.interaction.SlashCommandOptionBuilder;
-import org.javacord.api.interaction.SlashCommandOptionChoiceBuilder;
-import org.javacord.api.interaction.SlashCommandOptionType;
+import org.javacord.api.interaction.SlashCommandOption;
+import org.javacord.api.interaction.SlashCommandOptionChoice;
 
 import net.tomatentum.marinara.interaction.InteractionType;
+import net.tomatentum.marinara.interaction.commands.CommandConverter;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
-import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
@@ -33,12 +27,15 @@ public class JavacordWrapper extends LibraryWrapper {
 
     private DiscordApi api;
     private JavacordContextObjectProvider contextObjectProvider;
+    private CommandConverter<SlashCommandBuilder, SlashCommandOption, SlashCommandOptionChoice> commandConverter;
     
     private Logger logger = LoggerUtil.getLogger(getClass());
 
     public JavacordWrapper(DiscordApi api) {
         this.api = api;
         this.contextObjectProvider = new JavacordContextObjectProvider();
+        this.commandConverter = CommandConverter.of(new JavacordConverterSpec());
+
         if (api != null)
             api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
         else
@@ -51,7 +48,7 @@ public class JavacordWrapper extends LibraryWrapper {
         HashMap<Long, Set<SlashCommandBuilder>> serverCommands = new HashMap<>();
         Set<SlashCommandBuilder> globalCommands = new HashSet<>();
         for (SlashCommandDefinition slashCommandDefinition : defs) {
-            SlashCommandBuilder builder = convertSlashCommand(slashCommandDefinition);
+            SlashCommandBuilder builder = commandConverter.convert(slashCommandDefinition);
             if (slashCommandDefinition.rootIdentifier().serverIds().length > 0) {
                 for (long serverId : slashCommandDefinition.rootIdentifier().serverIds()) {
                     serverCommands.putIfAbsent(serverId, new HashSet<>());
@@ -109,71 +106,6 @@ public class JavacordWrapper extends LibraryWrapper {
         }
 
         return lastIdentifier;
-    }
-
-    private SlashCommandBuilder convertSlashCommand(SlashCommandDefinition def) {
-        List<org.javacord.api.interaction.SlashCommandOption> options = new ArrayList<>();
-        RootCommandIdentifier cmd = def.rootIdentifier();
-        if (!def.isRootCommand()) {
-            Arrays.stream(def.getSubCommands(null)).map(this::convertSubCommandDef).forEach(options::add);
-            Arrays.stream(def.getSubCommandGroups()).map((x) -> convertSubCommandGroupDef(def, x)).forEach(options::add);
-        }else {
-            Arrays.stream(cmd.options()).map(this::convertOptionDef).forEach(options::add);
-        }
-
-        return org.javacord.api.interaction.SlashCommand.with(cmd.name(), cmd.description(), options);
-    }
-
-    private org.javacord.api.interaction.SlashCommandOption convertSubCommandGroupDef(SlashCommandDefinition def, SlashCommandIdentifier subGroup) {
-        SlashCommandIdentifier[] subCommands = def.getSubCommands(subGroup.name());
-        List<org.javacord.api.interaction.SlashCommandOption> convertedSubCommands = Arrays.stream(subCommands).map(this::convertSubCommandDef).toList();
-        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
-            org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND_GROUP, 
-            subGroup.name(), 
-            subGroup.description(), 
-            convertedSubCommands);
-    }
-
-    private org.javacord.api.interaction.SlashCommandOption convertSubCommandDef(SlashCommandIdentifier sub) {
-        List<org.javacord.api.interaction.SlashCommandOption> convertedOptions = Arrays.stream(sub.options()).map(this::convertOptionDef).toList();
-        return org.javacord.api.interaction.SlashCommandOption.createWithOptions(
-            org.javacord.api.interaction.SlashCommandOptionType.SUB_COMMAND, 
-            sub.name(), 
-            sub.description(), 
-            convertedOptions);
-    }
-
-    private org.javacord.api.interaction.SlashCommandOption convertOptionDef(SlashCommandOption option) {
-        SlashCommandOptionType type = SlashCommandOptionType.fromValue(option.type().getValue());
-        SlashCommandOptionBuilder builder = new SlashCommandOptionBuilder();
-        builder
-            .setType(type)
-            .setName(option.name())
-            .setDescription(option.description())
-            .setRequired(option.required())
-            .setAutocompletable(option.autocomplete())
-            .setChoices(convertChoices(option));
-        
-        return builder.build();
-    }
-
-    private List<org.javacord.api.interaction.SlashCommandOptionChoice> convertChoices(SlashCommandOption option) {
-        List<org.javacord.api.interaction.SlashCommandOptionChoice> convertedChoices = new ArrayList<>();
-        for (SlashCommandOptionChoice choice : SlashCommandDefinition.getActualChoices(option)) {
-            SlashCommandOptionChoiceBuilder builder = new SlashCommandOptionChoiceBuilder();
-            builder.setName(choice.name());
-            if (choice.longValue() != Long.MAX_VALUE)
-                builder.setValue(choice.longValue());
-            /*
-            not yet available
-            if (choice.doubleValue() != Double.MAX_VALUE)
-                builder.setValue(choice.doubleValue());
-            */
-            if (!choice.stringValue().isEmpty())
-                builder.setValue(choice.stringValue());
-            convertedChoices.add(builder.build());
-        }
-        return convertedChoices;
     }
 
     @Override
