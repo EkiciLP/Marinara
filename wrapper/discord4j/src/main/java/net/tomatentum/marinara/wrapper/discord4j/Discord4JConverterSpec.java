@@ -6,11 +6,11 @@ import discord4j.core.object.command.ApplicationCommandOption.Type;
 import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
-import net.tomatentum.marinara.interaction.commands.CommandConverter;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
+import net.tomatentum.marinara.wrapper.CommandConverter;
 
 public class Discord4JConverterSpec implements CommandConverter.Spec<ApplicationCommandRequest, ApplicationCommandOptionData, ApplicationCommandOptionChoiceData> {
 

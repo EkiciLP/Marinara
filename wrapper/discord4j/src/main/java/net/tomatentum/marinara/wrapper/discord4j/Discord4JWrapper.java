@@ -19,10 +19,10 @@ import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.commands.CommandConverter;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
+import net.tomatentum.marinara.wrapper.CommandConverter;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 

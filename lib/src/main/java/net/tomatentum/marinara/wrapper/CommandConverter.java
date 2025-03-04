@@ -1,9 +1,10 @@
-package net.tomatentum.marinara.interaction.commands;
+package net.tomatentum.marinara.wrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;

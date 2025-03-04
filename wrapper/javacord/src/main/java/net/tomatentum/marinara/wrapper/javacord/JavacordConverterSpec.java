@@ -10,9 +10,9 @@ import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.javacord.api.interaction.SlashCommandOptionChoiceBuilder;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
-import net.tomatentum.marinara.interaction.commands.CommandConverter;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
+import net.tomatentum.marinara.wrapper.CommandConverter;
 
 public class JavacordConverterSpec implements CommandConverter.Spec<SlashCommandBuilder, SlashCommandOption, SlashCommandOptionChoice> {
 
