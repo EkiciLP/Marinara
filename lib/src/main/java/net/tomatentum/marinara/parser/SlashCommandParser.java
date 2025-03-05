@@ -37,9 +37,8 @@ public class SlashCommandParser implements AnnotationParser {
             .name(cmd.name())
             .description(cmd.description())
             .options(cmd.options())
-            .autocomplete(isAutoComplete)
             .serverIds(cmd.serverIds())
-            .build();
+            .build(isAutoComplete);
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
             SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
@@ -57,8 +56,7 @@ public class SlashCommandParser implements AnnotationParser {
                 .name(subCmd.name())
                 .description(subCmd.description())
                 .options(subCmd.options())
-                .autocomplete(isAutoComplete)
-                .build();
+                .build(isAutoComplete);
         }
 
         logger.trace("Parsed using SlashCommandParser for method {} with the result:\n{}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());

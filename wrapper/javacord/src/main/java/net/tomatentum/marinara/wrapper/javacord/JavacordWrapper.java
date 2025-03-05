@@ -2,26 +2,23 @@ package net.tomatentum.marinara.wrapper.javacord;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.interaction.AutocompleteInteraction;
-import org.javacord.api.interaction.ButtonInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
-import org.javacord.api.interaction.SlashCommandInteraction;
-import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.javacord.api.interaction.SlashCommandOption;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 
-import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.wrapper.CommandConverter;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
+import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
+import net.tomatentum.marinara.wrapper.javacord.identifierconverter.AutocompleteIdentifierConverter;
+import net.tomatentum.marinara.wrapper.javacord.identifierconverter.ButtonIdentifierConverter;
+import net.tomatentum.marinara.wrapper.javacord.identifierconverter.SlashCommandIdentifierConverter;
 
 public class JavacordWrapper extends LibraryWrapper {
 
@@ -65,47 +62,12 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public InteractionIdentifier getInteractionIdentifier(Object context) {
-        if (context instanceof ButtonInteraction) {
-            ButtonInteraction button = (ButtonInteraction) context;
-            return InteractionIdentifier.builder().name(button.getCustomId()).type(InteractionType.BUTTON).build();
-        }
-
-        if (!(context instanceof SlashCommandInteraction))
-            return null;
-
-        boolean isAutocomplete = false;
-
-        if (context instanceof AutocompleteInteraction)
-            isAutocomplete = true;
-
-        SlashCommandInteraction interaction = (SlashCommandInteraction) context;
-        InteractionIdentifier lastIdentifier = InteractionIdentifier.rootBuilder()
-            .name(interaction.getCommandName())
-            .autocomplete(isAutocomplete)
-            .build();
-        List<SlashCommandInteractionOption> options = interaction.getOptions();
-        if (!options.isEmpty()) {
-            if (!options.getFirst().getArguments().isEmpty()) {
-                lastIdentifier = InteractionIdentifier.builder()
-                    .name(options.getFirst().getName())
-                    .type(isAutocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND)
-                    .parent(lastIdentifier)
-                    .build();
-                lastIdentifier = InteractionIdentifier.slashBuilder()
-                    .name(options.getFirst().getOptions().getFirst().getName())
-                    .autocomplete(isAutocomplete)
-                    .parent(lastIdentifier)
-                    .build();
-            }else
-                lastIdentifier = InteractionIdentifier.slashBuilder()
-                    .name(options.getFirst().getName())
-                    .autocomplete(isAutocomplete)
-                    .parent(lastIdentifier)
-                    .build();
-        }
-
-        return lastIdentifier;
+    public IdentifierProvider createIdentifierProvider() {
+        return IdentifierProvider.of(
+            new SlashCommandIdentifierConverter(),
+            new AutocompleteIdentifierConverter(),
+            new ButtonIdentifierConverter()
+        );
     }
 
     @Override

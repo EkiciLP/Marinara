@@ -8,9 +8,6 @@ import java.util.function.Function;
 import org.apache.logging.log4j.Logger;
 
 import discord4j.core.GatewayDiscordClient;
-import discord4j.core.event.domain.interaction.ButtonInteractionEvent;
-import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
-import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption.Type;
@@ -18,13 +15,15 @@ import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandOptionData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.CommandConverter;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
+import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
+import net.tomatentum.marinara.wrapper.discord4j.identifierconverter.AutocompleteIdentifierConverter;
+import net.tomatentum.marinara.wrapper.discord4j.identifierconverter.ButtonIdentifierConverter;
+import net.tomatentum.marinara.wrapper.discord4j.identifierconverter.SlashCommandIdentifierConverter;
 
 public class Discord4JWrapper extends LibraryWrapper {
 
@@ -82,49 +81,12 @@ public class Discord4JWrapper extends LibraryWrapper {
     }
 
     @Override
-    public InteractionIdentifier getInteractionIdentifier(Object context) {
-
-        if (context instanceof ButtonInteractionEvent) {
-            ButtonInteractionEvent interaction = (ButtonInteractionEvent) context;
-            return InteractionIdentifier.builder().name(interaction.getCustomId()).type(InteractionType.BUTTON).build();
-        }
-
-        List<ApplicationCommandInteractionOption> options;
-        String commandName;
-        boolean isAutocomplete = false;
-
-        if (context instanceof ChatInputInteractionEvent) {
-            ChatInputInteractionEvent interaction = (ChatInputInteractionEvent) context;
-            options = SUB_FILTER.apply(interaction.getOptions());
-            commandName = interaction.getCommandName();
-        }else if (context instanceof ChatInputAutoCompleteEvent) {
-            ChatInputAutoCompleteEvent interaction = (ChatInputAutoCompleteEvent) context;
-            options = SUB_FILTER.apply(interaction.getOptions());
-            commandName = interaction.getCommandName();
-            isAutocomplete = true;
-        }else
-            return null;
-
-        InteractionIdentifier last = InteractionIdentifier.slashBuilder().name(commandName).autocomplete(isAutocomplete).build();
-
-        if (!options.isEmpty()) {
-            List<ApplicationCommandInteractionOption> sub_options = SUB_FILTER.apply(options.getFirst().getOptions());
-            if (!sub_options.isEmpty()) {
-                last = InteractionIdentifier.builder()
-                    .name(options.getFirst().getName())
-                    .type(isAutocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND)
-                    .parent(last).build();
-                last = InteractionIdentifier.slashBuilder()
-                    .name(sub_options.getFirst().getName())
-                    .autocomplete(isAutocomplete)
-                    .parent(last).build();
-            }else
-                last = InteractionIdentifier.slashBuilder()
-                    .name(options.getFirst().getName())
-                    .autocomplete(isAutocomplete)
-                    .parent(last).build();
-        }
-        return last;
+    public IdentifierProvider createIdentifierProvider() {
+        return IdentifierProvider.of(
+            new SlashCommandIdentifierConverter(),
+            new AutocompleteIdentifierConverter(),
+            new ButtonIdentifierConverter()
+        );
     }
 
     @Override

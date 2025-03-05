@@ -1,5 +1,6 @@
 package net.tomatentum.marinara.interaction.ident;
 
+import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 
 public class RootCommandIdentifier extends SlashCommandIdentifier {
@@ -10,10 +11,10 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
             InteractionIdentifier parent, 
             String name, 
             String description, 
+            InteractionType type,
             SlashCommandOption[] options, 
-            boolean isAutocomplete,
             long[] serverIds) {
-        super(parent, name, description, options, isAutocomplete);
+        super(parent, name, description, type, options);
         this.serverIds = serverIds;
     }
 
@@ -26,7 +27,6 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
         private String name;
         private String description;
         private SlashCommandOption[] options;
-        private boolean isAutocomplete = false;
         private long[] serverIds;
 
 
@@ -66,15 +66,6 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
             return this;
         }
 
-        public boolean autocomplete() {
-            return this.isAutocomplete;
-        }
-
-        public Builder autocomplete(boolean isAutocomplete) {
-            this.isAutocomplete = isAutocomplete;
-            return this;
-        }
-
         public long[] serverIds() {
             return this.serverIds;
         }
@@ -84,8 +75,14 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
             return this;
         }
 
-        public SlashCommandIdentifier build() {
-            return new RootCommandIdentifier(parent, name, description, options, isAutocomplete, serverIds);
+        public SlashCommandIdentifier build(boolean autocomplete) {
+            return new RootCommandIdentifier(
+                parent, 
+                name, 
+                description, 
+                autocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND, 
+                options, 
+                serverIds);
         }
 
     }

@@ -16,17 +16,19 @@ import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
-import net.tomatentum.marinara.wrapper.LibraryWrapper;
+import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
 
 public class InteractionRegistry {
     private Logger logger = LoggerUtil.getLogger(getClass());
     private Set<InteractionEntry> interactions;
     private Marinara marinara;
+    private IdentifierProvider identifierProvider;
 
     public InteractionRegistry(Marinara marinara) {
         this.interactions = new HashSet<>();
         this.marinara = marinara;
+        this.identifierProvider = marinara.getWrapper().createIdentifierProvider();
         marinara.getWrapper().subscribeInteractions(this::handle);
     }
 
@@ -74,9 +76,8 @@ public class InteractionRegistry {
 
     public void handle(Object context) {
         logger.debug("Received {} interaction ", context);
-        LibraryWrapper wrapper = marinara.getWrapper();
         interactions.forEach((e) -> {
-            if (wrapper.getInteractionIdentifier(context).equals(e.identifier())) {
+            if (this.identifierProvider.provide(context).equals(e.identifier())) {
                 logger.info("Running {} interaction using {}\ncontext: {}", e.type(), e.toString(), context.toString());
                 e.runAll(context);
             }

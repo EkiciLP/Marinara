@@ -11,10 +11,10 @@ public class SlashCommandIdentifier extends InteractionIdentifier {
             InteractionIdentifier parent, 
             String name, 
             String description,
-            SlashCommandOption[] options,
-            boolean isAutocomplete
+            InteractionType type,
+            SlashCommandOption[] options
             ) {
-        super(parent, name, description, isAutocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND);
+        super(parent, name, description, type);
         this.options = options;
     }
 
@@ -27,7 +27,6 @@ public class SlashCommandIdentifier extends InteractionIdentifier {
         private String name;
         private String description;
         private SlashCommandOption[] options;
-        private boolean isAutocomplete = false;
 
         public InteractionIdentifier parent() {
             return parent;
@@ -65,17 +64,13 @@ public class SlashCommandIdentifier extends InteractionIdentifier {
             return this;
         }
 
-        public boolean autocomplete() {
-            return this.isAutocomplete;
-        }
-
-        public Builder autocomplete(boolean isAutocomplete) {
-            this.isAutocomplete = isAutocomplete;
-            return this;
-        }
-
-        public SlashCommandIdentifier build() {
-            return new SlashCommandIdentifier(parent, name, description, options, isAutocomplete);
+        public SlashCommandIdentifier build(boolean autocomplete) {
+            return new SlashCommandIdentifier(
+                parent, 
+                name, 
+                description, 
+                autocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND, 
+                options);
         }
 
     }

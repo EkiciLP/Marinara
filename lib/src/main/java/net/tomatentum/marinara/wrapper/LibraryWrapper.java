@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
-import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 
 public abstract class LibraryWrapper {
 
     private List<Consumer<Object>> interactionSubscriber;
 
     protected LibraryWrapper() {
-        interactionSubscriber = new ArrayList<>();
+        this.interactionSubscriber = new ArrayList<>();
     }
 
     public void handleInteraction(Object context) {
@@ -27,8 +26,8 @@ public abstract class LibraryWrapper {
     }
 
     public abstract void registerSlashCommands(SlashCommandDefinition[] defs); 
-    public abstract InteractionIdentifier getInteractionIdentifier(Object context);
-
+    
+    public abstract IdentifierProvider createIdentifierProvider();
     public abstract ContextObjectProvider getContextObjectProvider();
 
 }
