@@ -1,6 +1,7 @@
 package net.tomatentum.marinara.registry;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -57,7 +58,7 @@ public class InteractionRegistry {
             .toList();
 
         SlashCommandDefinition[] defs = new ObjectAggregator<InteractionIdentifier, RootCommandIdentifier, SlashCommandDefinition>(
-            i -> (RootCommandIdentifier)i.rootNode(),
+            i -> Arrays.asList((RootCommandIdentifier)i.rootNode()),
             SlashCommandDefinition::addIdentifier,
             SlashCommandDefinition::new)
             .aggregate(slashIdentifiers)
