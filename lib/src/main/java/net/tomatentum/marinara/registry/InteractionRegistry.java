@@ -1,7 +1,6 @@
 package net.tomatentum.marinara.registry;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -13,9 +12,10 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
-import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
+import net.tomatentum.marinara.util.ObjectAggregator;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
 
@@ -51,26 +51,19 @@ public class InteractionRegistry {
     }
 
     public void registerCommands() {
-        List<SlashCommandDefinition> defs = new ArrayList<>();
-        List<SlashCommandIdentifier> slashIdentifiers = interactions.stream()
+        List<InteractionIdentifier> slashIdentifiers = interactions.stream()
             .filter((x) -> x.type().equals(InteractionType.COMMAND))
-            .map((x) -> (SlashCommandIdentifier)x.identifier())
+            .map((x) -> x.identifier())
             .toList();
 
-        slashIdentifiers.forEach((ident) -> {
-            Optional<SlashCommandDefinition> appDef = defs.stream()
-                .filter((x) -> x.rootIdentifier().equals(ident.rootNode()))
-                .findFirst();
+        SlashCommandDefinition[] defs = new ObjectAggregator<InteractionIdentifier, RootCommandIdentifier, SlashCommandDefinition>(
+            i -> (RootCommandIdentifier)i.rootNode(),
+            SlashCommandDefinition::addIdentifier,
+            SlashCommandDefinition::new)
+            .aggregate(slashIdentifiers)
+            .toArray(SlashCommandDefinition[]::new);
 
-            if (appDef.isPresent())
-                appDef.get().addIdentifier(ident);
-            else
-                defs.add(
-                    new SlashCommandDefinition((RootCommandIdentifier) ident.rootNode())
-                        .addIdentifier(ident));
-        });
-
-        marinara.getWrapper().registerSlashCommands(defs.toArray(SlashCommandDefinition[]::new));
+        marinara.getWrapper().registerSlashCommands(defs);
         logger.info("Registered all SlashCommands");
     }
 
