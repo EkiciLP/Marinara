@@ -1,17 +1,11 @@
 package net.tomatentum.marinara.wrapper.javacord;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommandBuilder;
-import org.javacord.api.interaction.SlashCommandOption;
-import org.javacord.api.interaction.SlashCommandOptionChoice;
 
-import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.wrapper.CommandConverter;
+import net.tomatentum.marinara.wrapper.CommandRegisterer;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.util.LoggerUtil;
@@ -22,16 +16,15 @@ import net.tomatentum.marinara.wrapper.javacord.identifierconverter.SlashCommand
 
 public class JavacordWrapper extends LibraryWrapper {
 
-    private DiscordApi api;
     private JavacordContextObjectProvider contextObjectProvider;
-    private CommandConverter<SlashCommandBuilder, SlashCommandOption, SlashCommandOptionChoice> commandConverter;
+    private CommandRegisterer<SlashCommandBuilder> commandRegisterer;
     
     private Logger logger = LoggerUtil.getLogger(getClass());
 
     public JavacordWrapper(DiscordApi api) {
-        this.api = api;
         this.contextObjectProvider = new JavacordContextObjectProvider();
-        this.commandConverter = CommandConverter.of(new JavacordConverterSpec());
+        var converter = CommandConverter.of(new JavacordConverterSpec());
+        this.commandRegisterer = CommandRegisterer.of(new JavacordRegistererStrategy(api), converter);
 
         if (api != null)
             api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
@@ -41,24 +34,8 @@ public class JavacordWrapper extends LibraryWrapper {
     }
 
     @Override
-    public void registerSlashCommands(SlashCommandDefinition[] defs) {
-        HashMap<Long, Set<SlashCommandBuilder>> serverCommands = new HashMap<>();
-        Set<SlashCommandBuilder> globalCommands = new HashSet<>();
-        for (SlashCommandDefinition slashCommandDefinition : defs) {
-            SlashCommandBuilder builder = commandConverter.convert(slashCommandDefinition);
-            if (slashCommandDefinition.rootIdentifier().serverIds().length > 0) {
-                for (long serverId : slashCommandDefinition.rootIdentifier().serverIds()) {
-                    serverCommands.putIfAbsent(serverId, new HashSet<>());
-                    serverCommands.get(serverId).add(builder);
-                }
-            }else
-                globalCommands.add(builder);
-        }
-
-        for (long serverId : serverCommands.keySet()) {
-            api.bulkOverwriteServerApplicationCommands(serverId, serverCommands.get(serverId));
-        }
-        api.bulkOverwriteGlobalApplicationCommands(globalCommands);
+    public CommandRegisterer<?> getRegisterer() {
+        return this.commandRegisterer;
     }
 
     @Override
