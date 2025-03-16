@@ -95,6 +95,10 @@ public class SlashCommandDefinition {
         return this.rootIdentifier().equals(other.rootIdentifier());
     }
 
+    public long[] serverIds() {
+        return rootIdentifier().serverIds();
+    }
+
     public Set<InteractionIdentifier> entries() {
         return this.entries;
     }
