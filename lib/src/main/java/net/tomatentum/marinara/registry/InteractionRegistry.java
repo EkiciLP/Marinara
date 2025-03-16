@@ -40,11 +40,12 @@ public class InteractionRegistry {
         for (Method method : interactionHandler.getClass().getMethods()) {
             InteractionMethod iMethod = InteractionMethod.create(method, interactionHandler, marinara);
             if (iMethod != null) {
-                Optional<InteractionEntry> entry = this.interactions.stream().filter(iMethod::equals).findFirst();
-                if (entry.isEmpty()) {
-                    interactions.add(new InteractionEntry(iMethod.identifier()).addMethod(iMethod));
-                }else
-                    entry.get().addMethod(iMethod);
+                Optional<InteractionEntry> oentry = this.interactions.stream()
+                    .filter(i -> i.identifier().equals(iMethod.identifier()))
+                    .findFirst();
+
+                InteractionEntry entry = oentry.orElse(new InteractionEntry(iMethod.identifier())).addMethod(iMethod);
+                if (oentry.isEmpty()) this.interactions.add(entry);
                 logger.debug("Added {} method from {}", iMethod.method().getName(), interactionHandler.getClass().getSimpleName());
             }
         }
