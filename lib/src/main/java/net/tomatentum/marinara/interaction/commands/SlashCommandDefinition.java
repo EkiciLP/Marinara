@@ -66,13 +66,13 @@ public class SlashCommandDefinition {
             .map(x -> x.parent())
             .toList();
 
-        return InteractionIdentifier.distinct(subCommandGroups).toArray(SlashCommandIdentifier[]::new);
+        return subCommandGroups.toArray(SlashCommandIdentifier[]::new);
     }
 
     public SlashCommandIdentifier[] getSubCommands() {
         if (isRootCommand)
             return null;
-        return InteractionIdentifier.distinct(entries.stream().filter(x -> x.parent() instanceof RootCommandIdentifier).toList()).toArray(SlashCommandIdentifier[]::new);
+        return entries.stream().filter(x -> x.parent() instanceof RootCommandIdentifier).toArray(SlashCommandIdentifier[]::new);
     }
 
     public SlashCommandIdentifier[] getSubCommands(String groupName) {
@@ -84,7 +84,7 @@ public class SlashCommandDefinition {
             .map(x -> x.parent().parent())
             .toList();
 
-        return InteractionIdentifier.distinct(subCommands).toArray(SlashCommandIdentifier[]::new);
+        return subCommands.toArray(SlashCommandIdentifier[]::new);
     }
 
     @Override

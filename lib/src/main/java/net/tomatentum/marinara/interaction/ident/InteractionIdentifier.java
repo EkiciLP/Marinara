@@ -1,8 +1,5 @@
 package net.tomatentum.marinara.interaction.ident;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import net.tomatentum.marinara.interaction.InteractionType;
@@ -36,20 +33,6 @@ public class InteractionIdentifier {
         if (receiver.description().isBlank())
             receiver.description = provider.description();
         tryAddDescriptions(receiver.parent(), provider.parent());
-    }
-    
-    /*
-     * TODO: Might not be the best solution. Propagating to future
-     * returns only one Identifier per name and takes the first present description
-     */
-    public static Collection<InteractionIdentifier> distinct(List<InteractionIdentifier> identifiers) {
-        HashMap<String, InteractionIdentifier> distinctIdentifiers = new HashMap<>();
-        identifiers.forEach((x) -> {
-            InteractionIdentifier current = distinctIdentifiers.get(x.name());
-            if (current == null || (current.description().isBlank() && !x.description().isBlank()))
-                distinctIdentifiers.put(x.name(), x);
-        });
-        return distinctIdentifiers.values();
     }
 
     private InteractionIdentifier parent;
