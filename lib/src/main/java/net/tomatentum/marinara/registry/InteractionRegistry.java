@@ -64,7 +64,7 @@ public class InteractionRegistry {
             .aggregate(slashIdentifiers)
             .toArray(SlashCommandDefinition[]::new);
 
-        marinara.getWrapper().registerSlashCommands(defs);
+        marinara.getWrapper().getRegisterer().register(defs);
         logger.info("Registered all SlashCommands");
     }
 
