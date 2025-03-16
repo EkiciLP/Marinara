@@ -41,12 +41,12 @@ public class Discord4JWrapper extends LibraryWrapper {
     public Discord4JWrapper(GatewayDiscordClient api) {
         this.contextObjectProvider = new Discord4JContextObjectProvider();
         var converter = CommandConverter.of(new Discord4JConverterSpec());
-        this.commandRegisterer = CommandRegisterer.of(new Discord4JRegistererStrategy(api), converter);
 
-        if (api != null)
+        if (api != null) {
+            this.commandRegisterer = CommandRegisterer.of(new Discord4JRegistererStrategy(api), converter);
             api.on(InteractionCreateEvent.class)
                 .subscribe(event -> handleInteraction(event));
-        else
+        }else
             logger.warn("GatewayDiscordClient was null so no Events were subscribed to.");
             
         logger.info("Discord4J wrapper loaded!");

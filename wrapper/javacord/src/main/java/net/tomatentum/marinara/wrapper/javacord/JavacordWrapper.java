@@ -24,11 +24,11 @@ public class JavacordWrapper extends LibraryWrapper {
     public JavacordWrapper(DiscordApi api) {
         this.contextObjectProvider = new JavacordContextObjectProvider();
         var converter = CommandConverter.of(new JavacordConverterSpec());
-        this.commandRegisterer = CommandRegisterer.of(new JavacordRegistererStrategy(api), converter);
 
-        if (api != null)
+        if (api != null) {
+            this.commandRegisterer = CommandRegisterer.of(new JavacordRegistererStrategy(api), converter);
             api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
-        else
+        }else
             logger.warn("DiscordApi was null so no Events were subscribed to.");
         logger.info("Javacord wrapper loaded!");
     }
