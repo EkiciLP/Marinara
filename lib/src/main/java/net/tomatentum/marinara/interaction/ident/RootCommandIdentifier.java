@@ -1,0 +1,90 @@
+package net.tomatentum.marinara.interaction.ident;
+
+import net.tomatentum.marinara.interaction.InteractionType;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
+
+public class RootCommandIdentifier extends SlashCommandIdentifier {
+
+    private long[] serverIds;
+
+    public RootCommandIdentifier(
+            InteractionIdentifier parent, 
+            String name, 
+            String description, 
+            InteractionType type,
+            SlashCommandOption[] options, 
+            long[] serverIds) {
+        super(parent, name, description, type, options);
+        this.serverIds = serverIds;
+    }
+
+    public long[] serverIds() {
+        return serverIds;
+    }
+
+    public static class Builder {
+        private InteractionIdentifier parent;
+        private String name;
+        private String description;
+        private SlashCommandOption[] options;
+        private long[] serverIds;
+
+
+        public InteractionIdentifier parent() {
+            return parent;
+        }
+
+        public Builder parent(InteractionIdentifier parent) {
+            this.parent = parent;
+            return this;
+        }
+
+        public String name() {
+            return name;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public String description() {
+            return this.description;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public SlashCommandOption[] options() {
+            return this.options;
+        }
+
+        public Builder options(SlashCommandOption[] options) {
+            this.options = options;
+            return this;
+        }
+
+        public long[] serverIds() {
+            return this.serverIds;
+        }
+
+        public Builder serverIds(long[] serverIds) {
+            this.serverIds = serverIds;
+            return this;
+        }
+
+        public SlashCommandIdentifier build(boolean autocomplete) {
+            return new RootCommandIdentifier(
+                parent, 
+                name, 
+                description, 
+                autocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND, 
+                options, 
+                serverIds);
+        }
+
+    }
+    
+}

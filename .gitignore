@@ -6,3 +6,4 @@ build
 .vscode
 lib/bin
 wrapper/javacord/bin
+wrapper/discord4j/bin

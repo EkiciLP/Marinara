@@ -1,99 +1,110 @@
 package net.tomatentum.marinara.interaction.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
+import org.apache.logging.log4j.Logger;
+
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption.PlaceHolderEnum;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
+import net.tomatentum.marinara.interaction.commands.choice.EnumChoices;
+import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
+import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
+import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
+import net.tomatentum.marinara.util.LoggerUtil;
 
 public class SlashCommandDefinition {
-    private List<ExecutableSlashCommandDefinition> executableDefinitons;
-    private SlashCommand slashCommand;
-    private boolean isRootCommand;
 
-    public SlashCommandDefinition(SlashCommand applicationCommand) {
-        this.executableDefinitons = new ArrayList<>();
-        this.slashCommand = applicationCommand;
+    public static SlashCommandOptionChoice[] getActualChoices(SlashCommandOption option) {
+        SlashCommandOptionChoice[] choices = option.choices();
+        if (choices.length <= 0 && !option.choiceEnum().equals(PlaceHolderEnum.class))
+            choices = EnumChoices.of(option.choiceEnum()).choices();
+        return choices;
     }
 
-    public SlashCommandDefinition addExecutableCommand(ExecutableSlashCommandDefinition def) {
-        if (def.applicationCommand() != null) {
-            if (slashCommand == null)
-                this.slashCommand = def.applicationCommand();
-            if (!this.slashCommand.name().equals(def.applicationCommand().name()))
-                throw new IllegalArgumentException(def + ": has a non matching Application Command description. Please edit it to equal all other descriptions or remove it to use other definitions descriptions");
-        }
+    private Set<InteractionIdentifier> entries;
+    private RootCommandIdentifier rootIdentifier;
+    private boolean isRootCommand;
 
-        if (executableDefinitons.isEmpty())
-            this.isRootCommand = def.isRootCommand();
+    private Logger logger = LoggerUtil.getLogger(getClass());
 
-        if ((isRootCommand && !def.isRootCommand()) || (!isRootCommand && def.isRootCommand())) {
-            throw new IllegalArgumentException(def + ": cannot have subcommands and rootcommand definitions together");
+    public SlashCommandDefinition(RootCommandIdentifier rootIdentifier) {
+        this.entries = new HashSet<>();
+        this.rootIdentifier = rootIdentifier;
+        this.isRootCommand = false;
+    }
+
+    public SlashCommandDefinition addIdentifier(InteractionIdentifier identifier) {
+        RootCommandIdentifier rootIdentifier = (RootCommandIdentifier) identifier.rootNode();
+
+        if (!this.rootIdentifier.equals(rootIdentifier))
+            throw new IllegalArgumentException("Root Node did not match.");
+
+        if (this.rootIdentifier.description() == null)
+            this.rootIdentifier = rootIdentifier;
+
+        if (!isRootCommand)
+            this.isRootCommand = identifier.parent() == null ? true : false;
+
+        if ((isRootCommand && identifier.parent() != null) || (!isRootCommand && identifier.parent() == null)) {
+            throw new IllegalArgumentException(identifier.toString() + ": cannot have subcommands and rootcommand definitions together");
         }
         
-        executableDefinitons.add(def);
+        entries.add(identifier);
+        this.logger.debug("Added identifer {} to command {}", identifier, rootIdentifier);
         return this;
     }
 
-    public SubCommandGroup[] getSubCommandGroups() {
-        List<SubCommandGroup> subCommandGroups = Arrays.stream(getExecutableDefinitons())
-            .filter((x) -> x.subCommandGroup() != null)
-            .map((x) -> x.subCommandGroup())
-            .toList();
-
-        HashMap<String, SubCommandGroup> subCommandGroupMap = new HashMap<>();
-        subCommandGroups.forEach((x) -> {
-            SubCommandGroup current = subCommandGroupMap.get(x.name());
-            if (current == null || (current.description().isBlank() && !x.description().isBlank()))
-                subCommandGroupMap.put(x.name(), x);
-        });
-
-        return subCommandGroupMap.values().toArray(new SubCommandGroup[0]);
-    }
-
-    public SubCommand[] getSubCommands(String groupName) {
-        List<SubCommand> subCommands;
-        if (groupName == null)
-            subCommands = Arrays.stream(getExecutableDefinitons())
-            .filter((x) -> x.subCommandGroup() == null && x.subCommand() != null)
-            .map((x) -> x.subCommand())
-            .toList();
-        else 
-            subCommands = Arrays.stream(getExecutableDefinitons())
-            .filter((x) -> x.subCommandGroup().name().equals(groupName) && x.subCommand() != null)
-            .map((x) -> x.subCommand())
-            .toList();
+    public SlashCommandIdentifier[] getSubCommandGroups() {
+        if (isRootCommand)
+            return null;
         
-        HashMap<String, SubCommand> subCommandMap = new HashMap<>();
-        subCommands.forEach((x) -> {
-            SubCommand current = subCommandMap.get(x.name());
-            if (current == null || (current.description().isBlank() && !x.description().isBlank()))
-                subCommandMap.put(x.name(), x);
-        });
+        List<InteractionIdentifier> subCommandGroups = entries().stream()
+            .filter(x -> x.parent().parent() != null)
+            .map(x -> x.parent())
+            .toList();
 
-        return subCommandMap.values().toArray(new SubCommand[0]);
+        return subCommandGroups.toArray(SlashCommandIdentifier[]::new);
     }
 
-    public SlashCommand getFullSlashCommand() {
-        if (isRootCommand())
-            return getSlashCommand();
-        for (ExecutableSlashCommandDefinition executableSlashCommandDefinition : executableDefinitons) {
-            if (executableSlashCommandDefinition.options().length > 0)
-                return executableSlashCommandDefinition.applicationCommand();
-        }
-
-        return null;
+    public SlashCommandIdentifier[] getSubCommands() {
+        if (isRootCommand)
+            return null;
+        return entries.stream().filter(x -> x.parent() instanceof RootCommandIdentifier).toArray(SlashCommandIdentifier[]::new);
     }
 
-    public SlashCommand getSlashCommand() {
-        return slashCommand;
+    public SlashCommandIdentifier[] getSubCommands(String groupName) {
+        if (isRootCommand)
+            return null;
+
+        List<InteractionIdentifier> subCommands = entries().stream()
+            .filter(x -> x.parent().parent() != null && x.parent().name().equals(groupName))
+            .map(x -> x.parent().parent())
+            .toList();
+
+        return subCommands.toArray(SlashCommandIdentifier[]::new);
     }
 
-    public ExecutableSlashCommandDefinition[] getExecutableDefinitons() {
-        return executableDefinitons.toArray(new ExecutableSlashCommandDefinition[0]);
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof SlashCommandDefinition))
+            return false;
+        SlashCommandDefinition other = (SlashCommandDefinition) obj;
+        return this.rootIdentifier().equals(other.rootIdentifier());
+    }
+
+    public long[] serverIds() {
+        return rootIdentifier().serverIds();
+    }
+
+    public Set<InteractionIdentifier> entries() {
+        return this.entries;
+    }
+
+    public RootCommandIdentifier rootIdentifier() {
+        return rootIdentifier;
     }
 
     public boolean isRootCommand() {
