@@ -1,21 +1,14 @@
 package net.tomatentum.marinara.util;
 
-import java.util.Properties;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.simple.SimpleLogger;
-import org.apache.logging.log4j.util.PropertiesUtil;
-import org.apache.logging.log4j.util.ProviderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLoggerFactory;
 
 public class LoggerUtil {
     public static Logger getLogger(String name) {
-        if (ProviderUtil.hasProviders()) {
-            return LogManager.getLogger(name);
-        }else
-            return new SimpleLogger(name, Level.DEBUG, true, false, true, true, "yyyy-MM-dd HH:mm:ss.SSSZ", null,
-                                                 new PropertiesUtil(new Properties()), System.out);
+        if (LoggerFactory.getILoggerFactory() instanceof NOPLoggerFactory)
+            return new SimpleLogger(name);
+        return LoggerFactory.getLogger(name);
     }
 
     public static Logger getLogger(Class<?> clazz) {

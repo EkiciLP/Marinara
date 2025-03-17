@@ -1,6 +1,6 @@
 package net.tomatentum.marinara;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.registry.InteractionCheckRegistry;
 import net.tomatentum.marinara.registry.InteractionRegistry;

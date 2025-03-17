@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.checks.AppliedCheck;
 import net.tomatentum.marinara.checks.InteractionCheck;

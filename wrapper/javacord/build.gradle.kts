@@ -21,7 +21,7 @@ dependencies {
     testImplementation(libs.mockito)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation(libs.log4j)
+    implementation(libs.slf4j)
     implementation(libs.javacord)
     implementation(libs.geantyref)
     implementation(project(":lib"))

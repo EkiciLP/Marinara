@@ -3,7 +3,7 @@ package net.tomatentum.marinara.parser;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
@@ -59,7 +59,7 @@ public class SlashCommandParser implements AnnotationParser {
                 .build(isAutoComplete);
         }
 
-        logger.trace("Parsed using SlashCommandParser for method {} with the result:\n{}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());
+        logger.trace("Parsed using SlashCommandParser for method {} with the result: {}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());
         consumer.accept((SlashCommandIdentifier) lastIdentifier);
     }
 

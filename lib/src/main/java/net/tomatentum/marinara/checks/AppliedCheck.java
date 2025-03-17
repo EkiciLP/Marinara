@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ReflectionUtil;
@@ -27,7 +27,7 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
             logger.debug("Pre Check {} {} with context {}", check.getClass().getName(), result ? "succeeded" : "failed", context.toString());
             return result;
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
-            logger.fatal(e);
+            logger.error("Failed executing pre-check", e);
             return false;
         }
     }
@@ -43,7 +43,7 @@ public record AppliedCheck(InteractionCheck<?> check, Annotation annotation) {
             logger.debug("Executing post check {} with context {}", check.getClass().getName(), context.toString());
             method.invoke(check, context, annotation);
         } catch (IllegalAccessException | InvocationTargetException | SecurityException e) {
-            logger.fatal(e);
+            logger.error("Failed executing post-check", e);
         }
     }
 

@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
+import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ObjectAggregator;
 
 public class CommandRegisterer<A extends Object> {
@@ -12,6 +15,8 @@ public class CommandRegisterer<A extends Object> {
     public static <A extends Object> CommandRegisterer<A> of(Strategy<A> strategy, CommandConverter<A, ?, ?> converter) {
         return new CommandRegisterer<A>(strategy, converter);
     }
+
+    private Logger logger = LoggerUtil.getLogger(getClass());
 
     private Strategy<A> strategy;
     private CommandConverter<A, ?, ?> converter;
@@ -36,6 +41,7 @@ public class CommandRegisterer<A extends Object> {
 
         serverCommands.forEach(strategy::registerServer);
         strategy.registerGlobal(globalCommands);
+        logger.info("Registered all SlashCommands");
     }
     
     public interface Strategy<A extends Object> {

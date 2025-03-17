@@ -20,7 +20,7 @@ dependencies {
     testImplementation(libs.junit.jupiter)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation(libs.log4j)
+    implementation(libs.slf4j)
     implementation(libs.geantyref)
 }
 
