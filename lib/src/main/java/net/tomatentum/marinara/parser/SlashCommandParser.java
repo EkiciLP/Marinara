@@ -59,7 +59,7 @@ public class SlashCommandParser implements AnnotationParser {
                 .build(isAutoComplete);
         }
 
-        logger.trace("Parsed using SlashCommandParser for method {} with the result:\n{}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());
+        logger.trace("Parsed using SlashCommandParser for method {} with the result: {}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());
         consumer.accept((SlashCommandIdentifier) lastIdentifier);
     }
 
