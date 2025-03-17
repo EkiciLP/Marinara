@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
@@ -66,7 +66,6 @@ public class InteractionRegistry {
             .toArray(SlashCommandDefinition[]::new);
 
         marinara.getWrapper().getRegisterer().register(defs);
-        logger.info("Registered all SlashCommands");
     }
 
     public void handle(Object context) {

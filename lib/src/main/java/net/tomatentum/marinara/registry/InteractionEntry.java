@@ -3,7 +3,7 @@ package net.tomatentum.marinara.registry;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;

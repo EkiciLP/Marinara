@@ -1,8 +1,8 @@
 package net.tomatentum.marinara.wrapper.javacord;
 
-import org.apache.logging.log4j.Logger;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.interaction.SlashCommandBuilder;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.wrapper.CommandConverter;
 import net.tomatentum.marinara.wrapper.CommandRegisterer;

@@ -3,7 +3,7 @@ package net.tomatentum.marinara.parser;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;

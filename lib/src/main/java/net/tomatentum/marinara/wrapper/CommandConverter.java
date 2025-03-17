@@ -4,18 +4,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.slf4j.Logger;
+
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
+import net.tomatentum.marinara.util.LoggerUtil;
 
 public class CommandConverter<A extends Object, O extends Object, C extends Object> {
 
     public static <A, O, C> CommandConverter<A, O, C> of(Spec<A, O, C> spec) {
         return new CommandConverter<>(spec);
     }
+
+    private Logger logger = LoggerUtil.getLogger(getClass());
 
     private Spec<A, O, C> spec;
 
@@ -24,6 +29,7 @@ public class CommandConverter<A extends Object, O extends Object, C extends Obje
     }
     
     public A convert(SlashCommandDefinition def) {
+        logger.debug("Converting command {}", def);
         List<O> options = new ArrayList<>();
         if (!def.isRootCommand()) {
             Arrays.stream(def.getSubCommands()).map(this::convertSubCommand).forEach(options::add);
@@ -35,17 +41,20 @@ public class CommandConverter<A extends Object, O extends Object, C extends Obje
     }
 
     private O convertSubCommandGroup(SlashCommandDefinition def, InteractionIdentifier identifier) {
+        logger.debug("Converting subCommandGroup {} of {}", identifier, def);
         SlashCommandIdentifier[] subCommands = def.getSubCommands(identifier.name());
         List<O> convertedSubCommands = Arrays.stream(subCommands).map(this::convertSubCommand).toList();
         return spec.convertSubCommandGroup(identifier, convertedSubCommands);
     }
 
     private O convertSubCommand(SlashCommandIdentifier identifier) {
+        logger.debug("Converting subCommand {}", identifier);
         List<O> options = Arrays.stream(identifier.options()).map(this::convertOption).toList();
         return spec.convertSubCommand(identifier, options);
     }
 
     private O convertOption(SlashCommandOption option) {
+        logger.debug("Converting option {}", option);
         List<C> choices = Arrays.stream(SlashCommandDefinition.getActualChoices(option)).map(spec::convertChoice).toList();
         return spec.convertOption(option, choices);
     }

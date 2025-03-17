@@ -3,7 +3,7 @@ package net.tomatentum.marinara.wrapper.discord4j;
 import java.util.List;
 import java.util.function.Function;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;

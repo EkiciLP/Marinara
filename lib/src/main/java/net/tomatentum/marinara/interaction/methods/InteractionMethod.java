@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.checks.AppliedCheck;
@@ -69,7 +69,7 @@ public abstract class InteractionMethod {
         try {
             method.invoke(handler, getParameters(context));
         }catch (IllegalAccessException | InvocationTargetException ex) {
-            logger.fatal(ex);
+            logger.error("InteractionMethod failed to run", ex);
         }
 
         this.appliedChecks.forEach(x -> x.post(context));
