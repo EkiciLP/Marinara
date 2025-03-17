@@ -40,8 +40,7 @@ public class SimpleLogger extends LegacyAbstractLogger {
 
     @Override
     protected String getFullyQualifiedCallerName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getFullyQualifiedCallerName'");
+        return this.name;
     }
 
     @Override
