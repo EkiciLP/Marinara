@@ -33,7 +33,7 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
         if (autocompleteOptionValue != null)
             return autocompleteOptionValue;
 
-        return marinara.getWrapper().getContextObjectProvider().getComponentContextObject(context, type);
+        return marinara.getWrapper().getContextObjectProvider().getInteractionContextObject(context, type);
     }
 
     @Override
