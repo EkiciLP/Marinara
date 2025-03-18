@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.javacord.api.interaction.SlashCommandInteraction;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
+import net.tomatentum.marinara.interaction.commands.annotation.CommandChoices;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
@@ -21,7 +22,7 @@ public class TestCommand implements InteractionHandler {
                 name = "foo",
                 description = "foo bar is very fooby",
                 type = SlashCommandOptionType.STRING,
-                choiceEnum = TestChoiceEnum.class
+                choices = @CommandChoices(cenum = TestChoiceEnum.class)
             )
         }
         )

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
+import net.tomatentum.marinara.interaction.commands.annotation.CommandChoices;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption.PlaceHolderEnum;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptionChoice;
@@ -18,10 +19,11 @@ import net.tomatentum.marinara.util.LoggerUtil;
 public class SlashCommandDefinition {
 
     public static SlashCommandOptionChoice[] getActualChoices(SlashCommandOption option) {
-        SlashCommandOptionChoice[] choices = option.choices();
-        if (choices.length <= 0 && !option.choiceEnum().equals(PlaceHolderEnum.class))
-            choices = EnumChoices.of(option.choiceEnum()).choices();
-        return choices;
+        CommandChoices choices = option.choices();
+        SlashCommandOptionChoice[] actualChoices = choices.value();
+        if (choices.value().length <= 0 && !choices.cenum().equals(PlaceHolderEnum.class))
+            actualChoices = EnumChoices.of(choices.cenum()).choices();
+        return actualChoices;
     }
 
     private Set<InteractionIdentifier> entries;
