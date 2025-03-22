@@ -56,6 +56,10 @@ public class Discord4JConverterSpec implements CommandConverter.Spec<Application
             .description(option.description())
             .required(option.required())
             .autocomplete(option.autocomplete())
+			.minLength(Double.valueOf(option.range().min()).intValue())
+			.minValue(option.range().min())
+			.maxLength(Double.valueOf(option.range().max()).intValue())
+			.maxValue(option.range().max())
             .choices(choices)
             .build();
 	}

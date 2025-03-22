@@ -15,6 +15,7 @@ public @interface SlashCommandOption {
     public SlashCommandOptionType type() default SlashCommandOptionType.STRING;
     public boolean required() default false;
     public boolean autocomplete() default false;
+    public Range range() default @Range;
     public CommandChoices choices() default @CommandChoices;
 
     public static enum PlaceHolderEnum {
