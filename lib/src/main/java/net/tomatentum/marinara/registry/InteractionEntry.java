@@ -1,6 +1,5 @@
 package net.tomatentum.marinara.registry;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -35,15 +34,13 @@ public class InteractionEntry {
     }
 
     public InteractionEntry addMethod(InteractionMethod method) {
-        Optional<InteractionIdentifier> methodId = Arrays.stream(method.identifier())
-            .filter(x -> x.name().equals(identifier().name()))
-            .findFirst();
+        InteractionIdentifier identifier = method.identifier();
 
-        if (methodId.isEmpty())
-            throw new IllegalArgumentException("Method's identifiers did not contain the entry's identifier");
+        if (this.identifier().equals(identifier))
+            throw new IllegalArgumentException("Method's identifier did not equal the entry's identifier");
 
         this.methods.add(method);
-        InteractionIdentifier.tryAddDescriptions(identifier, methodId.get());
+        InteractionIdentifier.tryAddDescriptions(identifier, identifier);
         logger.debug("Added method {} to entry {}", method.method().getName(), this.identifier);
         return this;
     }
