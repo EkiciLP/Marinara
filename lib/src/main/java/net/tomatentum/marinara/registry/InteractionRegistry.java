@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -32,20 +31,12 @@ public class InteractionRegistry {
         this.identifierProvider = marinara.getWrapper().createIdentifierProvider();
         marinara.getWrapper().subscribeInteractions(this::handle);
     }
-
-    /*
-     * TODO: Maybe relocate InteractionEntry checking to another class with description merging.
-     */
+    
     public void addInteractions(InteractionHandler interactionHandler) {
         for (Method method : interactionHandler.getClass().getMethods()) {
             InteractionMethod iMethod = InteractionMethod.create(method, interactionHandler, marinara);
             if (iMethod != null) {
-                Optional<InteractionEntry> oentry = this.interactions.stream()
-                    .filter(i -> i.identifier().equals(iMethod.identifier()))
-                    .findFirst();
-
-                InteractionEntry entry = oentry.orElse(new InteractionEntry(iMethod.identifier())).addMethod(iMethod);
-                if (oentry.isEmpty()) this.interactions.add(entry);
+                InteractionEntry.findEntry(interactions, iMethod.identifier()).addMethod(iMethod);
                 logger.debug("Added {} method from {}", iMethod.method().getName(), interactionHandler.getClass().getSimpleName());
             }
         }
