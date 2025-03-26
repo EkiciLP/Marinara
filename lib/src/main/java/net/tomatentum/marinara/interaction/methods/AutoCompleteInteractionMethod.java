@@ -20,9 +20,9 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
     }
 
     @Override
-    public AnnotationParser[] parsers() {
+    public AnnotationParser[] provideParsers() {
         return new AnnotationParser[] { 
-            new SlashCommandParser(method, true, (x) -> { this.interactionIdentifier = x; } ) 
+            new SlashCommandParser(method(), true, (x) -> { this.interactionIdentifier = x; } ) 
         };
     }
 
