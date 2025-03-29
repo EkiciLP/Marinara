@@ -1,4 +1,4 @@
-package net.tomatentum.marinara.util;
+package net.tomatentum.marinara.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,7 +9,8 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-import net.tomatentum.marinara.parser.AnnotationParser;
+import net.tomatentum.marinara.util.LoggerUtil;
+import net.tomatentum.marinara.util.ReflectionUtil;
 
 public abstract class ReflectedMethod {
 
@@ -17,21 +18,15 @@ public abstract class ReflectedMethod {
 
     private Method method;
     private Object containingObject;
-    protected List<AnnotationParser> parsers;
 
     public ReflectedMethod(Method method, Object containingObject) {
         if (!Arrays.asList(containingObject.getClass().getMethods()).contains(method))
             throw new InvalidParameterException("Method does not apply to specified handler");
         this.method = method;
         this.containingObject = containingObject;
-        this.parsers = new ArrayList<>(Arrays.asList(provideParsers()));
-
-        this.parsers.stream().forEach(AnnotationParser::parse);
     }
 
     public abstract Object getParameter(Object context, int index);
-
-    public abstract AnnotationParser[] provideParsers();
 
     public Object run(Object context) {
         method.setAccessible(true);
@@ -49,10 +44,6 @@ public abstract class ReflectedMethod {
 
     public Object containingObject() {
         return this.containingObject;
-    }
-
-    public List<AnnotationParser> parsers() {
-        return this.parsers;
     }
 
     private Object[] getParameters(Object context) {

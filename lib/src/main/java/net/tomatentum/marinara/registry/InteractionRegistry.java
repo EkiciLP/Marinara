@@ -12,12 +12,16 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
+import net.tomatentum.marinara.interaction.components.methods.ButtonInteractionMethod;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ObjectAggregator;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
+import net.tomatentum.marinara.interaction.methods.AutoCompleteInteractionMethod;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
+import net.tomatentum.marinara.interaction.methods.SlashCommandInteractionMethod;
+import net.tomatentum.marinara.reflection.ReflectedMethod;
 
 public class InteractionRegistry {
     private Logger logger = LoggerUtil.getLogger(getClass());
@@ -30,12 +34,18 @@ public class InteractionRegistry {
         this.marinara = marinara;
         this.identifierProvider = marinara.getWrapper().createIdentifierProvider();
         marinara.getWrapper().subscribeInteractions(this::handle);
+        marinara.getReflectedMethodFactory()
+            .addFactory(new AutoCompleteInteractionMethod.Factory())
+            .addFactory(new SlashCommandInteractionMethod.Factory())
+            .addFactory(new ButtonInteractionMethod.Factory());
+
     }
     
     public void addInteractions(InteractionHandler interactionHandler) {
-        for (Method method : interactionHandler.getClass().getMethods()) {
-            InteractionMethod iMethod = InteractionMethod.create(method, interactionHandler, marinara);
-            if (iMethod != null) {
+        for (Method method : interactionHandler.getClass().getDeclaredMethods()) {
+            ReflectedMethod rMethod = this.marinara.getReflectedMethodFactory().produce(method, interactionHandler);
+            if (rMethod != null && rMethod instanceof InteractionMethod) {
+                InteractionMethod iMethod = (InteractionMethod) rMethod;
                 InteractionEntry.findEntry(interactions, iMethod.identifier()).addMethod(iMethod);
                 logger.debug("Added {} method from {}", iMethod.method().getName(), interactionHandler.getClass().getSimpleName());
             }

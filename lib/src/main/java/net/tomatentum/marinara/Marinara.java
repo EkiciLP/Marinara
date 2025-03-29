@@ -2,6 +2,8 @@ package net.tomatentum.marinara;
 
 import org.slf4j.Logger;
 
+import net.tomatentum.marinara.reflection.ReflectedMethodFactory;
+import net.tomatentum.marinara.reflection.ReflectedMethodFactoryImpl;
 import net.tomatentum.marinara.registry.InteractionCheckRegistry;
 import net.tomatentum.marinara.registry.InteractionRegistry;
 import net.tomatentum.marinara.util.LoggerUtil;
@@ -15,26 +17,32 @@ public class Marinara {
         return new Marinara(wrapper);
     }
 
+    private LibraryWrapper wrapper;
+    private ReflectedMethodFactory reflectedMethodFactory;
     private InteractionRegistry registry;
     private InteractionCheckRegistry checkRegistry;
-    private LibraryWrapper wrapper;
 
     private Marinara(LibraryWrapper wrapper) {
         this.wrapper = wrapper;
+        this.reflectedMethodFactory = new ReflectedMethodFactoryImpl(this);
         this.registry = new InteractionRegistry(this);
         this.checkRegistry = new InteractionCheckRegistry();
         logger.info("Marinara loaded successfully!");
     }
 
+    public LibraryWrapper getWrapper() {
+        return this.wrapper;
+    }
+
     public InteractionRegistry getRegistry() {
-        return registry;
+        return this.registry;
     }
 
     public InteractionCheckRegistry getCheckRegistry() {
-        return checkRegistry;
+        return this.checkRegistry;
     }
 
-    public LibraryWrapper getWrapper() {
-        return wrapper;
+    public ReflectedMethodFactory getReflectedMethodFactory() {
+        return this.reflectedMethodFactory;
     }
 }
