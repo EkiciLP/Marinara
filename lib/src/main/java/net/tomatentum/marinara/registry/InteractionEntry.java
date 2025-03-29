@@ -36,7 +36,7 @@ public class InteractionEntry {
     public InteractionEntry addMethod(InteractionMethod method) {
         InteractionIdentifier identifier = method.identifier();
 
-        if (this.identifier().equals(identifier))
+        if (!this.identifier().equals(identifier))
             throw new IllegalArgumentException("Method's identifier did not equal the entry's identifier");
 
         this.methods.add(method);

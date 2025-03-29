@@ -80,7 +80,7 @@ public class InteractionIdentifier {
             return false;
         if (!name().equals(ident.name()))
             return false;
-        return Objects.equals(ident, obj);
+        return Objects.equals(parent(), ident.parent());
     }
 
     @Override
