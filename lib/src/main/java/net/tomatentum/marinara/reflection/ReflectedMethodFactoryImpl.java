@@ -3,7 +3,6 @@ package net.tomatentum.marinara.reflection;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -30,18 +29,18 @@ public class ReflectedMethodFactoryImpl implements ReflectedMethodFactory {
     }
 
     @Override
-    public ReflectedMethod produce(Method method, Object containingClass) {
+    public Optional<ReflectedMethod> produce(Method method, Object containingClass) {
         Optional<ReflectedMethod> imethod = this.factories.stream()
             .map(f -> factoryProduce(f, method, containingClass))
-            .filter(Objects::nonNull)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .findFirst();
 
         if (imethod.isEmpty()) {
             logger.debug("Could not produce a ReflectedMethod for Method {}", ReflectionUtil.getFullMethodName(method));
-            return null;
         }
 
-        return imethod.get();
+        return imethod;
     }
 
     @Override
@@ -50,13 +49,13 @@ public class ReflectedMethodFactoryImpl implements ReflectedMethodFactory {
         return this;
     }
 
-    private ReflectedMethod factoryProduce(Factory factory, Method method, Object containingClass) {
+    private Optional<ReflectedMethod> factoryProduce(Factory factory, Method method, Object containingClass) {
         List<AnnotationParser> parser = new ArrayList<>();
-        ReflectedMethod m = factory.produce(this.marinara, method, containingClass);
-        if (m != null) {
-            factory.addParser(m, parser); 
+        Optional<ReflectedMethod> m = factory.produce(this.marinara, method, containingClass);
+        m.ifPresent(x -> {
+            factory.addParser(x, parser); 
             parser.forEach(AnnotationParser::parse);
-        }
+        });
         return m;
     }
     

@@ -2,6 +2,7 @@ package net.tomatentum.marinara.interaction.methods;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
@@ -47,14 +48,15 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
     public static class Factory extends InteractionMethod.Factory {
 
         @Override
-        public ReflectedMethod produce(Marinara marinara, Method method, Object containingObject) {
-            if (!(containingObject instanceof InteractionHandler) ||
-                !method.isAnnotationPresent(AutoComplete.class) ||
-                (method.isAnnotationPresent(SlashCommand.class) ||
+        public Optional<ReflectedMethod> produce(Marinara marinara, Method method, Object containingObject) {
+            ReflectedMethod rMethod = null;
+            if ((containingObject instanceof InteractionHandler) &&
+                method.isAnnotationPresent(AutoComplete.class) &&
+                !(method.isAnnotationPresent(SlashCommand.class) ||
                 method.isAnnotationPresent(SubCommand.class)))
-                return null;
+                rMethod = new AutoCompleteInteractionMethod(method, (InteractionHandler) containingObject, marinara);
 
-            return new AutoCompleteInteractionMethod(method, (InteractionHandler) containingObject, marinara);
+            return Optional.ofNullable(rMethod);
         }
 
         @Override

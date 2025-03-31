@@ -44,12 +44,14 @@ public class InteractionRegistry {
     
     public void addInteractions(InteractionHandler interactionHandler) {
         for (Method method : interactionHandler.getClass().getDeclaredMethods()) {
-            ReflectedMethod rMethod = this.marinara.getReflectedMethodFactory().produce(method, interactionHandler);
-            if (rMethod != null && rMethod instanceof InteractionMethod) {
-                InteractionMethod iMethod = (InteractionMethod) rMethod;
-                InteractionEntry.findEntry(interactions, iMethod.identifier()).addMethod(iMethod);
-                logger.debug("Added {} method from {}", iMethod.method().getName(), interactionHandler.getClass().getSimpleName());
-            }
+            Optional<ReflectedMethod> rMethod = this.marinara.getReflectedMethodFactory().produce(method, interactionHandler);
+            rMethod.ifPresent(x -> {
+                if (x instanceof InteractionMethod) {
+                    InteractionMethod iMethod = (InteractionMethod) x;
+                    InteractionEntry.findEntry(interactions, iMethod.identifier()).addMethod(iMethod);
+                    logger.debug("Added {} method from {}", iMethod.method().getName(), interactionHandler.getClass().getSimpleName());                    
+                }
+            });
         }
         logger.info("Added all Interactions from {}", interactionHandler.getClass().getSimpleName());
     }

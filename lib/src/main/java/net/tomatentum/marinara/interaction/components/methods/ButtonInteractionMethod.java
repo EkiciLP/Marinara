@@ -2,6 +2,7 @@ package net.tomatentum.marinara.interaction.components.methods;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Optional;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
@@ -39,13 +40,14 @@ public class ButtonInteractionMethod extends InteractionMethod {
     public static class Factory extends InteractionMethod.Factory {
 
         @Override
-        public ReflectedMethod produce(Marinara marinara, Method method, Object containingObject) {
-            if (!method.isAnnotationPresent(Button.class) ||
-                !(containingObject instanceof InteractionHandler)
+        public Optional<ReflectedMethod> produce(Marinara marinara, Method method, Object containingObject) {
+            ReflectedMethod rMethod = null;
+            if (method.isAnnotationPresent(Button.class) &&
+                (containingObject instanceof InteractionHandler)
                 )
-                return null;
+                rMethod = new ButtonInteractionMethod(method, (InteractionHandler) containingObject, marinara);
 
-            return new ButtonInteractionMethod(method, (InteractionHandler) containingObject, marinara);
+            return Optional.ofNullable(rMethod);
         }
 
         @Override
