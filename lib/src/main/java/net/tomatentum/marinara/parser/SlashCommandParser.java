@@ -17,14 +17,12 @@ import net.tomatentum.marinara.util.ReflectionUtil;
 public class SlashCommandParser implements AnnotationParser {
 
     private Method method;
-    private boolean isAutoComplete;
     private Consumer<SlashCommandIdentifier> consumer;
 
     private Logger logger = LoggerUtil.getLogger(getClass());
 
-    public SlashCommandParser(Method method, boolean isAutoComplete, Consumer<SlashCommandIdentifier> consumer) {
+    public SlashCommandParser(Method method, Consumer<SlashCommandIdentifier> consumer) {
         this.method = method;
-        this.isAutoComplete = isAutoComplete;
         this.consumer = consumer;
     }
 
@@ -38,14 +36,14 @@ public class SlashCommandParser implements AnnotationParser {
             .description(cmd.description())
             .options(cmd.options())
             .serverIds(cmd.serverIds())
-            .build(isAutoComplete);
+            .build();
 
         if (ReflectionUtil.isAnnotationPresent(method, SubCommandGroup.class)) {
             SubCommandGroup cmdGroup = ReflectionUtil.getAnnotation(method, SubCommandGroup.class);
             lastIdentifier = InteractionIdentifier.builder()
                 .name(cmdGroup.name())
                 .description(cmdGroup.description())
-                .type(isAutoComplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND)
+                .type(InteractionType.COMMAND)
                 .parent(lastIdentifier)
                 .build();
         }
@@ -56,7 +54,7 @@ public class SlashCommandParser implements AnnotationParser {
                 .name(subCmd.name())
                 .description(subCmd.description())
                 .options(subCmd.options())
-                .build(isAutoComplete);
+                .build();
         }
 
         logger.trace("Parsed using SlashCommandParser for method {} with the result: {}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());

@@ -13,8 +13,9 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
             String description, 
             InteractionType type,
             SlashCommandOption[] options, 
-            long[] serverIds) {
-        super(parent, name, description, type, options);
+            long[] serverIds,
+            String[] autocompleteRef) {
+        super(parent, name, description, type, options, autocompleteRef);
         this.serverIds = serverIds;
     }
 
@@ -28,7 +29,7 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
         private String description;
         private SlashCommandOption[] options;
         private long[] serverIds;
-
+        private String[] autocompleteRef;
 
         public InteractionIdentifier parent() {
             return parent;
@@ -75,14 +76,24 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
             return this;
         }
 
-        public SlashCommandIdentifier build(boolean autocomplete) {
+        public String[] autocompleteRef() {
+            return this.autocompleteRef;
+        }
+
+        public Builder autocompleteRef(String[] autocompleteRef) {
+            this.autocompleteRef = autocompleteRef;
+            return this;
+        }
+
+        public SlashCommandIdentifier build() {
             return new RootCommandIdentifier(
                 parent, 
                 name, 
                 description, 
-                autocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND, 
+                InteractionType.COMMAND, 
                 options, 
-                serverIds);
+                serverIds,
+                autocompleteRef);
         }
 
     }

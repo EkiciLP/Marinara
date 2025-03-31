@@ -6,20 +6,31 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 public class SlashCommandIdentifier extends InteractionIdentifier {
 
     private SlashCommandOption[] options;
+    private String[] autocompleteRef;
 
     protected SlashCommandIdentifier(
             InteractionIdentifier parent, 
             String name, 
             String description,
             InteractionType type,
-            SlashCommandOption[] options
+            SlashCommandOption[] options,
+            String[] autocompleteRef
             ) {
         super(parent, name, description, type);
         this.options = options;
+        this.autocompleteRef = autocompleteRef;
     }
 
     public SlashCommandOption[] options() {
         return this.options;
+    }
+
+    public String[] autocompleteRef() {
+        return this.autocompleteRef;
+    }
+    public SlashCommandIdentifier autocompleteRef(String[] autocompleteRef) {
+        this.autocompleteRef = autocompleteRef;
+        return this;
     }
 
     public static class Builder {
@@ -27,6 +38,7 @@ public class SlashCommandIdentifier extends InteractionIdentifier {
         private String name;
         private String description;
         private SlashCommandOption[] options;
+        private String[] autocompleteRef;
 
         public InteractionIdentifier parent() {
             return parent;
@@ -64,13 +76,23 @@ public class SlashCommandIdentifier extends InteractionIdentifier {
             return this;
         }
 
-        public SlashCommandIdentifier build(boolean autocomplete) {
+        public String[] autocompleteRef() {
+            return this.autocompleteRef;
+        }
+
+        public Builder autocompleteRef(String[] autocompleteRef) {
+            this.autocompleteRef = autocompleteRef;
+            return this;
+        }
+
+        public SlashCommandIdentifier build() {
             return new SlashCommandIdentifier(
                 parent, 
                 name, 
                 description, 
-                autocomplete ? InteractionType.AUTOCOMPLETE : InteractionType.COMMAND, 
-                options);
+                InteractionType.COMMAND, 
+                options,
+                autocompleteRef);
         }
 
     }

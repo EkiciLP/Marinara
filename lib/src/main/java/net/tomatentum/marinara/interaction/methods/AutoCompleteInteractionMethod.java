@@ -5,15 +5,18 @@ import java.util.List;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionHandler;
+import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.annotation.AutoComplete;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.parser.AnnotationParser;
-import net.tomatentum.marinara.parser.SlashCommandParser;
+import net.tomatentum.marinara.parser.AutocompleteParser;
 import net.tomatentum.marinara.reflection.ReflectedMethod;
 
 public class AutoCompleteInteractionMethod extends InteractionMethod {
 
-    private InteractionIdentifier interactionIdentifier;
+    private String autocompleteRef;
 
     private AutoCompleteInteractionMethod(Method method, 
         InteractionHandler handler, 
@@ -34,16 +37,21 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
 
     @Override
     public InteractionIdentifier identifier() {
-        return interactionIdentifier;
+        return InteractionIdentifier.builder()
+            .type(InteractionType.AUTOCOMPLETE)
+            .name(autocompleteRef)
+            .description("AUTOCOMPLETE")
+            .build();
     }
 
     public static class Factory extends InteractionMethod.Factory {
 
         @Override
         public ReflectedMethod produce(Marinara marinara, Method method, Object containingObject) {
-            if (!method.isAnnotationPresent(AutoComplete.class) ||
-                !(containingObject instanceof InteractionHandler)
-                )
+            if (!(containingObject instanceof InteractionHandler) ||
+                !method.isAnnotationPresent(AutoComplete.class) ||
+                (method.isAnnotationPresent(SlashCommand.class) ||
+                method.isAnnotationPresent(SubCommand.class)))
                 return null;
 
             return new AutoCompleteInteractionMethod(method, (InteractionHandler) containingObject, marinara);
@@ -55,7 +63,7 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
 
             AutoCompleteInteractionMethod imethod = (AutoCompleteInteractionMethod) method;
             parser.add(
-                new SlashCommandParser(method.method(), true, x -> imethod.interactionIdentifier = x)
+                new AutocompleteParser(method.method(), x -> imethod.autocompleteRef = x[0])
             );
         }
 

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 
 import io.leangen.geantyref.GenericTypeReflector;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
+import net.tomatentum.marinara.registry.InteractionRegistry;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ReflectionUtil;
 
@@ -36,7 +37,7 @@ public class IdentifierProvider {
         }
     }
 
-    public InteractionIdentifier provide(Object context) {
+    public InteractionIdentifier provide(Object context, InteractionRegistry registry) {
         Type type = ReflectionUtil.getMostSpecificClass(
             converter.keySet().stream().filter(x -> x.isAssignableFrom(context.getClass())).toArray(Class<?>[]::new), 
             context.getClass());
@@ -47,12 +48,12 @@ public class IdentifierProvider {
         @SuppressWarnings("unchecked")
         Converter<Object> conv = (Converter<Object>) converter.get(type);
 
-        return conv.convert(context);
+        return conv.convert(context, registry);
     }
 
     @FunctionalInterface
     public interface Converter<T extends Object> {
-        InteractionIdentifier convert(T context);
+        InteractionIdentifier convert(T context, InteractionRegistry registry);
     }
 
     public static class LambdaWrapper<T extends Object> implements Converter<T> {
@@ -64,8 +65,8 @@ public class IdentifierProvider {
         }
 
         @Override
-        public InteractionIdentifier convert(T context) {
-            return this.converter.convert(context);
+        public InteractionIdentifier convert(T context, InteractionRegistry registry) {
+            return this.converter.convert(context, registry);
         }
 
     }

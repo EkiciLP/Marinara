@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -72,10 +73,16 @@ public class InteractionRegistry {
     public void handle(Object context) {
         logger.debug("Received {} interaction ", context);
         interactions.forEach((e) -> {
-            if (this.identifierProvider.provide(context).equals(e.identifier())) {
+            if (e.identifier().equals(this.identifierProvider.provide(context, this))) {
                 logger.info("Running {} interaction using {}\ncontext: {}", e.type(), e.toString(), context.toString());
                 e.runAll(context);
             }
         });
+    }
+
+    public Optional<InteractionEntry> findFor(InteractionIdentifier identifier) {
+        return this.interactions.stream()
+            .filter(x -> x.identifier().equals(identifier))
+            .findFirst();
     }
 }

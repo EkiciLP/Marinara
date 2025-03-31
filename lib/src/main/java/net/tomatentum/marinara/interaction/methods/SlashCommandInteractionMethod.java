@@ -10,6 +10,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.parser.AnnotationParser;
+import net.tomatentum.marinara.parser.AutocompleteParser;
 import net.tomatentum.marinara.parser.SlashCommandParser;
 import net.tomatentum.marinara.reflection.ReflectedMethod;
 
@@ -35,10 +36,9 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
 
         @Override
         public ReflectedMethod produce(Marinara marinara, Method method, Object containingObject) {
-            if (!(method.isAnnotationPresent(SlashCommand.class) ||
-                method.isAnnotationPresent(SubCommand.class)) ||
-                !(containingObject instanceof InteractionHandler)
-                )
+            if (!(containingObject instanceof InteractionHandler) || 
+                !(method.isAnnotationPresent(SlashCommand.class) ||
+                method.isAnnotationPresent(SubCommand.class)))
                 return null;
 
             return new SlashCommandInteractionMethod(method, (InteractionHandler) containingObject, marinara);
@@ -50,7 +50,10 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
 
             SlashCommandInteractionMethod imethod = (SlashCommandInteractionMethod) method;
             parser.add(
-                new SlashCommandParser(method.method(), false, x -> imethod.interactionIdentifier = x)
+                new SlashCommandParser(method.method(), x -> imethod.interactionIdentifier = x)
+            );
+            parser.add(
+                new AutocompleteParser(method.method(), x -> imethod.interactionIdentifier.autocompleteRef(x))
             );
         }
 
