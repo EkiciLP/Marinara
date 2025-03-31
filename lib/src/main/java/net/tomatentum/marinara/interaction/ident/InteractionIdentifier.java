@@ -73,7 +73,7 @@ public class InteractionIdentifier {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof InteractionIdentifier))
+        if (obj == null || !(obj instanceof InteractionIdentifier))
             return false;
         InteractionIdentifier ident = (InteractionIdentifier) obj;
         if (!type().equals(ident.type()))
