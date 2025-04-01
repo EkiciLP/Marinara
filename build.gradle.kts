@@ -8,7 +8,11 @@ allprojects {
     group = "net.tomatentum.Marinara"
     version = "1.0.0-RC1" + (if (!project.hasProperty("release")) ("-" + getGitHash()) else "")
     description = "A simple but powerful, library-agnostic Discord Interaction Wrapper."
-
+    plugins.withType<JavaPlugin> {
+        tasks.withType<Jar>().configureEach {
+            archiveBaseName.set("marinara-" + archiveBaseName.get())
+        }
+    }
 }
 
 subprojects {
