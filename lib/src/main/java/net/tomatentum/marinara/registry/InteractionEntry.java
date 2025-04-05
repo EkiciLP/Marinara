@@ -1,8 +1,10 @@
 package net.tomatentum.marinara.registry;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -34,22 +36,25 @@ public class InteractionEntry {
     }
 
     public InteractionEntry addMethod(InteractionMethod method) {
-        InteractionIdentifier identifier = method.identifier();
+        InteractionIdentifier midentifier = method.identifier();
 
-        if (!this.identifier().equals(identifier))
+        if (!this.identifier().equals(midentifier))
             throw new IllegalArgumentException("Method's identifier did not equal the entry's identifier");
 
         this.methods.add(method);
-        InteractionIdentifier.tryAddDescriptions(identifier, identifier);
+        InteractionIdentifier.tryAddDescriptions(midentifier, midentifier);
         logger.debug("Added method {} to entry {}", method.method().getName(), this.identifier);
         return this;
     }
 
-    public void runAll(Object context) {
-        this.methods.stream().forEach(x -> {
-            logger.debug("Running Method {} from {} with context {}", x.toString(), this.toString(), context.toString());
-            x.run(context);
-        });
+    public Object[] runAll(Object context) {
+        return this.methods.stream()
+            .map(x -> {
+                logger.debug("Running Method {} from {} with context {}", x, this, context);
+                return x.run(context);
+            })
+            .flatMap(o -> o instanceof Object[] oArray ? Arrays.stream(oArray) : Stream.<Object>of(o))
+            .toArray();
     }
 
     @Override
@@ -58,6 +63,11 @@ public class InteractionEntry {
             return false;
         InteractionEntry other = (InteractionEntry) obj;
         return other.identifier().equals(identifier());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.identifier().hashCode();
     }
 
     @Override

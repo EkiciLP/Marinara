@@ -6,17 +6,27 @@ import java.util.Collections;
 
 import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.AutocompleteInteraction;
+import org.javacord.api.interaction.SlashCommandInteraction;
 
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.annotation.AutoComplete;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
+import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
+import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
 
 public class TestAutocomplete implements InteractionHandler {
     
-    @SlashCommand(name = "test")
+    @SlashCommand(
+        name = "test",
+        options = @SlashCommandOption(
+                name = "foo",
+                type = SlashCommandOptionType.STRING,
+                autocompletes = @AutoComplete("testAuto")
+            )
+        )
     @AutoComplete("testAuto")
-    public void exec(SlashCommandCreateEvent context) {
-        
+    public void exec(SlashCommandInteraction context) {
+
     }
 
     @AutoComplete("testAuto")

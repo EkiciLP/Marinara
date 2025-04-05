@@ -50,10 +50,10 @@ public class JavacordConverterSpec implements CommandConverter.Spec<SlashCommand
             .setName(option.name())
             .setDescription(option.description())
             .setRequired(option.required())
-            .setAutocompletable(option.autocomplete())
-			.setMinLength(Double.valueOf(option.range().min()).longValue())
+            .setAutocompletable(option.autocompletes().length > 0)
+			.setMinLength((long) option.range().min())
 			.setDecimalMinValue(option.range().min())
-			.setMaxLength(Double.valueOf(option.range().max()).longValue())
+			.setMaxLength((long) option.range().max())
 			.setDecimalMaxValue(option.range().max())
             .setChoices(choices)
 			.build();

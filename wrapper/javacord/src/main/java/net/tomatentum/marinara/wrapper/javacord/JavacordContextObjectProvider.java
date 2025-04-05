@@ -2,10 +2,12 @@ package net.tomatentum.marinara.wrapper.javacord;
 
 import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.ButtonInteraction;
+import org.javacord.api.interaction.InteractionBase;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.javacord.api.interaction.SlashCommandInteractionOption;
 import org.javacord.api.interaction.SlashCommandOptionType;
 
+import net.tomatentum.marinara.interaction.commands.option.AutocompleteOptionData;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 
 public class JavacordContextObjectProvider implements ContextObjectProvider {
@@ -16,14 +18,14 @@ public class JavacordContextObjectProvider implements ContextObjectProvider {
             return null;
         SlashCommandInteraction interaction = (SlashCommandInteraction) context;
         if (!interaction.getArguments().isEmpty())
-            return getOptionValue(interaction.getOptionByName(optionName).get());
+            return getOptionValue(interaction.getOptionByName(optionName).orElse(null));
 
         SlashCommandInteractionOption subCommandOption = interaction.getOptions().getFirst();
 
         if (!subCommandOption.getOptions().isEmpty())
             subCommandOption = subCommandOption.getOptions().getFirst();
 
-        return getOptionValue(subCommandOption.getOptionByName(optionName).get());
+        return getOptionValue(subCommandOption.getOptionByName(optionName).orElse(null));
     }
 
     private Object getOptionValue(SlashCommandInteractionOption option) {
@@ -89,7 +91,7 @@ public class JavacordContextObjectProvider implements ContextObjectProvider {
 
     @Override
     public Object getInteractionContextObject(Object context, Class<?> type) {
-        ButtonInteraction button = (ButtonInteraction) context;
+        InteractionBase button = (InteractionBase) context;
         switch (type.getName()) {
             case "org.javacord.api.entity.channel.TextChannel":
                 return button.getChannel().orElse(null);
@@ -102,9 +104,9 @@ public class JavacordContextObjectProvider implements ContextObjectProvider {
     }
 
     @Override
-    public Object getAutocompleteFocusedOption(Object context) {
-        AutocompleteInteraction interaction = (AutocompleteInteraction) context;
-        return getOptionValue(interaction.getFocusedOption());
+    public AutocompleteOptionData getAutocompleteFocusedOption(Object context) {
+        SlashCommandInteractionOption option = ((AutocompleteInteraction) context).getFocusedOption();
+        return new AutocompleteOptionData(option.getName(), getOptionValue(option));
     }
 
 }

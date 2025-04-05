@@ -1,14 +1,16 @@
 package net.tomatentum.marinara.wrapper.discord4j;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.slf4j.Logger;
 
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import discord4j.core.object.command.ApplicationCommandOption.Type;
+import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
 import net.tomatentum.marinara.util.LoggerUtil;
@@ -22,13 +24,12 @@ import net.tomatentum.marinara.wrapper.discord4j.identifierconverter.ButtonIdent
 import net.tomatentum.marinara.wrapper.discord4j.identifierconverter.SlashCommandIdentifierConverter;
 
 public class Discord4JWrapper extends LibraryWrapper {
-
-    public static final Function<List<ApplicationCommandInteractionOption>, List<ApplicationCommandInteractionOption>> SUB_FILTER = (i) ->
+    public static final UnaryOperator<List<ApplicationCommandInteractionOption>> SUB_FILTER = i ->
         i.stream()
             .filter(o -> o.getType().equals(Type.SUB_COMMAND) || o.getType().equals(Type.SUB_COMMAND_GROUP))
             .toList();
     
-    public static final Function<List<ApplicationCommandInteractionOption>, List<ApplicationCommandInteractionOption>> ARG_FILTER = (i) ->
+    public static final UnaryOperator<List<ApplicationCommandInteractionOption>> ARG_FILTER = i ->
             i.stream()
                 .filter(o -> !o.getType().equals(Type.SUB_COMMAND) && !o.getType().equals(Type.SUB_COMMAND_GROUP))
                 .toList();
@@ -69,6 +70,17 @@ public class Discord4JWrapper extends LibraryWrapper {
     @Override
     public ContextObjectProvider getContextObjectProvider() {
         return this.contextObjectProvider;
+    }
+
+    @Override
+    public void respondAutocomplete(Object context, List<Object> options) {
+        if (context instanceof ChatInputAutoCompleteEvent event) {
+            List<ApplicationCommandOptionChoiceData> choices = options.stream()
+                .filter(ApplicationCommandOptionChoiceData.class::isInstance)
+                .map(o -> (ApplicationCommandOptionChoiceData)o)
+                .toList();
+            event.respondWithSuggestions(choices);
+        }
     }
 
 }

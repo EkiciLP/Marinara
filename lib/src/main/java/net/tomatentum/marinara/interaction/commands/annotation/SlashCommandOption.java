@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import net.tomatentum.marinara.interaction.annotation.AutoComplete;
 import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
 
 @Target({ElementType.ANNOTATION_TYPE})
@@ -14,11 +15,11 @@ public @interface SlashCommandOption {
     public String description() default "";
     public SlashCommandOptionType type() default SlashCommandOptionType.STRING;
     public boolean required() default false;
-    public boolean autocomplete() default false;
+    public AutoComplete[] autocompletes() default {};
     public Range range() default @Range;
     public CommandChoices choices() default @CommandChoices;
 
-    public static enum PlaceHolderEnum {
+    public enum PlaceHolderEnum {
 
     }
 }

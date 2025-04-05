@@ -6,31 +6,19 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 public class SlashCommandIdentifier extends InteractionIdentifier {
 
     private SlashCommandOption[] options;
-    private String[] autocompleteRef;
 
     protected SlashCommandIdentifier(
             InteractionIdentifier parent, 
             String name, 
             String description,
             InteractionType type,
-            SlashCommandOption[] options,
-            String[] autocompleteRef
-            ) {
+            SlashCommandOption[] options) {
         super(parent, name, description, type);
         this.options = options;
-        this.autocompleteRef = autocompleteRef;
     }
 
     public SlashCommandOption[] options() {
         return this.options;
-    }
-
-    public String[] autocompleteRef() {
-        return this.autocompleteRef;
-    }
-    public SlashCommandIdentifier autocompleteRef(String[] autocompleteRef) {
-        this.autocompleteRef = autocompleteRef;
-        return this;
     }
 
     public static class Builder {
@@ -91,8 +79,7 @@ public class SlashCommandIdentifier extends InteractionIdentifier {
                 name, 
                 description, 
                 InteractionType.COMMAND, 
-                options,
-                autocompleteRef);
+                options);
         }
 
     }

@@ -7,13 +7,12 @@ import org.javacord.api.interaction.SlashCommandInteractionOption;
 
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.registry.InteractionRegistry;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
 
 public class SlashCommandIdentifierConverter implements IdentifierProvider.Converter<SlashCommandInteraction> {
 
     @Override
-    public InteractionIdentifier convert(SlashCommandInteraction context, InteractionRegistry registry) {
+    public InteractionIdentifier convert(SlashCommandInteraction context) {
         List<SlashCommandInteractionOption> options = context.getOptions();
         String commandName = context.getCommandName();
         if (!options.isEmpty()) {

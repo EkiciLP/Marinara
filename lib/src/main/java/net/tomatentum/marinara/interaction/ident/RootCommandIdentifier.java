@@ -13,9 +13,8 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
             String description, 
             InteractionType type,
             SlashCommandOption[] options, 
-            long[] serverIds,
-            String[] autocompleteRef) {
-        super(parent, name, description, type, options, autocompleteRef);
+            long[] serverIds) {
+        super(parent, name, description, type, options);
         this.serverIds = serverIds;
     }
 
@@ -92,8 +91,7 @@ public class RootCommandIdentifier extends SlashCommandIdentifier {
                 description, 
                 InteractionType.COMMAND, 
                 options, 
-                serverIds,
-                autocompleteRef);
+                serverIds);
         }
 
     }

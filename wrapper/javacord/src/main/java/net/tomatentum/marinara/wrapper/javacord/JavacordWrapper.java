@@ -1,7 +1,11 @@
 package net.tomatentum.marinara.wrapper.javacord;
 
+import java.util.List;
+
 import org.javacord.api.DiscordApi;
+import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
+import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.slf4j.Logger;
 
 import net.tomatentum.marinara.wrapper.CommandConverter;
@@ -27,7 +31,7 @@ public class JavacordWrapper extends LibraryWrapper {
 
         if (api != null) {
             this.commandRegisterer = CommandRegisterer.of(new JavacordRegistererStrategy(api), converter);
-            api.addInteractionCreateListener((e) -> handleInteraction(e.getInteraction()));
+            api.addInteractionCreateListener(e -> handleInteraction(e.getInteraction()));
         }else
             logger.warn("DiscordApi was null so no Events were subscribed to.");
         logger.info("Javacord wrapper loaded!");
@@ -50,6 +54,17 @@ public class JavacordWrapper extends LibraryWrapper {
     @Override
     public ContextObjectProvider getContextObjectProvider() {
         return contextObjectProvider;
+    }
+
+    @Override
+    public void respondAutocomplete(Object context, List<Object> options) {
+        if (context instanceof AutocompleteInteraction interaction) {
+            List<SlashCommandOptionChoice> choices = options.stream()
+                .filter(SlashCommandOptionChoice.class::isInstance)
+                .map(o -> (SlashCommandOptionChoice)o)
+                .toList();
+            interaction.respondWithChoices(choices);
+        }
     }
 
 }

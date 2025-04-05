@@ -18,10 +18,10 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.discord4j.Discord4JWrapper;
 
-public class AutoCompleteTest {
+class AutoCompleteTest {
     
     @Test
-    public void testAutocomplete() {
+    void testAutocomplete() {
         ApplicationCommandInteractionOption optionMock = mock();
         ChatInputAutoCompleteEvent autoCompleteEventMock = mock();
 

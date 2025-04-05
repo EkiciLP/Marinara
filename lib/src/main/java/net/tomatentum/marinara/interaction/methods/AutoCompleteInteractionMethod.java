@@ -29,11 +29,15 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
     @Override
     public Object getParameter(Object context, int index) {
         Class<?> type = method().getParameterTypes()[index+1];
-        Object autocompleteOptionValue = marinara.getWrapper().getContextObjectProvider().getAutocompleteFocusedOption(context);
-        if (autocompleteOptionValue != null)
+        Object contextObject = marinara.getWrapper().getContextObjectProvider().getInteractionContextObject(context, type);
+        if (contextObject != null)
+            return contextObject;
+
+        Object autocompleteOptionValue = marinara.getWrapper().getContextObjectProvider().getAutocompleteFocusedOption(context).input();
+        if (type.isInstance(autocompleteOptionValue))
             return autocompleteOptionValue;
 
-        return marinara.getWrapper().getContextObjectProvider().getInteractionContextObject(context, type);
+        return null;
     }
 
     @Override
@@ -50,11 +54,11 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
         @Override
         public Optional<ReflectedMethod> produce(Marinara marinara, Method method, Object containingObject) {
             ReflectedMethod rMethod = null;
-            if ((containingObject instanceof InteractionHandler) &&
+            if ((containingObject instanceof InteractionHandler iHandler) &&
                 method.isAnnotationPresent(AutoComplete.class) &&
                 !(method.isAnnotationPresent(SlashCommand.class) ||
                 method.isAnnotationPresent(SubCommand.class)))
-                rMethod = new AutoCompleteInteractionMethod(method, (InteractionHandler) containingObject, marinara);
+                rMethod = new AutoCompleteInteractionMethod(method, iHandler, marinara);
 
             return Optional.ofNullable(rMethod);
         }
@@ -63,9 +67,8 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
         public void addParser(ReflectedMethod method, List<AnnotationParser> parser) {
             super.addParser(method, parser);
 
-            AutoCompleteInteractionMethod imethod = (AutoCompleteInteractionMethod) method;
             parser.add(
-                new AutocompleteParser(method.method(), x -> imethod.autocompleteRef = x[0])
+                new AutocompleteParser(method.method(), x -> ((AutoCompleteInteractionMethod) method).autocompleteRef = x[0])
             );
         }
 

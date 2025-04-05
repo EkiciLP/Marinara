@@ -2,10 +2,15 @@ package net.tomatentum.marinara;
 
 import org.slf4j.Logger;
 
+import net.tomatentum.marinara.interaction.InteractionType;
+import net.tomatentum.marinara.interaction.processor.AutocompleteInteractionProcessor;
+import net.tomatentum.marinara.interaction.processor.DirectInteractionProcessor;
 import net.tomatentum.marinara.reflection.ReflectedMethodFactory;
 import net.tomatentum.marinara.reflection.ReflectedMethodFactoryImpl;
 import net.tomatentum.marinara.registry.InteractionCheckRegistry;
+import net.tomatentum.marinara.registry.InteractionExecutor;
 import net.tomatentum.marinara.registry.InteractionRegistry;
+import net.tomatentum.marinara.registry.ProcessorInteractionExecutor;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
@@ -13,7 +18,7 @@ public class Marinara {
 
     private Logger logger = LoggerUtil.getLogger(getClass());
     
-    public static <T extends LibraryWrapper> Marinara load(LibraryWrapper wrapper) {
+    public static Marinara load(LibraryWrapper wrapper) {
         return new Marinara(wrapper);
     }
 
@@ -21,12 +26,17 @@ public class Marinara {
     private ReflectedMethodFactory reflectedMethodFactory;
     private InteractionRegistry registry;
     private InteractionCheckRegistry checkRegistry;
+    private InteractionExecutor interactionExecutor;
 
     private Marinara(LibraryWrapper wrapper) {
         this.wrapper = wrapper;
         this.reflectedMethodFactory = new ReflectedMethodFactoryImpl(this);
         this.registry = new InteractionRegistry(this);
         this.checkRegistry = new InteractionCheckRegistry();
+        this.interactionExecutor = new ProcessorInteractionExecutor(wrapper.createIdentifierProvider(), this)
+            .addProcessor(new DirectInteractionProcessor(InteractionType.COMMAND, InteractionType.BUTTON))
+            .addProcessor(new AutocompleteInteractionProcessor());
+        wrapper.subscribeInteractions(this.interactionExecutor::handle);
         logger.info("Marinara loaded successfully!");
     }
 
@@ -45,4 +55,9 @@ public class Marinara {
     public ReflectedMethodFactory getReflectedMethodFactory() {
         return this.reflectedMethodFactory;
     }
+
+    public InteractionExecutor getInteractionExecutor() {
+        return interactionExecutor;
+    }
+    
 }

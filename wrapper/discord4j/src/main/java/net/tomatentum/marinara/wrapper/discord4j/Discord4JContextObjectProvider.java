@@ -5,7 +5,9 @@ import java.util.List;
 import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
 import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.event.domain.interaction.ComponentInteractionEvent;
+import discord4j.core.event.domain.interaction.InteractionCreateEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
+import net.tomatentum.marinara.interaction.commands.option.AutocompleteOptionData;
 import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 
@@ -79,24 +81,25 @@ public class Discord4JContextObjectProvider implements ContextObjectProvider {
 
     @Override
     public Object getInteractionContextObject(Object context, Class<?> type) {
-        ComponentInteractionEvent componentInteractionEvent = (ComponentInteractionEvent) context;
+        InteractionCreateEvent interactionEvent = (InteractionCreateEvent) context;
         switch (type.getName()) {
             case "discord4j.core.object.entity.channel.MessageChannel":
-                return componentInteractionEvent.getInteraction().getChannel().block();
+                return interactionEvent.getInteraction().getChannel().block();
             case "discord4j.core.object.entity.Guild":
-                return componentInteractionEvent.getInteraction().getGuild().block();
+                return interactionEvent.getInteraction().getGuild().block();
             case "discord4j.core.object.entity.Member":
-                return componentInteractionEvent.getInteraction().getMember().orElse(null);
+                return interactionEvent.getInteraction().getMember().orElse(null);
             case "discord4j.core.object.entity.User":
-                return componentInteractionEvent.getInteraction().getUser();
+                return interactionEvent.getInteraction().getUser();
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
-    public Object getAutocompleteFocusedOption(Object context) {
-        ChatInputAutoCompleteEvent interaction = (ChatInputAutoCompleteEvent) context;
-        return getOptionValue(interaction.getFocusedOption());
+    public AutocompleteOptionData getAutocompleteFocusedOption(Object context) {
+        ApplicationCommandInteractionOption option = ((ChatInputAutoCompleteEvent) context).getFocusedOption();
+        return new AutocompleteOptionData(option.getName(), getOptionValue(option));
     }
 
 }

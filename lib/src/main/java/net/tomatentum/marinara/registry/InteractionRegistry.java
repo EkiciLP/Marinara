@@ -18,7 +18,6 @@ import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ObjectAggregator;
-import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.interaction.methods.AutoCompleteInteractionMethod;
 import net.tomatentum.marinara.interaction.methods.InteractionMethod;
 import net.tomatentum.marinara.interaction.methods.SlashCommandInteractionMethod;
@@ -28,13 +27,10 @@ public class InteractionRegistry {
     private Logger logger = LoggerUtil.getLogger(getClass());
     private Set<InteractionEntry> interactions;
     private Marinara marinara;
-    private IdentifierProvider identifierProvider;
 
     public InteractionRegistry(Marinara marinara) {
         this.interactions = new HashSet<>();
         this.marinara = marinara;
-        this.identifierProvider = marinara.getWrapper().createIdentifierProvider();
-        marinara.getWrapper().subscribeInteractions(this::handle);
         marinara.getReflectedMethodFactory()
             .addFactory(new AutoCompleteInteractionMethod.Factory())
             .addFactory(new SlashCommandInteractionMethod.Factory())
@@ -72,19 +68,13 @@ public class InteractionRegistry {
         marinara.getWrapper().getRegisterer().register(defs);
     }
 
-    public void handle(Object context) {
-        logger.debug("Received {} interaction ", context);
-        interactions.forEach((e) -> {
-            if (e.identifier().equals(this.identifierProvider.provide(context, this))) {
-                logger.info("Running {} interaction using {}\ncontext: {}", e.type(), e.toString(), context.toString());
-                e.runAll(context);
-            }
-        });
-    }
-
     public Optional<InteractionEntry> findFor(InteractionIdentifier identifier) {
         return this.interactions.stream()
             .filter(x -> x.identifier().equals(identifier))
             .findFirst();
+    }
+
+    public Set<InteractionEntry> interactions() {
+        return this.interactions;
     }
 }

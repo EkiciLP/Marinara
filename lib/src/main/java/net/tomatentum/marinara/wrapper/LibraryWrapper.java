@@ -12,7 +12,7 @@ public abstract class LibraryWrapper {
     }
 
     public void handleInteraction(Object context) {
-        interactionSubscriber.forEach((o) -> o.accept(context));
+        interactionSubscriber.forEach(o -> o.accept(context));
     }
 
     public void subscribeInteractions(Consumer<Object> consumer) {
@@ -25,5 +25,6 @@ public abstract class LibraryWrapper {
     public abstract CommandRegisterer<?> getRegisterer();  
     public abstract IdentifierProvider createIdentifierProvider();
     public abstract ContextObjectProvider getContextObjectProvider();
+    public abstract void respondAutocomplete(Object context, List<Object> options);
 
 }

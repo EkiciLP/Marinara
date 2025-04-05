@@ -11,7 +11,6 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.parser.AnnotationParser;
-import net.tomatentum.marinara.parser.AutocompleteParser;
 import net.tomatentum.marinara.parser.SlashCommandParser;
 import net.tomatentum.marinara.reflection.ReflectedMethod;
 
@@ -38,10 +37,10 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
         @Override
         public Optional<ReflectedMethod> produce(Marinara marinara, Method method, Object containingObject) {
             ReflectedMethod rMethod = null;
-            if ((containingObject instanceof InteractionHandler) && 
+            if ((containingObject instanceof InteractionHandler iHandler) && 
                 (method.isAnnotationPresent(SlashCommand.class) ||
                 method.isAnnotationPresent(SubCommand.class)))
-                rMethod = new SlashCommandInteractionMethod(method, (InteractionHandler) containingObject, marinara);
+                rMethod = new SlashCommandInteractionMethod(method, iHandler, marinara);
             return Optional.ofNullable(rMethod);
         }
 
@@ -49,12 +48,8 @@ public class SlashCommandInteractionMethod extends InteractionMethod {
         public void addParser(ReflectedMethod method, List<AnnotationParser> parser) {
             super.addParser(method, parser);
 
-            SlashCommandInteractionMethod imethod = (SlashCommandInteractionMethod) method;
             parser.add(
-                new SlashCommandParser(method.method(), x -> imethod.interactionIdentifier = x)
-            );
-            parser.add(
-                new AutocompleteParser(method.method(), x -> imethod.interactionIdentifier.autocompleteRef(x))
+                new SlashCommandParser(method.method(), x -> ((SlashCommandInteractionMethod) method).interactionIdentifier = x)
             );
         }
 

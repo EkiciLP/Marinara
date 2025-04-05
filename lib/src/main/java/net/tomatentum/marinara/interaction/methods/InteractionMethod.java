@@ -51,7 +51,7 @@ public abstract class InteractionMethod extends ReflectedMethod {
         return this.appliedChecks;
     }
 
-    public static abstract class Factory implements ReflectedMethodFactory.Factory {
+    public abstract static class Factory implements ReflectedMethodFactory.Factory {
 
         @Override
         public void addParser(ReflectedMethod method, List<AnnotationParser> parser) {

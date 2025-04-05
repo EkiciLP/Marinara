@@ -73,7 +73,7 @@ public class InteractionIdentifier {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !(obj instanceof InteractionIdentifier))
+        if (!(obj instanceof InteractionIdentifier))
             return false;
         InteractionIdentifier ident = (InteractionIdentifier) obj;
         if (!type().equals(ident.type()))
@@ -84,10 +84,15 @@ public class InteractionIdentifier {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(type(), name(), parent());
+    }
+
+    @Override
     public String toString() {
         if (parent() == null)
             return name();
-        return "{}.{}".formatted(name(), parent().toString());
+        return "%s.%s".formatted(name(), parent().toString());
     }
 
     public static class Builder {

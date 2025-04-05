@@ -6,14 +6,13 @@ import discord4j.core.event.domain.interaction.ChatInputInteractionEvent;
 import discord4j.core.object.command.ApplicationCommandInteractionOption;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.registry.InteractionRegistry;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.wrapper.discord4j.Discord4JWrapper;
 
 public class SlashCommandIdentifierConverter implements IdentifierProvider.Converter<ChatInputInteractionEvent> {
 
     @Override
-    public InteractionIdentifier convert(ChatInputInteractionEvent context, InteractionRegistry registry) {
+    public InteractionIdentifier convert(ChatInputInteractionEvent context) {
         List<ApplicationCommandInteractionOption> options = Discord4JWrapper.SUB_FILTER.apply(context.getOptions());
         String commandName = context.getCommandName();
 
