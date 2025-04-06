@@ -13,27 +13,28 @@ public class SlashCommandIdentifierConverter implements IdentifierProvider.Conve
 
     @Override
     public InteractionIdentifier convert(ChatInputInteractionEvent context) {
+        InteractionIdentifier last = InteractionIdentifier.builder()
+            .type(InteractionType.COMMAND)
+            .name(context.getCommandName())
+            .build();
+
         List<ApplicationCommandInteractionOption> options = Discord4JWrapper.SUB_FILTER.apply(context.getOptions());
-        String commandName = context.getCommandName();
-
         if (!options.isEmpty()) {
-            List<ApplicationCommandInteractionOption> sub_options = Discord4JWrapper.SUB_FILTER.apply(options.getFirst().getOptions());
-            if (!sub_options.isEmpty())
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.COMMAND, 
-                    commandName, 
-                    options.getFirst().getName(),
-                    sub_options.getFirst().getName());
-            else
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.COMMAND, 
-                    commandName, 
-                    options.getFirst().getName());
-        }else
-            return InteractionIdentifier.createHierarchy(
-                InteractionType.COMMAND, 
-                commandName); 
+            last = InteractionIdentifier.builder()
+                .type(InteractionType.COMMAND)
+                .name(options.getFirst().getName())
+                .parent(last)
+                .build();
 
+            List<ApplicationCommandInteractionOption> subOptions = Discord4JWrapper.SUB_FILTER.apply(options.getFirst().getOptions());
+            if (!subOptions.isEmpty())
+                last = InteractionIdentifier.builder()
+                    .type(InteractionType.COMMAND)
+                    .name(subOptions.getFirst().getName())
+                    .parent(last)
+                    .build();
+        }
+        return last;
     }
     
 }

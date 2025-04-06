@@ -13,27 +13,28 @@ public class AutocompleteIdentifierConverter implements IdentifierProvider.Conve
 
     @Override
     public InteractionIdentifier convert(AutocompleteInteraction context) {
-        List<SlashCommandInteractionOption> options = context.getOptions();
-        String commandName = context.getCommandName();
+        InteractionIdentifier last = InteractionIdentifier.builder()
+            .type(InteractionType.AUTOCOMPLETE)
+            .name(context.getCommandName())
+            .build();
 
+        List<SlashCommandInteractionOption> options = context.getOptions();
         if (!options.isEmpty()) {
+            last = InteractionIdentifier.builder()
+                .type(InteractionType.AUTOCOMPLETE)
+                .name(options.getFirst().getName())
+                .parent(last)
+                .build();
+
             List<SlashCommandInteractionOption> subOptions = context.getOptions().getFirst().getOptions();
             if (!subOptions.isEmpty())
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.AUTOCOMPLETE, 
-                    commandName, 
-                    options.getFirst().getName(),
-                    subOptions.getFirst().getName());
-            else
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.AUTOCOMPLETE, 
-                    commandName, 
-                    options.getFirst().getName());
-        }else
-            return InteractionIdentifier.createHierarchy(
-                InteractionType.AUTOCOMPLETE, 
-                commandName); 
-
+                last = InteractionIdentifier.builder()
+                    .type(InteractionType.AUTOCOMPLETE)
+                    .name(subOptions.getFirst().getName())
+                    .parent(last)
+                    .build();
+        }
+        return last;
     }
     
 }

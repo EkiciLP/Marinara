@@ -13,26 +13,28 @@ public class SlashCommandIdentifierConverter implements IdentifierProvider.Conve
 
     @Override
     public InteractionIdentifier convert(SlashCommandInteraction context) {
-        List<SlashCommandInteractionOption> options = context.getOptions();
-        String commandName = context.getCommandName();
-        if (!options.isEmpty()) {
-            List<SlashCommandInteractionOption> sub_options = context.getOptions().getFirst().getOptions();
-            if (!sub_options.isEmpty())
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.COMMAND, 
-                    commandName, 
-                    options.getFirst().getName(),
-                    sub_options.getFirst().getName());
-            else
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.COMMAND, 
-                    commandName, 
-                    options.getFirst().getName());
-        }else
-            return InteractionIdentifier.createHierarchy(
-                InteractionType.COMMAND, 
-                commandName); 
+        InteractionIdentifier last = InteractionIdentifier.builder()
+            .type(InteractionType.COMMAND)
+            .name(context.getCommandName())
+            .build();
 
+        List<SlashCommandInteractionOption> options = context.getOptions();
+        if (!options.isEmpty()) {
+            last = InteractionIdentifier.builder()
+                .type(InteractionType.COMMAND)
+                .name(options.getFirst().getName())
+                .parent(last)
+                .build();
+                
+            List<SlashCommandInteractionOption> subOptions = context.getOptions().getFirst().getOptions();
+            if (!subOptions.isEmpty())
+                last = InteractionIdentifier.builder()
+                    .type(InteractionType.COMMAND)
+                    .name(subOptions.getFirst().getName())
+                    .parent(last)
+                    .build();
+        }
+        return last;
     }
     
 }

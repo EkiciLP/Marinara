@@ -13,27 +13,28 @@ public class AutocompleteIdentifierConverter implements IdentifierProvider.Conve
 
     @Override
     public InteractionIdentifier convert(ChatInputAutoCompleteEvent context) {
-        List<ApplicationCommandInteractionOption> options = Discord4JWrapper.SUB_FILTER.apply(context.getOptions());
-        String commandName = context.getCommandName();
+        InteractionIdentifier last = InteractionIdentifier.builder()
+            .type(InteractionType.AUTOCOMPLETE)
+            .name(context.getCommandName())
+            .build();
 
+        List<ApplicationCommandInteractionOption> options = Discord4JWrapper.SUB_FILTER.apply(context.getOptions());
         if (!options.isEmpty()) {
+            last = InteractionIdentifier.builder()
+                .type(InteractionType.AUTOCOMPLETE)
+                .name(options.getFirst().getName())
+                .parent(last)
+                .build();
+
             List<ApplicationCommandInteractionOption> subOptions = Discord4JWrapper.SUB_FILTER.apply(options.getFirst().getOptions());
             if (!subOptions.isEmpty())
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.AUTOCOMPLETE, 
-                    commandName, 
-                    options.getFirst().getName(),
-                    subOptions.getFirst().getName());
-            else
-                return InteractionIdentifier.createHierarchy(
-                    InteractionType.AUTOCOMPLETE, 
-                    commandName, 
-                    options.getFirst().getName());
-        }else
-            return InteractionIdentifier.createHierarchy(
-                InteractionType.AUTOCOMPLETE, 
-                commandName); 
-
+                last = InteractionIdentifier.builder()
+                    .type(InteractionType.AUTOCOMPLETE)
+                    .name(subOptions.getFirst().getName())
+                    .parent(last)
+                    .build();
+        }
+        return last;
     }
     
 }
