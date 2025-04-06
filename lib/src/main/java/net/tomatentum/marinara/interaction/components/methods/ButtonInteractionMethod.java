@@ -43,9 +43,9 @@ public class ButtonInteractionMethod extends InteractionMethod {
         public Optional<ReflectedMethod> produce(Marinara marinara, Method method, Object containingObject) {
             ReflectedMethod rMethod = null;
             if (method.isAnnotationPresent(Button.class) &&
-                (containingObject instanceof InteractionHandler)
+                (containingObject instanceof InteractionHandler iHandler)
                 )
-                rMethod = new ButtonInteractionMethod(method, (InteractionHandler) containingObject, marinara);
+                rMethod = new ButtonInteractionMethod(method, iHandler, marinara);
 
             return Optional.ofNullable(rMethod);
         }
@@ -54,9 +54,8 @@ public class ButtonInteractionMethod extends InteractionMethod {
         public void addParser(ReflectedMethod method, List<AnnotationParser> parser) {
             super.addParser(method, parser);
 
-            ButtonInteractionMethod imethod = (ButtonInteractionMethod) method;
             parser.add(
-                new ButtonParser(method.method(), x -> imethod.customId = x)
+                new ButtonParser(method.method(), x -> ((ButtonInteractionMethod) method).customId = x)
             );
         }
 
