@@ -4,24 +4,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.registry.InteractionEntry;
+import net.tomatentum.marinara.wrapper.IdentifierProvider;
 
-public class AutocompleteInteractionProcessor implements InteractionProcessor {
+public class AutocompleteInteractionProcessor extends InteractionMethodProcessor {
+
+    private Marinara marinara;
+
+    public AutocompleteInteractionProcessor(Marinara marinara, IdentifierProvider provider) {
+        super(provider, Set.of(InteractionType.AUTOCOMPLETE));
+        this.marinara = marinara;
+    }
 
     @Override
-    public void process(Object context, InteractionIdentifier identifier, Marinara marinara) {
-        if (!identifier.type().equals(InteractionType.AUTOCOMPLETE))
-            return;
-        Optional<InteractionEntry> entry = marinara.getRegistry().findFor(convertToCommandIdentifier(identifier));
+    public void processInteraction(Object context, InteractionIdentifier identifier) {
+        Optional<InteractionEntry> entry = this.marinara.getRegistry().findFor(convertToCommandIdentifier(identifier));
         if (entry.isPresent() && entry.get().identifier() instanceof SlashCommandIdentifier sIdent) {
-            List<String> autocompleteRefs = Arrays.asList(marinara.getWrapper().getContextObjectProvider()
+            List<String> autocompleteRefs = Arrays.asList(this.marinara.getWrapper().getContextObjectProvider()
                 .getAutocompleteFocusedOption(context).getAutocompleteRefs(sIdent.options()));
-            List<Object> results = marinara.getRegistry().interactions().stream()
+            List<Object> results = this.marinara.getRegistry().interactions().stream()
                 .filter(e -> e.type().equals(InteractionType.AUTOCOMPLETE))
                 .filter(e -> autocompleteRefs.contains(e.identifier().name()))
                 .map(e -> e.runAll(context))

@@ -2,28 +2,23 @@ package net.tomatentum.marinara.interaction.processor;
 
 import java.util.Set;
 
-import org.slf4j.Logger;
-
-import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.util.LoggerUtil;
+import net.tomatentum.marinara.registry.InteractionRegistry;
+import net.tomatentum.marinara.wrapper.IdentifierProvider;
 
-public class DirectInteractionProcessor implements InteractionProcessor {
+public class DirectInteractionProcessor extends InteractionMethodProcessor {
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
-    private Set<InteractionType> types;
+    private InteractionRegistry registry;
 
-    public DirectInteractionProcessor(InteractionType... types) {
-        this.types = Set.of(types);
+    public DirectInteractionProcessor(InteractionRegistry registry, IdentifierProvider provider, InteractionType... types) {
+        super(provider, Set.of(types));
+        this.registry = registry;
     }
 
     @Override
-    public void process(Object context, InteractionIdentifier identifier, Marinara marinara) {
-        if (!types.contains(identifier.type()))
-            return;
-        logger.debug("Processing {} : {} with context {}", identifier, identifier.type(), context);
-        marinara.getRegistry().interactions().stream()
+    protected void processInteraction(Object context, InteractionIdentifier identifier) {
+        this.registry.interactions().stream()
             .filter(e -> e.identifier().equals(identifier))
             .findFirst()
             .ifPresent(e -> e.runAll(context));

@@ -5,13 +5,14 @@ import org.slf4j.Logger;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.processor.AutocompleteInteractionProcessor;
 import net.tomatentum.marinara.interaction.processor.DirectInteractionProcessor;
+import net.tomatentum.marinara.reflection.MethodExecutor;
+import net.tomatentum.marinara.reflection.ProcessorMethodExecutor;
 import net.tomatentum.marinara.reflection.ReflectedMethodFactory;
 import net.tomatentum.marinara.reflection.ReflectedMethodFactoryImpl;
 import net.tomatentum.marinara.registry.InteractionCheckRegistry;
-import net.tomatentum.marinara.registry.InteractionExecutor;
 import net.tomatentum.marinara.registry.InteractionRegistry;
-import net.tomatentum.marinara.registry.ProcessorInteractionExecutor;
 import net.tomatentum.marinara.util.LoggerUtil;
+import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class Marinara {
@@ -26,16 +27,17 @@ public class Marinara {
     private ReflectedMethodFactory reflectedMethodFactory;
     private InteractionRegistry registry;
     private InteractionCheckRegistry checkRegistry;
-    private InteractionExecutor interactionExecutor;
+    private MethodExecutor interactionExecutor;
 
     private Marinara(LibraryWrapper wrapper) {
         this.wrapper = wrapper;
         this.reflectedMethodFactory = new ReflectedMethodFactoryImpl(this);
         this.registry = new InteractionRegistry(this);
         this.checkRegistry = new InteractionCheckRegistry();
-        this.interactionExecutor = new ProcessorInteractionExecutor(wrapper.createIdentifierProvider(), this)
-            .addProcessor(new DirectInteractionProcessor(InteractionType.COMMAND, InteractionType.BUTTON))
-            .addProcessor(new AutocompleteInteractionProcessor());
+        IdentifierProvider provider = wrapper.createIdentifierProvider();
+        this.interactionExecutor = (MethodExecutor) new ProcessorMethodExecutor()
+            .addProcessor(new DirectInteractionProcessor(getRegistry(), provider, InteractionType.COMMAND, InteractionType.BUTTON))
+            .addProcessor(new AutocompleteInteractionProcessor(this, provider));
         wrapper.subscribeInteractions(this.interactionExecutor::handle);
         logger.info("Marinara loaded successfully!");
     }
@@ -56,7 +58,7 @@ public class Marinara {
         return this.reflectedMethodFactory;
     }
 
-    public InteractionExecutor getInteractionExecutor() {
+    public MethodExecutor getInteractionExecutor() {
         return interactionExecutor;
     }
     
