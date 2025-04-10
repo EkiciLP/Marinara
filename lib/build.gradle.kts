@@ -10,11 +10,6 @@ plugins {
     `java-library`
 }
 
-repositories {
-    // Use Maven Central for resolving dependencies.
-    mavenCentral()
-}
-
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation(libs.junit.jupiter)
@@ -22,6 +17,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(libs.slf4j)
     implementation(libs.geantyref)
+    implementation(libs.cutin)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

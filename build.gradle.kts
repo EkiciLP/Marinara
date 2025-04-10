@@ -13,6 +13,14 @@ allprojects {
             archiveBaseName.set("marinara-" + archiveBaseName.get())
         }
     }
+
+    repositories {
+        // Use Maven Central for resolving dependencies.
+        mavenCentral()
+        maven {
+            url = uri("https://git.tomatentum.net/api/packages/tueem/maven")
+        }
+    }
 }
 
 subprojects {
