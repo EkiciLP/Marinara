@@ -26,7 +26,7 @@ public class TestCommand implements InteractionHandler {
         }
         )
     public void exec(ChatInputInteractionEvent event, String test) {
-        assertEquals(test, "test");
+        assertEquals("test", test);
         System.out.println("Success!");
     }
 }

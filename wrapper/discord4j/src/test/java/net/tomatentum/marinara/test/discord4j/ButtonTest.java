@@ -13,15 +13,15 @@ import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.discord4j.Discord4JWrapper;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class ButtonTest {
+class ButtonTest {
 
     @Test
-    public void testButtonExecution() {
+    void testButtonExecution() {
         ButtonInteractionEvent buttonEventMock = CommonMocks.getButtonEventMock("test");
 
         LibraryWrapper wrapper = new Discord4JWrapper(null); //null okay as we don't use the discord API in this test.
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getRegistry().addInteractions(new TestButton());
+        marinara.getInteractionContainer().addAllMethods(new TestButton());
         wrapper.handleInteraction(buttonEventMock);
         assertTrue(TestButton.didRun);
     }

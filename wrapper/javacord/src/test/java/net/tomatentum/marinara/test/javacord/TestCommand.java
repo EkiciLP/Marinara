@@ -11,6 +11,7 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 import net.tomatentum.marinara.interaction.commands.option.SlashCommandOptionType;
 
 public class TestCommand implements InteractionHandler {
+
     @SlashCommand(
         name = "test", 
         description = "testingen",
@@ -27,7 +28,8 @@ public class TestCommand implements InteractionHandler {
         }
         )
     public void exec(SlashCommandInteraction interaction, String test) {
-        assertEquals(test, "test");
+        assertEquals("test", test);
         System.out.println("Success!");
     }
+    
 }

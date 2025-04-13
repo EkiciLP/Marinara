@@ -17,7 +17,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(libs.slf4j)
     implementation(libs.geantyref)
-    implementation(libs.cutin)
+    api(libs.cutin)
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

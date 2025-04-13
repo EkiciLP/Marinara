@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collections;
 
-import org.javacord.api.event.interaction.SlashCommandCreateEvent;
 import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.SlashCommandInteraction;
 
@@ -24,15 +23,14 @@ public class TestAutocomplete implements InteractionHandler {
                 autocompletes = @AutoComplete("testAuto")
             )
         )
-    @AutoComplete("testAuto")
     public void exec(SlashCommandInteraction context) {
-
+        //only here for command definition
     }
 
     @AutoComplete("testAuto")
     public void autocomplete(AutocompleteInteraction context, String value) {
         System.out.println("Success!");
-        assertEquals(value, "test");
+        assertEquals("test", value);
         context.respondWithChoices(Collections.emptyList());
     }
 

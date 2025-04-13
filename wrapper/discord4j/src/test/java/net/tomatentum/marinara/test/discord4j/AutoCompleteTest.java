@@ -38,7 +38,7 @@ class AutoCompleteTest {
 
         LibraryWrapper wrapper = new Discord4JWrapper(null); //null okay as we don't use the discord API in this test.
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getRegistry().addInteractions(new TestAutocomplete());
+        marinara.getInteractionContainer().addAllMethods(new TestAutocomplete());
         wrapper.handleInteraction(autoCompleteEventMock);
         verify(autoCompleteEventMock).respondWithSuggestions(any());
     }

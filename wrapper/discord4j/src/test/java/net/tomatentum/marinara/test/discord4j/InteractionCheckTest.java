@@ -24,16 +24,16 @@ import net.tomatentum.marinara.wrapper.discord4j.checks.PermissionCheck;
 import reactor.core.publisher.Mono;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class InteractionCheckTest {
+class InteractionCheckTest {
     
     @Test
-    public void testInteractionCheck() {
+    void testInteractionCheck() {
         ButtonInteractionEvent buttonEventMock = CommonMocks.getButtonEventMock("test");
 
         LibraryWrapper wrapper = new Discord4JWrapper(null);
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getCheckRegistry().addCheck(new TestInteractionCheck());
-        marinara.getRegistry().addInteractions(new TestButton());
+        marinara.getCheckContainer().addAllMethods(new TestInteractionCheck());
+        marinara.getInteractionContainer().addAllMethods(new TestButton());
         wrapper.handleInteraction(buttonEventMock);
 
         assertTrue(TestInteractionCheck.preExecuted);
@@ -42,7 +42,7 @@ public class InteractionCheckTest {
     }
 
     @Test
-    public void testPermissionCheck() {
+    void testPermissionCheck() {
         Member memberMock = mock();
         Interaction interactionMock = mock();
 
@@ -54,8 +54,8 @@ public class InteractionCheckTest {
 
         LibraryWrapper wrapper = new Discord4JWrapper(null);
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getCheckRegistry().addCheck(new PermissionCheck());
-        marinara.getRegistry().addInteractions(new TestButton());
+        marinara.getCheckContainer().addAllMethods(new PermissionCheck());
+        marinara.getInteractionContainer().addAllMethods(new TestButton());
 
         wrapper.handleInteraction(buttonEventMock);
         assertFalse(TestButton.didPermRun);

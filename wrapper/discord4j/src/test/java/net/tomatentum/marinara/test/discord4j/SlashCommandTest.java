@@ -22,9 +22,9 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.discord4j.Discord4JWrapper;
 @TestInstance(Lifecycle.PER_CLASS)
-public class SlashCommandTest {
+class SlashCommandTest {
 
-    String DISCORD_TOKEN = System.getenv("DISCORD_TEST_TOKEN");
+    private static String DISCORD_TOKEN = System.getenv("DISCORD_TEST_TOKEN");
     GatewayDiscordClient client;
 
     @BeforeAll
@@ -41,8 +41,8 @@ public class SlashCommandTest {
     @Test
     void testSlashCommand() {
         Marinara marinara = Marinara.load(new Discord4JWrapper(client));
-        marinara.getRegistry().addInteractions(new TestCommand());
-        marinara.getRegistry().registerCommands();
+        marinara.getInteractionContainer().addAllMethods(new TestCommand());
+        marinara.registerCommands();
         System.out.println("Success!");
     }
     
@@ -64,7 +64,7 @@ public class SlashCommandTest {
         
         LibraryWrapper wrapper = new Discord4JWrapper(client);
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getRegistry().addInteractions(new TestCommand());
+        marinara.getInteractionContainer().addAllMethods(new TestCommand());
 
         wrapper.handleInteraction(eventMock);
     }

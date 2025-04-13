@@ -8,7 +8,7 @@ javacord = "3.8.0"
 discord4j = "3.2.7"
 geantyref = "2.0.0"
 mockito = "5.15.2"
-cutin = "0.1.0"
+cutin = "0.1.1-cad019e"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
@@ -17,4 +17,4 @@ javacord = { module = "org.javacord:javacord", version.ref = "javacord"}
 discord4j = { module = "com.discord4j:discord4j-core", version.ref = "discord4j"}
 geantyref = { module = "io.leangen.geantyref:geantyref", version.ref = "geantyref"}
 mockito = {module = "org.mockito:mockito-core", version.ref = "mockito"}
-cutin = {module = "net.tomatentum.cutin:lib", version.ref = "cutin"}
+cutin = {module = "net.tomatentum.cutin:lib-dev", version.ref = "cutin"}

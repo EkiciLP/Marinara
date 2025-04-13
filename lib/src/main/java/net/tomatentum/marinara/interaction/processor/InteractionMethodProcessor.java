@@ -4,13 +4,14 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 
+import net.tomatentum.cutin.MethodProcessor;
+import net.tomatentum.cutin.container.MethodContainer;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.reflection.MethodProcessor;
 import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
 
-public abstract class InteractionMethodProcessor implements MethodProcessor {
+public abstract class InteractionMethodProcessor implements MethodProcessor<InteractionIdentifier, Object> {
 
     private Logger logger = LoggerUtil.getLogger(getClass());
 
@@ -23,13 +24,16 @@ public abstract class InteractionMethodProcessor implements MethodProcessor {
     }
 
     @Override
-    public void process(Object context) {
+    public void process(Object context, MethodContainer<InteractionIdentifier, Object> container) {
         InteractionIdentifier identifier = this.provider.provide(context);
         if (!this.types.contains(identifier.type())) return;
         logger.debug("Processing {} : {} with context {}", identifier, identifier.type(), context);
-        this.processInteraction(context, identifier);
+        this.processInteraction(context, container, identifier);
     }
 
-    protected abstract void processInteraction(Object context, InteractionIdentifier identifier);
+    protected abstract void processInteraction(
+        Object context, 
+        MethodContainer<InteractionIdentifier, Object> container, 
+        InteractionIdentifier identifier);
     
 }

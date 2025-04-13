@@ -4,28 +4,34 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.tomatentum.marinara.Marinara;
+import net.tomatentum.cutin.MethodParser;
+import net.tomatentum.cutin.ReflectedMethodFactory;
+import net.tomatentum.cutin.container.MethodContainer;
+import net.tomatentum.cutin.method.ReflectedMethod;
 import net.tomatentum.marinara.checks.AppliedCheck;
+import net.tomatentum.marinara.checks.CheckExecutionContext;
+import net.tomatentum.marinara.checks.CheckMethodIdentifier;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.parser.AnnotationParser;
 import net.tomatentum.marinara.parser.InteractionCheckParser;
-import net.tomatentum.marinara.reflection.ReflectedMethod;
-import net.tomatentum.marinara.reflection.ReflectedMethodFactory;
 
-public abstract class InteractionMethod extends ReflectedMethod {
+public abstract class InteractionMethod extends ReflectedMethod<InteractionIdentifier, Object> {
 
-    protected Marinara marinara;
     protected List<AppliedCheck> appliedChecks;
 
     protected InteractionMethod(
         Method method, 
-        InteractionHandler handler, 
-        Marinara marinara
+        InteractionHandler handler
         ) {
         super(method, handler);
-        this.marinara = marinara;
         this.appliedChecks = new ArrayList<>();
+    }
+
+    @Override
+    public Object getParameter(Object context, int index) {
+        if (index == 0)
+            return context;
+        return null;
     }
     
     @Override
@@ -41,23 +47,23 @@ public abstract class InteractionMethod extends ReflectedMethod {
         return result;
     }
 
-    public abstract InteractionIdentifier identifier();
-
-    public Marinara marinara() {
-        return this.marinara;
-    }
-
     public List<AppliedCheck> appliedChecks() {
         return this.appliedChecks;
     }
 
-    public abstract static class Factory implements ReflectedMethodFactory.Factory {
+    public abstract static class Factory implements ReflectedMethodFactory.Factory<InteractionIdentifier, Object> {
+
+        private MethodContainer<CheckMethodIdentifier, CheckExecutionContext> checkContainer;
+
+        protected Factory(MethodContainer<CheckMethodIdentifier, CheckExecutionContext> checkContainer) {
+            this.checkContainer = checkContainer;
+        }
 
         @Override
-        public void addParser(ReflectedMethod method, List<AnnotationParser> parser) {
+        public void addParser(ReflectedMethod<InteractionIdentifier, Object> method, List<MethodParser> parser) {
             InteractionMethod imethod = (InteractionMethod) method;
             parser.add(
-                new InteractionCheckParser(method.method(), imethod.appliedChecks::add, imethod.marinara().getCheckRegistry())
+                new InteractionCheckParser(method.method(), imethod.appliedChecks::add, this.checkContainer)
             );
         }
 

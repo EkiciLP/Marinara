@@ -10,9 +10,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 
 import io.leangen.geantyref.GenericTypeReflector;
+import net.tomatentum.cutin.util.ReflectionUtil;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
-import net.tomatentum.marinara.util.ReflectionUtil;
 
 public class IdentifierProvider {
 

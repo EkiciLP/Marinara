@@ -16,8 +16,8 @@ import net.tomatentum.marinara.wrapper.javacord.checks.PermissionCheck.HasPermis
 
 public class TestButton implements InteractionHandler {
 
-
     public static boolean didRun = false;
+
     @Button("test")
     @TestCheck
     public void exec(ButtonInteraction interaction, TextChannel channel, Message message, User member, Server server) {

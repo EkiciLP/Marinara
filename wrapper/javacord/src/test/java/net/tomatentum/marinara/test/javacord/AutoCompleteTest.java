@@ -16,10 +16,10 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 
-public class AutoCompleteTest {
+class AutoCompleteTest {
     
     @Test
-    public void testAutocomplete() {
+    void testAutocomplete() {
 
         SlashCommandInteractionOption optionMock = mock();
         AutocompleteInteraction autocompleteInteractionMock = mock();
@@ -33,7 +33,7 @@ public class AutoCompleteTest {
 
         LibraryWrapper wrapper = new JavacordWrapper(null); //null okay as we don't use the discord API in this test.
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getRegistry().addInteractions(new TestAutocomplete());
+        marinara.getInteractionContainer().addAllMethods(new TestAutocomplete());
         wrapper.handleInteraction(autocompleteInteractionMock);
         verify(autocompleteInteractionMock).respondWithChoices(any());
     }

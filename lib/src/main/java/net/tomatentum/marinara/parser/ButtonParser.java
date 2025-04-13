@@ -5,11 +5,12 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import net.tomatentum.cutin.MethodParser;
+import net.tomatentum.cutin.util.ReflectionUtil;
 import net.tomatentum.marinara.interaction.annotation.Button;
 import net.tomatentum.marinara.util.LoggerUtil;
-import net.tomatentum.marinara.util.ReflectionUtil;
 
-public class ButtonParser implements AnnotationParser {
+public class ButtonParser implements MethodParser {
     
     private Method method;
     private Consumer<String> consumer;
@@ -23,14 +24,9 @@ public class ButtonParser implements AnnotationParser {
 
     @Override
     public void parse() {
-        Button button = getMethod().getAnnotation(Button.class);
-        logger.trace("Parsed Button annotation {} for method {}", button.toString(), ReflectionUtil.getFullMethodName(method));
+        Button button = this.method.getAnnotation(Button.class);
+        logger.trace("Parsed Button annotation {} for method {}", button, ReflectionUtil.getFullMethodName(method));
         this.consumer.accept(button.value());
-    }
-
-    @Override
-    public Method getMethod() {
-        return this.method;
     }
     
 }

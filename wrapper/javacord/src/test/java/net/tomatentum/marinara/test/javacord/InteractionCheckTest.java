@@ -19,25 +19,25 @@ import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 import net.tomatentum.marinara.wrapper.javacord.checks.PermissionCheck;
 
 @TestInstance(Lifecycle.PER_CLASS)
-public class InteractionCheckTest {
+class InteractionCheckTest {
     
     @Test
-    public void testInteractionCheck() {
+    void testInteractionCheck() {
         LibraryWrapper wrapper = new JavacordWrapper(null);
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getCheckRegistry().addCheck(new TestInteractionCheck());
-        marinara.getRegistry().addInteractions(new TestButton());
+        marinara.getCheckContainer().addAllMethods(new TestInteractionCheck());
+        marinara.getInteractionContainer().addAllMethods(new TestButton());
         wrapper.handleInteraction(CommonMocks.getButtonInteractionMock("test"));
         assertTrue(TestInteractionCheck.preExecuted);
         assertTrue(TestInteractionCheck.postExecuted);
     }
 
     @Test
-    public void testPermissionCheck() {
+    void testPermissionCheck() {
         LibraryWrapper wrapper = new JavacordWrapper(null);
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getCheckRegistry().addCheck(new PermissionCheck());
-        marinara.getRegistry().addInteractions(new TestButton());
+        marinara.getCheckContainer().addAllMethods(new PermissionCheck());
+        marinara.getInteractionContainer().addAllMethods(new TestButton());
 
         Server serverMock = mock();
         ButtonInteraction buttonInteractionMock = CommonMocks.getButtonInteractionMock("permissionCheck", serverMock);

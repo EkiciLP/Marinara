@@ -20,7 +20,7 @@ import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.JavacordWrapper;
 @TestInstance(Lifecycle.PER_CLASS)
-public class SlashCommandTest {
+class SlashCommandTest {
 
     String DISCORD_TOKEN = System.getenv("DISCORD_TEST_TOKEN");
     DiscordApi api;
@@ -41,8 +41,8 @@ public class SlashCommandTest {
     @Test
     void testSlashCommand() {
         Marinara marinara = Marinara.load(new JavacordWrapper(api));
-        marinara.getRegistry().addInteractions(new TestCommand());
-        marinara.getRegistry().registerCommands();
+        marinara.getInteractionContainer().addAllMethods(new TestCommand());
+        marinara.registerCommands();
         System.out.println("Success!");
     }
     
@@ -50,7 +50,7 @@ public class SlashCommandTest {
     void testSlashCommandExecution() {
         LibraryWrapper wrapper = new JavacordWrapper(api);
         Marinara marinara = Marinara.load(wrapper);
-        marinara.getRegistry().addInteractions(new TestCommand());
+        marinara.getInteractionContainer().addAllMethods(new TestCommand());
 
         SlashCommandInteractionOption optionMock = mock();
         SlashCommandInteraction interactionMock = mock();

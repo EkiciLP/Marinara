@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 
+import net.tomatentum.cutin.MethodParser;
+import net.tomatentum.cutin.util.ReflectionUtil;
 import net.tomatentum.marinara.interaction.InteractionType;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
@@ -12,9 +14,8 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 import net.tomatentum.marinara.util.LoggerUtil;
-import net.tomatentum.marinara.util.ReflectionUtil;
 
-public class SlashCommandParser implements AnnotationParser {
+public class SlashCommandParser implements MethodParser {
 
     private Method method;
     private Consumer<SlashCommandIdentifier> consumer;
@@ -57,13 +58,8 @@ public class SlashCommandParser implements AnnotationParser {
                 .build();
         }
 
-        logger.trace("Parsed using SlashCommandParser for method {} with the result: {}", ReflectionUtil.getFullMethodName(method), lastIdentifier.toString());
+        logger.trace("Parsed using SlashCommandParser for method {} with the result: {}", ReflectionUtil.getFullMethodName(method), lastIdentifier);
         consumer.accept((SlashCommandIdentifier) lastIdentifier);
-    }
-
-    @Override
-    public Method getMethod() {
-       return this.method;
     }
 
     private void checkValidCommandMethod(Method method) {
