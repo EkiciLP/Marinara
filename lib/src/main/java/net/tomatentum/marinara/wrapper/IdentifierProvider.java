@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.leangen.geantyref.GenericTypeReflector;
 import net.tomatentum.cutin.util.ReflectionUtil;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.util.LoggerUtil;
 
 public class IdentifierProvider {
 
@@ -20,8 +20,9 @@ public class IdentifierProvider {
         return new IdentifierProvider(Arrays.asList(converter));
     }
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     private Map<Class<?>, Converter<?>> converter;
-    private Logger logger = LoggerUtil.getLogger(getClass());
 
     private IdentifierProvider(List<Converter<?>> converter) {
         this.converter = new HashMap<>();
@@ -47,7 +48,9 @@ public class IdentifierProvider {
         @SuppressWarnings("unchecked")
         Converter<Object> conv = (Converter<Object>) converter.get(type);
 
-        return conv.convert(context);
+        InteractionIdentifier result = conv.convert(context);
+        logger.trace("Converted {} to {} using {}", context, result, conv);
+        return result;
     }
 
     @FunctionalInterface

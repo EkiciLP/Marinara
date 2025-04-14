@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.cutin.MethodExecutor;
 import net.tomatentum.cutin.ProcessorMethodExecutor;
@@ -18,14 +19,13 @@ import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.interaction.processor.AutocompleteInteractionProcessor;
 import net.tomatentum.marinara.interaction.processor.DirectInteractionProcessor;
-import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.util.ObjectAggregator;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 
 public class Marinara {
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
     
     public static Marinara load(LibraryWrapper wrapper) {
         return new Marinara(wrapper);

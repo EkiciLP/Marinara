@@ -3,9 +3,9 @@ package net.tomatentum.marinara.checks;
 import java.lang.annotation.Annotation;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.cutin.method.ReflectedMethod;
-import net.tomatentum.marinara.util.LoggerUtil;
 
 public record AppliedCheck(
         Annotation annotation, 
@@ -13,7 +13,7 @@ public record AppliedCheck(
         ReflectedMethod<CheckMethodIdentifier, CheckExecutionContext> postExec
     ) {
 
-    private static Logger logger = LoggerUtil.getLogger(AppliedCheck.class); 
+    private static Logger logger = LoggerFactory.getLogger(AppliedCheck.class); 
 
     public boolean pre(Object context) {
         logger.debug("Running InteractionCheck preExec {} with annotation {}", preExec(), annotation());

@@ -16,6 +16,8 @@ dependencies {
     testImplementation(libs.mockito)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(libs.slf4j.simple)
+
     implementation(libs.slf4j)
     implementation(libs.javacord)
     implementation(libs.geantyref)

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.cutin.MethodParser;
 import net.tomatentum.cutin.util.ReflectionUtil;
@@ -13,14 +14,13 @@ import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
-import net.tomatentum.marinara.util.LoggerUtil;
 
 public class SlashCommandParser implements MethodParser {
 
     private Method method;
     private Consumer<SlashCommandIdentifier> consumer;
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public SlashCommandParser(Method method, Consumer<SlashCommandIdentifier> consumer) {
         this.method = method;

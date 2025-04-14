@@ -10,7 +10,7 @@ import net.tomatentum.marinara.wrapper.CommandRegisterer;
 import net.tomatentum.marinara.wrapper.ServerCommandList;
 
 public class Discord4JRegistererStrategy implements CommandRegisterer.Strategy<ApplicationCommandRequest> {
-    
+
     private ApplicationService appService;
     private long applicationId;
 

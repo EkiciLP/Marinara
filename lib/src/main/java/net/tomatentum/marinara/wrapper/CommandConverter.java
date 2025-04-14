@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.marinara.interaction.commands.SlashCommandDefinition;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
@@ -12,7 +13,6 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOptio
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
-import net.tomatentum.marinara.util.LoggerUtil;
 
 public class CommandConverter<A extends Object, O extends Object, C extends Object> {
 
@@ -20,7 +20,7 @@ public class CommandConverter<A extends Object, O extends Object, C extends Obje
         return new CommandConverter<>(spec);
     }
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Spec<A, O, C> spec;
 

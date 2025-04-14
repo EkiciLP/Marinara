@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.marinara.interaction.commands.annotation.CommandChoices;
 import net.tomatentum.marinara.interaction.commands.annotation.SlashCommandOption;
@@ -14,7 +15,6 @@ import net.tomatentum.marinara.interaction.commands.choice.EnumChoices;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.interaction.ident.RootCommandIdentifier;
 import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
-import net.tomatentum.marinara.util.LoggerUtil;
 
 public class SlashCommandDefinition {
 
@@ -30,7 +30,7 @@ public class SlashCommandDefinition {
     private RootCommandIdentifier rootIdentifier;
     private boolean isRootCommand;
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public SlashCommandDefinition(RootCommandIdentifier rootIdentifier) {
         this.entries = new HashSet<>();

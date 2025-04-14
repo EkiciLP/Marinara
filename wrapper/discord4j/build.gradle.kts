@@ -17,6 +17,8 @@ dependencies {
     testImplementation(libs.discord4j)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(libs.slf4j.simple)
+
     implementation(libs.slf4j)
     implementation(libs.discord4j) {
         exclude(module="discord4j-voice")

@@ -91,8 +91,8 @@ public class InteractionIdentifier {
     @Override
     public String toString() {
         if (parent() == null)
-            return name();
-        return "%s.%s".formatted(name(), parent().toString());
+            return name() + " - " + type();
+        return "%s:%s".formatted(name(), parent().toString());
     }
 
     public static class Builder {

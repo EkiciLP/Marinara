@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.cutin.MethodParser;
 import net.tomatentum.cutin.container.MethodContainer;
@@ -14,7 +15,6 @@ import net.tomatentum.marinara.checks.AppliedCheck;
 import net.tomatentum.marinara.checks.CheckExecutionContext;
 import net.tomatentum.marinara.checks.CheckMethodIdentifier;
 import net.tomatentum.marinara.checks.CheckMethodIdentifier.CheckMethodType;
-import net.tomatentum.marinara.util.LoggerUtil;
 
 public class InteractionCheckParser implements MethodParser {
 
@@ -22,7 +22,7 @@ public class InteractionCheckParser implements MethodParser {
     private Method method;
     private Consumer<AppliedCheck> consumer;
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public InteractionCheckParser(Method method, Consumer<AppliedCheck> consumer, MethodContainer<CheckMethodIdentifier, CheckExecutionContext> checkContainer) {
         this.checkContainer = checkContainer;
