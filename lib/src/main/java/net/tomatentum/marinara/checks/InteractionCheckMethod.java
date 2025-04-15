@@ -1,12 +1,12 @@
 package net.tomatentum.marinara.checks;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import net.tomatentum.cutin.MethodParser;
+import net.tomatentum.cutin.ReflectedMethodFactory.ParserResults;
 import net.tomatentum.cutin.container.MethodContainer;
 import net.tomatentum.cutin.method.BestCandidateMethod;
-import net.tomatentum.cutin.method.ReflectedMethod;
 import net.tomatentum.marinara.checks.CheckMethodIdentifier.CheckMethodType;
 import net.tomatentum.marinara.parser.InteractionCheckClassParser;
 
@@ -14,8 +14,13 @@ public class InteractionCheckMethod extends BestCandidateMethod<CheckMethodIdent
 
     private CheckMethodIdentifier identifier;
 
-    public InteractionCheckMethod(String methodName, Object containingObject) {
+    public InteractionCheckMethod(
+            String methodName, 
+            Object containingObject,
+            CheckMethodIdentifier identifier
+        ) {
         super(methodName, containingObject);
+        this.identifier = identifier;
     }
 
     @Override
@@ -44,21 +49,24 @@ public class InteractionCheckMethod extends BestCandidateMethod<CheckMethodIdent
             this.type = type;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public void addParser(ReflectedMethod<CheckMethodIdentifier, CheckExecutionContext> method, List<MethodParser> parsers) {
+        public void addParser(Set<MethodParser> parsers) {
             parsers.add(
-                new InteractionCheckClassParser((Class<InteractionCheck<?>>) method.containingObject().getClass(),
-                    a -> ((InteractionCheckMethod) method).identifier = new CheckMethodIdentifier(a, type))
+                new InteractionCheckClassParser()
             );
         }
 
         @Override
-        protected Optional<BestCandidateMethod<CheckMethodIdentifier, CheckExecutionContext>> bcProduce(String methodName,
-                Object containingObject) {
-            if (!(containingObject instanceof InteractionCheck))
-                return Optional.empty();
-            return Optional.of(new InteractionCheckMethod(methodName, containingObject));
+        protected Optional<BestCandidateMethod<CheckMethodIdentifier, CheckExecutionContext>> bcProduce(
+                    String methodName,
+                    Object containingObject,
+                    ParserResults parserResults
+                ) {
+
+            CheckMethodIdentifier identifier = new CheckMethodIdentifier(parserResults.get(InteractionCheckClassParser.class), type);
+            if (identifier.annotationType() == null)
+                return null;
+            return Optional.of(new InteractionCheckMethod(methodName, containingObject, identifier));
         }
 
     }

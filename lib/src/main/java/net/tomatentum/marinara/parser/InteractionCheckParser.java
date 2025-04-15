@@ -3,7 +3,7 @@ package net.tomatentum.marinara.parser;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,31 +19,31 @@ import net.tomatentum.marinara.checks.CheckMethodIdentifier.CheckMethodType;
 public class InteractionCheckParser implements MethodParser {
 
     private MethodContainer<CheckMethodIdentifier, CheckExecutionContext> checkContainer;
-    private Method method;
-    private Consumer<AppliedCheck> consumer;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public InteractionCheckParser(Method method, Consumer<AppliedCheck> consumer, MethodContainer<CheckMethodIdentifier, CheckExecutionContext> checkContainer) {
+    public InteractionCheckParser(MethodContainer<CheckMethodIdentifier, CheckExecutionContext> checkContainer) {
         this.checkContainer = checkContainer;
-        this.method = method;
-        this.consumer = consumer;
     }
 
     @Override
-    public void parse() {
+    public Object parse(Method method, Object containingObject) {
         Annotation[] annotations = method.getAnnotations();
-        Arrays.stream(annotations).forEach(this::convertAnnotation);
+        return Arrays.stream(annotations)
+            .map(a -> convertAnnotation(a, method))
+            .filter(Objects::nonNull)
+            .toList();
     }
 
-    private void convertAnnotation(Annotation annotation) {
+    private AppliedCheck convertAnnotation(Annotation annotation, Method method) {
             var preExec = this.checkContainer.findFirstFor(new CheckMethodIdentifier(annotation.annotationType(), CheckMethodType.PRE));
             var postExec = this.checkContainer.findFirstFor(new CheckMethodIdentifier(annotation.annotationType(), CheckMethodType.POST));
             if (preExec.isPresent() && postExec.isPresent())  {
                 AppliedCheck appliedCheck = new AppliedCheck(annotation, preExec.get(), postExec.get());
                 logger.trace("Parsed InteractionCheck {} for annotation {} for method {}", preExec.get().containingObject(), annotation, ReflectionUtil.getFullMethodName(method));
-                consumer.accept(appliedCheck);
+                return appliedCheck;
             }
+            return null;
     }
     
 }

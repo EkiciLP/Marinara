@@ -1,8 +1,8 @@
 package net.tomatentum.marinara.interaction.methods;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import net.tomatentum.cutin.MethodParser;
 import net.tomatentum.cutin.ReflectedMethodFactory;
@@ -21,10 +21,11 @@ public abstract class InteractionMethod extends ReflectedMethod<InteractionIdent
 
     protected InteractionMethod(
         Method method, 
-        InteractionHandler handler
+        InteractionHandler handler,
+        List<AppliedCheck> appliedChecks
         ) {
         super(method, handler);
-        this.appliedChecks = new ArrayList<>();
+        this.appliedChecks = appliedChecks;
     }
 
     @Override
@@ -60,10 +61,9 @@ public abstract class InteractionMethod extends ReflectedMethod<InteractionIdent
         }
 
         @Override
-        public void addParser(ReflectedMethod<InteractionIdentifier, Object> method, List<MethodParser> parser) {
-            InteractionMethod imethod = (InteractionMethod) method;
+        public void addParser(Set<MethodParser> parser) {
             parser.add(
-                new InteractionCheckParser(method.method(), imethod.appliedChecks::add, this.checkContainer)
+                new InteractionCheckParser(this.checkContainer)
             );
         }
 

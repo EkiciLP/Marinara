@@ -1,7 +1,6 @@
 package net.tomatentum.marinara.parser;
 
 import java.lang.reflect.Method;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,22 +12,17 @@ import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.commands.annotation.SubCommandGroup;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
-import net.tomatentum.marinara.interaction.ident.SlashCommandIdentifier;
 
 public class SlashCommandParser implements MethodParser {
 
-    private Method method;
-    private Consumer<SlashCommandIdentifier> consumer;
-
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public SlashCommandParser(Method method, Consumer<SlashCommandIdentifier> consumer) {
-        this.method = method;
-        this.consumer = consumer;
+    public SlashCommandParser() {
     }
 
     @Override
-    public void parse() {
+    public Object parse(Method method, Object containingObject) {
+        if (!method.isAnnotationPresent(SlashCommand.class) && !method.isAnnotationPresent(SubCommand.class)) return null;
         this.checkValidCommandMethod(method);
 
         SlashCommand cmd = ReflectionUtil.getAnnotation(method, SlashCommand.class);
@@ -59,21 +53,21 @@ public class SlashCommandParser implements MethodParser {
         }
 
         logger.trace("Parsed using SlashCommandParser for method {} with the result: {}", ReflectionUtil.getFullMethodName(method), lastIdentifier);
-        consumer.accept((SlashCommandIdentifier) lastIdentifier);
+        return lastIdentifier;
     }
 
     private void checkValidCommandMethod(Method method) {
         if (method.isAnnotationPresent(SlashCommand.class) && 
             method.getDeclaringClass().isAnnotationPresent(SlashCommand.class)) {
-            throw new RuntimeException(method.getName() + ": Can't have ApplicationCommand Annotation on Class and Method");
+            throw new RuntimeException(method.getName() + ": Can't have SlashCommand Annotation on Class and Method");
         }
 
         if (!ReflectionUtil.isAnnotationPresent(method, SlashCommand.class))
-            throw new RuntimeException(method.getName() + ": Missing ApplicationCommand Annotation on either Class or Method");
+            throw new RuntimeException(method.getName() + ": Missing SlashCommand Annotation on either Class or Method");
 
         if ((method.isAnnotationPresent(SubCommand.class) && 
             !ReflectionUtil.isAnnotationPresent(method, SlashCommand.class))) {
-            throw new RuntimeException(method.getName() + ": Missing ApplicationCommand Annotation on either Method or Class");
+            throw new RuntimeException(method.getName() + ": Missing SlashCommand Annotation on either Method or Class");
         }
     }
     

@@ -2,7 +2,6 @@ package net.tomatentum.marinara.parser;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,21 +14,14 @@ public class AutocompleteParser implements MethodParser {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Method method;
-    private Consumer<String[]> consumer;
-
-    public AutocompleteParser(Method method, Consumer<String[]> consumer) {
-        this.method = method;
-        this.consumer = consumer;
-    }
-
     @Override
-    public void parse() {
-        String[] autocompletes = Arrays.stream(this.method.getAnnotationsByType(AutoComplete.class))
+    public Object parse(Method method, Object containingObject) {
+        String[] autoCompletes = Arrays.stream(method.getAnnotationsByType(AutoComplete.class))
             .map(AutoComplete::value)
             .toArray(String[]::new);
-        logger.trace("Parsed AutoComplete annotation {} for method {}", autocompletes, ReflectionUtil.getFullMethodName(method));
-        this.consumer.accept(autocompletes);
+        if (autoCompletes.length > 0)
+            logger.trace("Parsed AutoComplete annotations {} for method {}", autoCompletes, ReflectionUtil.getFullMethodName(method));
+        return autoCompletes;
     }
     
 }

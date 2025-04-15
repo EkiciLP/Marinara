@@ -3,19 +3,20 @@ package net.tomatentum.marinara.interaction.methods;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import net.tomatentum.cutin.MethodParser;
+import net.tomatentum.cutin.ReflectedMethodFactory.ParserResults;
 import net.tomatentum.cutin.container.MethodContainer;
 import net.tomatentum.cutin.method.ReflectedMethod;
+import net.tomatentum.marinara.checks.AppliedCheck;
 import net.tomatentum.marinara.checks.CheckExecutionContext;
 import net.tomatentum.marinara.checks.CheckMethodIdentifier;
 import net.tomatentum.marinara.interaction.InteractionHandler;
 import net.tomatentum.marinara.interaction.InteractionType;
-import net.tomatentum.marinara.interaction.annotation.AutoComplete;
-import net.tomatentum.marinara.interaction.commands.annotation.SlashCommand;
-import net.tomatentum.marinara.interaction.commands.annotation.SubCommand;
 import net.tomatentum.marinara.interaction.ident.InteractionIdentifier;
 import net.tomatentum.marinara.parser.AutocompleteParser;
+import net.tomatentum.marinara.parser.InteractionCheckParser;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 
 public class AutoCompleteInteractionMethod extends InteractionMethod {
@@ -23,11 +24,15 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
     private String autocompleteRef;
     private ContextObjectProvider cop;
 
-    private AutoCompleteInteractionMethod(Method method, 
-        InteractionHandler handler, 
-        ContextObjectProvider cop
+    private AutoCompleteInteractionMethod(
+            Method method, 
+            InteractionHandler handler,
+            List<AppliedCheck> appliedChecks,
+            String autocompleteRef,
+            ContextObjectProvider cop
         ) {
-        super(method, handler);
+        super(method, handler, appliedChecks);
+        this.autocompleteRef = autocompleteRef;
         this.cop = cop;
     }
 
@@ -64,23 +69,27 @@ public class AutoCompleteInteractionMethod extends InteractionMethod {
         }
 
         @Override
-        public Optional<ReflectedMethod<InteractionIdentifier, Object>> produce(Method method, Object containingObject) {
-            AutoCompleteInteractionMethod rMethod = null;
-            if ((containingObject instanceof InteractionHandler iHandler) &&
-                method.isAnnotationPresent(AutoComplete.class) &&
-                !(method.isAnnotationPresent(SlashCommand.class) ||
-                method.isAnnotationPresent(SubCommand.class)))
-                rMethod = new AutoCompleteInteractionMethod(method, iHandler, cop);
+        public Optional<ReflectedMethod<InteractionIdentifier, Object>> produce(Method method, Object containingObject, ParserResults parserResults) {
+            if (!(containingObject instanceof InteractionHandler)) return Optional.empty();
+            String[] autocompletes = parserResults.get(AutocompleteParser.class);
+            if (autocompletes.length <= 0) return Optional.empty();
+            
+            return Optional.of(new AutoCompleteInteractionMethod(
+                method, 
+                (InteractionHandler) containingObject,
+                parserResults.get(InteractionCheckParser.class),
+                autocompletes[0],
+                cop
+            ));
 
-            return Optional.ofNullable(rMethod);
         }
 
         @Override
-        public void addParser(ReflectedMethod<InteractionIdentifier, Object> method, List<MethodParser> parser) {
-            super.addParser(method, parser);
+        public void addParser(Set<MethodParser> parser) {
+            super.addParser(parser);
 
             parser.add(
-                new AutocompleteParser(method.method(), x -> ((AutoCompleteInteractionMethod) method).autocompleteRef = x[0])
+                new AutocompleteParser()
             );
         }
 
