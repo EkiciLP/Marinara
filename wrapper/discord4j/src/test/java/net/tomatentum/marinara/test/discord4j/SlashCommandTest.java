@@ -21,6 +21,7 @@ import discord4j.core.object.command.ApplicationCommandOption.Type;
 import net.tomatentum.marinara.Marinara;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.discord4j.Discord4JWrapper;
+
 @TestInstance(Lifecycle.PER_CLASS)
 class SlashCommandTest {
 

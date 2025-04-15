@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.interaction.ChatInputAutoCompleteEvent;
@@ -13,7 +14,6 @@ import discord4j.core.object.command.ApplicationCommandOption.Type;
 import discord4j.discordjson.json.ApplicationCommandOptionChoiceData;
 import discord4j.discordjson.json.ApplicationCommandRequest;
 
-import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.CommandConverter;
 import net.tomatentum.marinara.wrapper.CommandRegisterer;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
@@ -37,7 +37,7 @@ public class Discord4JWrapper extends LibraryWrapper {
     private Discord4JContextObjectProvider contextObjectProvider;
     private CommandRegisterer<ApplicationCommandRequest> commandRegisterer;
 
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public Discord4JWrapper(GatewayDiscordClient api) {
         this.contextObjectProvider = new Discord4JContextObjectProvider();

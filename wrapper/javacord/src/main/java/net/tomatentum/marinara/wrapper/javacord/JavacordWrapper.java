@@ -7,12 +7,12 @@ import org.javacord.api.interaction.AutocompleteInteraction;
 import org.javacord.api.interaction.SlashCommandBuilder;
 import org.javacord.api.interaction.SlashCommandOptionChoice;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.tomatentum.marinara.wrapper.CommandConverter;
 import net.tomatentum.marinara.wrapper.CommandRegisterer;
 import net.tomatentum.marinara.wrapper.ContextObjectProvider;
 import net.tomatentum.marinara.wrapper.IdentifierProvider;
-import net.tomatentum.marinara.util.LoggerUtil;
 import net.tomatentum.marinara.wrapper.LibraryWrapper;
 import net.tomatentum.marinara.wrapper.javacord.identifierconverter.AutocompleteIdentifierConverter;
 import net.tomatentum.marinara.wrapper.javacord.identifierconverter.ButtonIdentifierConverter;
@@ -23,7 +23,7 @@ public class JavacordWrapper extends LibraryWrapper {
     private JavacordContextObjectProvider contextObjectProvider;
     private CommandRegisterer<SlashCommandBuilder> commandRegisterer;
     
-    private Logger logger = LoggerUtil.getLogger(getClass());
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public JavacordWrapper(DiscordApi api) {
         this.contextObjectProvider = new JavacordContextObjectProvider();
